@@ -5,28 +5,28 @@ function logindiv() {
   loginDiv.innerHTML = ` 
     <!-- Sign Up Form -->
     <div class="form-container sign-up-container">
-      <form action="#">
+      <form action="/register" method="POST">
         <h1>Create Account</h1>
-        <input type="text" placeholder="Nickname" required />
-        <input type="number" placeholder="Age" min="13" required />
-        <select required>
+        <input type="text" placeholder="Nickname" name="Nickname" required />
+        <input type="number" placeholder="age" name="Age" min="13" required />
+        <select required name="gender">
           <option value="" disabled selected>Gender</option>
           <option value="male">Male</option>
           <option value="female">Female</option>
         </select>
-        <input type="text" placeholder="First Name" required />
-        <input type="text" placeholder="Last Name" required />
-        <input type="email" placeholder="E-mail" required />
-        <input type="password" placeholder="Password" required />
+        <input type="text" placeholder="First Name" name="first_name" required />
+        <input type="text" placeholder="Last Name" name="last_name" required />
+        <input type="email" placeholder="E-mail" name="email" required />
+        <input type="password" placeholder="Password"  name="password" required />
         <button>Sign Up</button>
       </form>
     </div>
     <div class="form-container sign-in-container">
-      <form action="#">
+      <form action="/login" method="POST">
         <h1>Sign in</h1>
         
-        <input type="email" placeholder="Email" />
-        <input type="password" placeholder="Password" />
+        <input type="email" name="email" placeholder="Email" />
+        <input type="password" name="password" placeholder="Password" />
         <a href="#">Forgot your password?</a>
         <button>Sign In</button>
       </form>
