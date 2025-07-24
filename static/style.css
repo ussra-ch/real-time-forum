@@ -237,3 +237,9 @@ textarea {
 .container.right-panel-active .overlay-right {
     transform: translateX(20%);
 }
+#logout{
+    position: absolute;
+    right: 0;
+    top: 0;
+    margin: 1vh;
+}

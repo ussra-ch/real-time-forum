@@ -23,6 +23,8 @@ func main() {
 	http.HandleFunc("/register", handlers.RegisterHandler)
 	http.HandleFunc("/login", handlers.LoginHandler)
 	http.HandleFunc("/logout", handlers.LogoutHandler)
+	http.HandleFunc("/api/logout", handlers.LogoutHandler)
+	http.HandleFunc("/api/anthenticated", handlers.IsAuthenticated)
 
 	fmt.Println("Server started at http://localhost:8080")
 	err := http.ListenAndServe(":8080", nil)

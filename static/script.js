@@ -1,5 +1,6 @@
+const loginDiv = document.createElement('div');
+const Logout = document.getElementById('logout');
 function logindiv() {
-  const loginDiv = document.createElement('div');
   loginDiv.className = 'container';
   loginDiv.id = 'container';
   loginDiv.innerHTML = ` 
@@ -25,10 +26,10 @@ function logindiv() {
       <form action="/login" method="POST">
         <h1>Sign in</h1>
         
-        <input type="email" name="email" placeholder="Email" />
+        <input type="Nickname" name="Nickname" placeholder="Nickname" />
         <input type="password" name="password" placeholder="Password" />
         <a href="#">Forgot your password?</a>
-        <button>Sign In</button>
+        <button id="login">Sign In</button>
       </form>
     </div>
     <div class="overlay-container">
@@ -52,7 +53,9 @@ function logindiv() {
   const signUpButton = loginDiv.querySelector('#signUp');
   const signInButton = loginDiv.querySelector('#signIn');
   const container = loginDiv;
-
+  document.getElementById('login').addEventListener("click", (e) => {
+    //e.preventDefault()
+  })
   signUpButton.addEventListener('click', () => {
     container.classList.add("right-panel-active");
   });
@@ -62,3 +65,33 @@ function logindiv() {
   });
 }
 logindiv();
+function login() {
+
+  fetch('/api/anthenticated')
+    .then(res => {
+      if (res.ok) {
+        loginDiv.style.display = 'none'
+        Logout.style.display = 'block'
+      } else {
+        loginDiv.style.display = 'block'
+        Logout.style.display = 'none'
+      }
+    })
+}
+login()
+function logout() {
+  Logout.addEventListener('click', () => {
+    fetch('/api/logout', {
+      method: 'POST',
+      credentials: 'include'
+    }).then(res => {
+      if (res.ok) {
+        login()
+      } else {
+        console.log("Logout failed");
+      }
+    });
+  });
+}
+
+logout();
