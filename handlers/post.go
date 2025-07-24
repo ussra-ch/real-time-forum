@@ -48,9 +48,15 @@ func PostHandler(w http.ResponseWriter, r *http.Request) {
 		INSERT INTO posts (title, content, interest, user_id)
 		VALUES (?, ?, ?, ?)
 	`
-	_, err = databases.DB.Exec(query, pd.Title, pd.Description, strings.Join(pd.Topics, ","), userID)
+	res, err := databases.DB.Exec(query, pd.Title, pd.Description, strings.Join(pd.Topics, ","), userID)
 	if err != nil {
 		log.Println("Insert post error:", err)
+		http.Error(w, "Database error", http.StatusInternalServerError)
+		return
+	}
+	post_id, err := res.LastInsertId()
+	if err != nil {
+		log.Println("Error getting inserted user ID:", err)
 		http.Error(w, "Database error", http.StatusInternalServerError)
 		return
 	}
@@ -61,6 +67,7 @@ func PostHandler(w http.ResponseWriter, r *http.Request) {
 		"title":    pd.Title,
 		"content":  pd.Description,
 		"interest": strings.Join(pd.Topics, ","),
+		"post_id": fmt.Sprintf("%d", post_id),
 	})
 }
 
@@ -109,7 +116,6 @@ func FetchPostsHandler(w http.ResponseWriter, r *http.Request) {
 		posts = append(posts, post)
 	}
 
-	fmt.Println("Fetched posts:", posts)
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(posts)
 }

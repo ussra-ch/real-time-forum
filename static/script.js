@@ -125,12 +125,12 @@ function Create() {
   </div>
   `;
   content.appendChild(CreateCard);
-  CreateCard.style.display= 'none';
-  
+  CreateCard.style.display = 'none';
+
   Create.addEventListener('click', (e) => {
     console.log(1);
     console.log(CreateCard);
-    CreateCard.style.display= 'block';
+    CreateCard.style.display = 'block';
   });
   document.getElementById('createPostForm').addEventListener('submit', async function (e) {
     e.preventDefault();
@@ -169,22 +169,104 @@ function fetchPosts() {
     .then(res => res.json())
     .then(posts => {
       const postsContainer = document.getElementById('postsContainer');
-      postsContainer.innerHTML = ''; 
+      postsContainer.innerHTML = '';
       posts.forEach(post => {
         const topics = post.interest ? post.interest.split(',') : [];
 
         const postCard = document.createElement('div');
         postCard.className = 'post-card1';
+        
         postCard.innerHTML = `
           <h3>${post.title}</h3>
           <p>${post.content}</p>
           <p>Topics: ${topics.join(', ')}</p>
           <p>Posted by: User #${post.user_id} on ${new Date(post.created_at).toLocaleDateString()}</p>
-        `;
+           <form class="commentForm">
+            <input type="text" name="post_id" value="${post.id}" hidden>
+              <input type="text" name="content" class="commentInput" placeholder="Write a comment..." required>
+              <button type="submit" class="commentButton">Comment</button>
+            </form>
+          `;
         postsContainer.prepend(postCard);
+        comment();
       });
     })
     .catch(err => console.error('Error fetching posts:', err));
 }
-
 fetchPosts();
+function catigories() {
+  let categories = ['All', 'Music', 'Sport', 'Gaming', 'Health', 'General'];
+  const categoDiv = document.getElementById('catego');
+
+  categories.forEach(element => {
+    const boutton = document.createElement('button');
+    boutton.className = 'catigories';
+    boutton.innerText = element;
+    boutton.addEventListener('click', () => {
+      fetch(`/api/fetch_posts`)
+        .then(res => res.json())
+        .then(posts => {
+          const postsContainer = document.getElementById('postsContainer');
+          postsContainer.innerHTML = '';
+          posts.forEach(post => {
+            if (post.interest == element || element === 'All') {
+              const topics = post.interest ? post.interest.split(',') : [];
+
+              const postCard = document.createElement('div');
+              postCard.className = 'post-card1';
+              postCard.innerHTML = `
+              <h3>${post.title}</h3>
+              <p>${post.content}</p>
+              <p>Topics: ${topics.join(', ')}</p>
+              <p>Posted by: User #${post.user_id} on ${new Date(post.created_at).toLocaleDateString()}</p>
+              <form class="commentForm">
+              <input type="text" name="post_id" value="${post.id}" hidden>
+                  <input type="text" name"content" class="commentInput" placeholder="Write a comment..." required>
+                  <button type="submit" class="commentButton">Comment</button>
+              </form>
+            `;
+              postsContainer.prepend(postCard);
+            }
+
+          });
+        })
+        .catch(err => console.error('Error fetching posts:', err));
+        comment();
+        
+    });
+    categoDiv.appendChild(boutton);
+  });
+}
+catigories();
+function comment() {
+  
+  const forms = document.querySelectorAll('.commentForm');
+  
+  forms.forEach((form) => {
+    form.addEventListener("submit", function (e) {
+      e.preventDefault();
+
+      const commentInput = form.querySelector(".commentInput");
+      const comment = commentInput.value;
+      const post_id = form.querySelector("[name='post_id']").value;
+
+      fetch("/comment", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ comment,post_id }),
+      })
+      .then(res => res.json())
+      .then(data => {
+        console.log("Comment posted:", data);
+        commentInput.value = "";
+      })
+      .catch(err => {
+        console.error("Error:", err);
+      });
+    });
+  });
+}
+
+comment();
