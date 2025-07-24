@@ -2,7 +2,11 @@ package handlers
 
 import (
 	"encoding/json"
+	"log"
 	"net/http"
+	"strings"
+
+	"handlers/databases"
 )
 
 type PostData struct {
@@ -13,17 +17,43 @@ type PostData struct {
 
 func PostHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
-		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
 		return
 	}
 
-	var postData PostData
-	if err := json.NewDecoder(r.Body).Decode(&postData); err != nil {
-		http.Error(w, "Bad request", http.StatusBadRequest)
+	var pd PostData
+	if err := json.NewDecoder(r.Body).Decode(&pd); err != nil {
+		http.Error(w, "Bad Request", http.StatusBadRequest)
+		return
+	}
+	cookie, err := r.Cookie("session_token")
+	if err != nil {
+		w.Write([]byte(`{"loggedIn": false}`))
+		return
+	}
+	query1 := `SELECT user_id FROM sessions WHERE session_token = ? AND expires_at > DATETIME('now')`
+	var userID int
+	err = databases.DB.QueryRow(query1, cookie.Value).Scan(&userID)
+	if err != nil {
+		w.Write([]byte(`{"loggedIn": false}`))
 		return
 	}
 
-	
-	w.WriteHeader(http.StatusCreated)
-	w.Write([]byte("Post created successfully"))
+	query := `
+    INSERT INTO posts (title, content, interest, user_id)
+    VALUES (?, ?, ?, ?)
+`
+	_, err = databases.DB.Exec(query, pd.Title, pd.Description, strings.Join(pd.Topics, ","), userID)
+	if err != nil {
+		log.Println(err)
+		http.Error(w, "Database error", http.StatusInternalServerError)
+		return
+	}
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(map[string]string{
+		"message":  "Data received successfully",
+		"title":    pd.Title,
+		"content":  pd.Description,
+		"interest": strings.Join(pd.Topics, ","),
+	})
 }

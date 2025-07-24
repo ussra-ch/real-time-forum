@@ -99,21 +99,64 @@ function Create() {
   const Create = document.getElementById('Create')
   const CreateCard = document.createElement('div')
   CreateCard.innerHTML = `
-  <div class="post-card" id="createPostCard" style=" margin-top:30px;">
-            <form id="createPostForm">
-                <h2 style="color:#00ff9d;">Create New Post</h2>
-                <input type="text" name="title" placeholder="Title" required />
-                <textarea name="content" placeholder="Content" required></textarea>
-                <select name="topic" required>
-                    <option value="" disabled selected>Choose Topic</option>
-                    <option value="General">General</option>
-                    <option value="Help">Help</option>
-                    <option value="News">News</option>
-                </select>
-                <button type="submit">Post</button>
-            </form>
+  <div class="post-card" id="createPostCard" >
+      <form id="createPostForm" method="get">
+      <div class="container">
+        <h3>Create Post</h3>
+        <div class="div-title">
+          <label for="title">Title :</label>
+          <input type="text" name="title" id="title" required>
         </div>
-  `
+        <div class="div-description">
+          <label for="description">description :</label>
+          <textarea name="description" id="description" rows="4" required></textarea>
+        </div>
+        <div class="topic-options">
+          <label><input type="checkbox" id="music" name="topic" value="Music"> Music</label>
+          <label><input type="checkbox" id="sport" name="topic" value="Sport"> Sport</label>
+          <label><input type="checkbox" id="gaming" name="topic" value="Gaming"> Gaming</label>
+          <label><input type="checkbox" id="health" name="topic" value="Health"> Health</label>
+          <label><input type="checkbox" id="general" name="topic" value="General"> General</label>
+        </div>
+        <div id="errorMsg" style="display:none; color:red; margin: 10px 10px;"></div>
+        <button type="submit">Post</button>
+      </div>
+    </form>
+        </div>
+  `;
   content.appendChild(CreateCard);
+  Create.addEventListener('click', (e) => {
+    e.preventDefault();
+    CreateCard.style.display = 'block';
+  });
+  document.getElementById('createPostForm').addEventListener('submit', async function (e) {
+    e.preventDefault();
+
+    const selectedTopics = Array.from(document.querySelectorAll('input[name="topic"]:checked')).map(el => el.value);
+
+    const data = {
+      title: this.title.value,
+      description: this.description.value,
+      topics: selectedTopics,
+    };
+
+    fetch('/api/post', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    })
+      .then(r => r.json())
+      .then(data => {
+        console.log(data);
+        CreateCard.style.display = 'none';
+      })
+      .catch(err => {
+        console.error('Error:', err.message);
+      });
+  });
+
+
 }
 Create();

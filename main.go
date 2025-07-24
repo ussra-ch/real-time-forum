@@ -25,7 +25,7 @@ func main() {
 	http.HandleFunc("/logout", handlers.LogoutHandler)
 	http.HandleFunc("/api/logout", handlers.LogoutHandler)
 	http.HandleFunc("/api/anthenticated", handlers.IsAuthenticated)
-
+	http.HandleFunc("/api/post",handlers.PostHandler)
 	fmt.Println("Server started at http://localhost:8080")
 	err := http.ListenAndServe(":8080", nil)
 	if err != nil {

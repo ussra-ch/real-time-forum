@@ -25,6 +25,16 @@ func InitDB(filepath string) {
 		last_name TEXT NOT NULL,
 		email TEXT NOT NULL UNIQUE,
 		password TEXT NOT NULL
+	);
+	CREATE TABLE IF NOT EXISTS posts (
+	id INTEGER PRIMARY KEY AUTOINCREMENT,
+	user_id INTEGER,
+	content TEXT,
+	title TEXT,
+	interest TEXT,
+	photo TEXT,
+	created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+	FOREIGN KEY(user_id) REFERENCES users(id)
 	);`
 	_, err = DB.Exec(createTable)
 	if err != nil {

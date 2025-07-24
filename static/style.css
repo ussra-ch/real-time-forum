@@ -107,7 +107,7 @@ textarea {
     margin: 10px 0;
     width: 100%;
     border-radius: 8px;
-    color: #e0e0e0;
+    color: #000000;
     font-size: 14px;
     transition: all 0.3s ease;
 }
@@ -248,4 +248,96 @@ textarea {
     left: 0;
     top: 0;
     margin: 1vh;
+}
+#createPostCard{
+    border: 2px solid #2a2a4a;
+    background-color: #FFFFFF;
+    padding:  20px;
+    border-radius: 20px;
+    color: #2a2a4a;
+}
+section .container {
+  display: none;
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+
+
+  padding: 15PX;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  animation: 0.5s animt ease-in-out;
+  z-index: 10;
+
+}
+
+.topic-options label {
+  font-weight: 400;
+  color: #444;
+  cursor: pointer;
+}
+
+.topic-options input[type="checkbox"] {
+  margin-right: 6px;
+  transform: scale(1.1);
+}
+
+body:has(#Create:checked) section .container {
+  display: block;
+}
+
+body:has(#Create:checked) #mainPage {
+  opacity: 0.3;
+}
+
+@keyframes animt {
+  0% {
+    opacity: 0;
+    top: -10%;
+    transform: translate(-50%, 0);
+  }
+
+  100% {
+    opacity: 1;
+    top: 50%;
+    transform: translate(-50%, -50%);
+  }
+}
+
+
+.div-title,
+.div-description {
+  margin-bottom: 20px;
+}
+
+.div-title label,
+.div-description label {
+  display: block;
+  font-size: 14px;
+  font-weight: 600;
+  color: #e0e0e0;
+  margin-bottom: 8px;
+}
+
+.topic-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.topic-options label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  color: #e0e0e0;
+}
+
+.topic-options input[type="checkbox"] {
+  width: auto;
+  cursor: pointer;
 }
