@@ -128,8 +128,7 @@ function Create() {
   CreateCard.style.display = 'none';
 
   Create.addEventListener('click', (e) => {
-    console.log(1);
-    console.log(CreateCard);
+
     CreateCard.style.display = 'block';
   });
   document.getElementById('createPostForm').addEventListener('submit', async function (e) {
@@ -152,7 +151,6 @@ function Create() {
     })
       .then(r => r.json())
       .then(data => {
-        console.log(data);
         CreateCard.style.display = 'none';
         fetchPosts();
       })
@@ -185,10 +183,18 @@ function fetchPosts() {
             <input type="text" name="post_id" value="${post.id}" hidden>
               <input type="text" name="content" class="commentInput" placeholder="Write a comment..." required>
               <button type="submit" class="commentButton">Comment</button>
-            </form>
+              </form>
+              <button  class="show">show Comment</button>
           `;
-        loadComments(post.id, postCard);
+        const div = document.createElement('div');
+        div.className = 'comments-container';
+        postCard.appendChild(div);
         postsContainer.prepend(postCard);
+        document.querySelector('.show').addEventListener('click', (e) => {
+          div.style.display = div.style.display === 'none' ? 'block' : 'none';
+          
+        });
+        loadComments(post.id, div);
         comment();
       });
     })
@@ -221,13 +227,21 @@ function catigories() {
               <p>Topics: ${topics.join(', ')}</p>
               <p>Posted by: User #${post.user_id} on ${new Date(post.created_at).toLocaleDateString()}</p>
               <form class="commentForm">
-              <input type="text" name="post_id" value="${post.id}" hidden>
+                  <input type="text" name="post_id" value="${post.id}" hidden>
                   <input type="text" name"content" class="commentInput" placeholder="Write a comment..." required>
                   <button type="submit" class="commentButton">Comment</button>
+                  <button  class="show">Comment</button>
               </form>
             `;
-              loadComments(post.id, postCard);
+              const div = document.createElement('div');
+              div.className = 'comments-container';
+              postCard.appendChild(div);
               postsContainer.prepend(postCard);
+              document.querySelector('.show').addEventListener('click', (e) => {
+                //div.style.display = div.style.display === 'none' ? 'block' : 'none';
+               
+              });
+              loadComments(post.id, div);
             }
 
           });
@@ -262,28 +276,32 @@ function comment() {
       })
         .then(res => res.json())
         .then(data => {
-          console.log("Comment posted:", data);
           commentInput.value = "";
         })
         .catch(err => {
           console.error("Error:", err);
         });
-      
+
     });
   });
 }
 
 comment();
 function loadComments(postId, container) {
-  
+
   fetch('/api/fetch_comments')
-  .then(res => res.json())
-  .then(comments => {
-    comments.forEach(comment => {
-      const p = document.createElement("p");
-      p.textContent = `User#${comment.user_id}: ${comment.content}`;
-      container.appendChild(p);
+    .then(res => res.json())
+    .then(comments => {
+      comments.forEach(comment => {
+        console.log(comment.PostID, postId);
+        if (comment.PostID != postId) return;
+
+        const p = document.createElement("div");
+        p.innerHTML = `
+        <p><strong>${comment.Name}:</strong> ${comment.Content}</p>
+        <p class="comment-date">${new Date(comment.CreatedAt).toLocaleDateString()}</p>
+      `;
+        container.appendChild(p);
+      });
     });
-  });
-  console.log(postId, container);
 }

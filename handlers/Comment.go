@@ -3,6 +3,7 @@ package handlers
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 
 	"handlers/databases"
@@ -52,38 +53,40 @@ func CommentHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 type Comment struct {
-	ID        int    `json:"id"`
-	PostID    int    `json:"post_id"`
-	UserID    int    `json:"user_id"`
-	Content   string `json:"content"`
-	CreatedAt string `json:"created_at"`
+	ID        int
+	Content   string
+	CreatedAt string
+	UserID    string
+	PostID    string
+	Name      string
 }
 
 func FetchCommentsHandler(w http.ResponseWriter, r *http.Request) {
-	postID := r.URL.Query().Get("post_id")
-	if postID == "" {
-		http.Error(w, "post_id is required", http.StatusBadRequest)
-		return
-	}
-
 	rows, err := databases.DB.Query(`
-		SELECT id, post_id, user_id, content, created_at 
-		FROM comments 
-		WHERE post_id = ? 
-		ORDER BY created_at ASC`, postID)
+		SELECT 
+			comments.id,
+			comments.content,
+			comments.created_at,
+			comments.user_id,
+			comments.post_id,
+			users.nickname
+		FROM comments
+		JOIN users ON comments.user_id = users.id
+		ORDER BY comments.created_at DESC;
+	`)
 	if err != nil {
-		http.Error(w, "Failed to get comments", http.StatusInternalServerError)
-		return
+		log.Fatal(err)
 	}
 	defer rows.Close()
 
 	var comments []Comment
+
 	for rows.Next() {
 		var c Comment
-		err := rows.Scan(&c.ID, &c.PostID, &c.UserID, &c.Content, &c.CreatedAt)
+		err := rows.Scan(&c.ID, &c.Content, &c.CreatedAt, &c.UserID, &c.PostID, &c.Name)
 		if err != nil {
-			http.Error(w, "Error scanning comment", http.StatusInternalServerError)
-			return
+			log.Println("Error scanning comment:", err)
+			continue
 		}
 		comments = append(comments, c)
 	}
@@ -91,3 +94,4 @@ func FetchCommentsHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(comments)
 }
+
