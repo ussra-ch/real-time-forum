@@ -7,7 +7,8 @@ CREATE TABLE
         first_name TEXT,
         last_name TEXT,
         email TEXT UNIQUE,
-        password TEXT
+        password TEXT,
+        
     );
 
 CREATE TABLE
@@ -22,9 +23,9 @@ CREATE TABLE
         FOREIGN KEY (user_id) REFERENCES users (id)
     );
 
-CREATE TABLE
-    sessions (
-        id TEXT PRIMARY KEY,
-        user_id INTEGER,
-        expires_at DATETIME
-    );
+CREATE TABLE IF NOT EXISTS sessions (
+    id TEXT PRIMARY KEY,
+    user_id INTEGER NOT NULL,
+    expires_at DATETIME NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);

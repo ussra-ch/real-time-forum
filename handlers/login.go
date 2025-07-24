@@ -6,9 +6,9 @@ import (
 	"net/http"
 	"time"
 
-	"handlers/databases"
-
+	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
+	"handlers/databases"
 )
 
 func LoginHandler(w http.ResponseWriter, r *http.Request) {
@@ -80,17 +80,17 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if exists > 0 {
-		http.Error(w, "error", http.StatusConflict)
+		http.Error(w, "Email already in use", http.StatusConflict)
 		return
 	}
 
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	if err != nil {
-		http.Error(w, "error", http.StatusInternalServerError)
+		http.Error(w, "Error encrypting password", http.StatusInternalServerError)
 		return
 	}
 
-	_, err = databases.DB.Exec(`
+	res, err := databases.DB.Exec(`
 		INSERT INTO users (nickname, age, gender, first_name, last_name, email, password)
 		VALUES (?, ?, ?, ?, ?, ?, ?)`,
 		username, age, gender, firstName, lastName, email, hashedPassword)
@@ -100,5 +100,50 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	userID, err := res.LastInsertId()
+	if err != nil {
+		log.Println("Error getting inserted user ID:", err)
+		http.Error(w, "Database error", http.StatusInternalServerError)
+		return
+	}
+
+	sessionID := uuid.New().String()
+	expiresAt := time.Now().Add(24 * time.Hour)
+
+	_, err = databases.DB.Exec(`
+		INSERT INTO sessions (id, user_id, expires_at)
+		VALUES (?, ?, ?)`,
+		sessionID, userID, expiresAt)
+	if err != nil {
+		log.Println("Error inserting session:", err)
+		http.Error(w, "Database error", http.StatusInternalServerError)
+		return
+	}
+
+	http.SetCookie(w, &http.Cookie{
+		Name:     "sessionId",
+		Value:    sessionID,
+		Path:     "/",
+		Expires:  expiresAt,
+		HttpOnly: true,
+	})
+
 	http.Redirect(w, r, "/", http.StatusSeeOther)
+}
+
+func GetUserIDFromSession(r *http.Request) (int64, error) {
+	cookie, err := r.Cookie("sessionId")
+	if err != nil {
+		return 0, err
+	}
+
+	var userID int64
+	err = databases.DB.QueryRow(`
+		SELECT user_id FROM sessions
+		WHERE id = ? AND expires_at > datetime('now')`, cookie.Value).Scan(&userID)
+	if err != nil {
+		return 0, err
+	}
+
+	return userID, nil
 }

@@ -97,6 +97,7 @@ function logout() {
 logout();
 function Create() {
   const Create = document.getElementById('Create')
+  
   const CreateCard = document.createElement('div')
   CreateCard.innerHTML = `
   <div class="post-card" id="createPostCard" >
@@ -125,9 +126,11 @@ function Create() {
         </div>
   `;
   content.appendChild(CreateCard);
+  
   Create.addEventListener('click', (e) => {
-    e.preventDefault();
-    CreateCard.style.display = 'block';
+    console.log(1);
+    console.log(CreateCard);
+    CreateCard.style.display= 'block';
   });
   document.getElementById('createPostForm').addEventListener('submit', async function (e) {
     e.preventDefault();
@@ -151,7 +154,7 @@ function Create() {
       .then(data => {
         console.log(data);
         CreateCard.style.display = 'none';
-        //fetchPosts();
+        fetchPosts();
       })
       .catch(err => {
         console.error('Error:', err.message);
@@ -168,17 +171,20 @@ function fetchPosts() {
       const postsContainer = document.getElementById('postsContainer');
       postsContainer.innerHTML = ''; 
       posts.forEach(post => {
+        const topics = post.interest ? post.interest.split(',') : [];
+
         const postCard = document.createElement('div');
-        postCard.className = 'post-card';
+        postCard.className = 'post-card1';
         postCard.innerHTML = `
           <h3>${post.title}</h3>
-          <p>${post.description}</p>
-          <p>Topics: ${post.topics.join(', ')}</p>
-          <p>Posted by: ${post.author} on ${new Date(post.created_at).toLocaleDateString()}</p>
+          <p>${post.content}</p>
+          <p>Topics: ${topics.join(', ')}</p>
+          <p>Posted by: User #${post.user_id} on ${new Date(post.created_at).toLocaleDateString()}</p>
         `;
-        postsContainer.appendChild(postCard);
+        postsContainer.prepend(postCard);
       });
     })
     .catch(err => console.error('Error fetching posts:', err));
 }
-//fetchPosts();
+
+fetchPosts();
