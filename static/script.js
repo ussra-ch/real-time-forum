@@ -97,35 +97,35 @@ function logout() {
 logout();
 function Create() {
   const Create = document.getElementById('Create')
-  
   const CreateCard = document.createElement('div')
   CreateCard.innerHTML = `
   <div class="post-card" id="createPostCard" >
-      <form id="createPostForm" method="get">
-      <div class="container">
-        <h3>Create Post</h3>
-        <div class="div-title">
-          <label for="title">Title :</label>
-          <input type="text" name="title" id="title" required>
-        </div>
-        <div class="div-description">
-          <label for="description">description :</label>
-          <textarea name="description" id="description" rows="4" required></textarea>
-        </div>
-        <div class="topic-options">
-          <label><input type="checkbox" id="music" name="topic" value="Music"> Music</label>
-          <label><input type="checkbox" id="sport" name="topic" value="Sport"> Sport</label>
-          <label><input type="checkbox" id="gaming" name="topic" value="Gaming"> Gaming</label>
-          <label><input type="checkbox" id="health" name="topic" value="Health"> Health</label>
-          <label><input type="checkbox" id="general" name="topic" value="General"> General</label>
-        </div>
-        <div id="errorMsg" style="display:none; color:red; margin: 10px 10px;"></div>
-        <button type="submit">Post</button>
-      </div>
-    </form>
-        </div>
+  <form id="createPostForm" method="get">
+  <div class="container">
+  <h3>Create Post</h3>
+  <div class="div-title">
+  <label for="title">Title :</label>
+  <input type="text" name="title" id="title" required>
+  </div>
+  <div class="div-description">
+  <label for="description">description :</label>
+  <textarea name="description" id="description" rows="4" required></textarea>
+  </div>
+  <div class="topic-options">
+  <label><input type="checkbox" id="music" name="topic" value="Music"> Music</label>
+  <label><input type="checkbox" id="sport" name="topic" value="Sport"> Sport</label>
+  <label><input type="checkbox" id="gaming" name="topic" value="Gaming"> Gaming</label>
+  <label><input type="checkbox" id="health" name="topic" value="Health"> Health</label>
+  <label><input type="checkbox" id="general" name="topic" value="General"> General</label>
+  </div>
+  <div id="errorMsg" style="display:none; color:red; margin: 10px 10px;"></div>
+  <button type="submit">Post</button>
+  </div>
+  </form>
+  </div>
   `;
   content.appendChild(CreateCard);
+  CreateCard.style.display= 'none';
   
   Create.addEventListener('click', (e) => {
     console.log(1);
