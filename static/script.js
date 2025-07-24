@@ -175,7 +175,7 @@ function fetchPosts() {
 
         const postCard = document.createElement('div');
         postCard.className = 'post-card1';
-        
+
         postCard.innerHTML = `
           <h3>${post.title}</h3>
           <p>${post.content}</p>
@@ -187,6 +187,7 @@ function fetchPosts() {
               <button type="submit" class="commentButton">Comment</button>
             </form>
           `;
+        loadComments(post.id, postCard);
         postsContainer.prepend(postCard);
         comment();
       });
@@ -225,29 +226,31 @@ function catigories() {
                   <button type="submit" class="commentButton">Comment</button>
               </form>
             `;
+              loadComments(post.id, postCard);
               postsContainer.prepend(postCard);
             }
 
           });
         })
         .catch(err => console.error('Error fetching posts:', err));
-        comment();
-        
+      comment();
+
     });
     categoDiv.appendChild(boutton);
   });
 }
 catigories();
 function comment() {
-  
+
   const forms = document.querySelectorAll('.commentForm');
-  
+
   forms.forEach((form) => {
     form.addEventListener("submit", function (e) {
       e.preventDefault();
 
       const commentInput = form.querySelector(".commentInput");
       const comment = commentInput.value;
+
       const post_id = form.querySelector("[name='post_id']").value;
 
       fetch("/comment", {
@@ -255,18 +258,32 @@ function comment() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ comment,post_id }),
+        body: JSON.stringify({ comment, post_id }),
       })
-      .then(res => res.json())
-      .then(data => {
-        console.log("Comment posted:", data);
-        commentInput.value = "";
-      })
-      .catch(err => {
-        console.error("Error:", err);
-      });
+        .then(res => res.json())
+        .then(data => {
+          console.log("Comment posted:", data);
+          commentInput.value = "";
+        })
+        .catch(err => {
+          console.error("Error:", err);
+        });
+      
     });
   });
 }
 
 comment();
+function loadComments(postId, container) {
+  
+  fetch('/api/fetch_comments')
+  .then(res => res.json())
+  .then(comments => {
+    comments.forEach(comment => {
+      const p = document.createElement("p");
+      p.textContent = `User#${comment.user_id}: ${comment.content}`;
+      container.appendChild(p);
+    });
+  });
+  console.log(postId, container);
+}
