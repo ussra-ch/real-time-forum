@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 	"strings"
@@ -26,14 +27,16 @@ func PostHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Bad Request", http.StatusBadRequest)
 		return
 	}
-	cookie, err := r.Cookie("session_token")
+	fmt.Println("Received post data:", pd)
+	cookie, err := r.Cookie("session")
 	if err != nil {
 		w.Write([]byte(`{"loggedIn": false}`))
 		return
 	}
-	query1 := `SELECT user_id FROM sessions WHERE session_token = ? AND expires_at > DATETIME('now')`
+	query1 := `SELECT user_id FROM sessions WHERE session = ? AND expires_at > DATETIME('now')`
 	var userID int
 	err = databases.DB.QueryRow(query1, cookie.Value).Scan(&userID)
+	fmt.Println("User ID from session:", err)
 	if err != nil {
 		w.Write([]byte(`{"loggedIn": false}`))
 		return
@@ -56,4 +59,45 @@ func PostHandler(w http.ResponseWriter, r *http.Request) {
 		"content":  pd.Description,
 		"interest": strings.Join(pd.Topics, ","),
 	})
+}
+func FetchPostsHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	query := `SELECT id, user_id, content, title, interest, photo, created_at FROM posts`
+	rows, err := databases.DB.Query(query)
+	if err != nil {
+		log.Println("Error fetching posts:", err)
+		http.Error(w, "Database error", http.StatusInternalServerError)
+		return
+	}
+	defer rows.Close()
+
+	var posts []map[string]interface{}
+	for rows.Next() {
+		var id int
+		var userID int
+		var content, title, interest, photo string
+		var createdAt string
+		if err := rows.Scan(&id, &userID, &content, &title, &interest, &photo, &createdAt); err != nil {
+			log.Println("Error scanning row:", err)
+			http.Error(w, "Database error", http.StatusInternalServerError)
+			return
+		}
+		post := map[string]interface{}{
+			"id":        id,
+			"user_id":   userID,
+			"content":   content,
+			"title":     title,
+			"interest":  interest,
+			"photo":     photo,
+			"created_at": createdAt,
+		}
+		posts = append(posts, post)
+	}
+	fmt.Println("Fetched posts:", posts)
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(posts)
 }

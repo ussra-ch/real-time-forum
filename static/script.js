@@ -151,6 +151,7 @@ function Create() {
       .then(data => {
         console.log(data);
         CreateCard.style.display = 'none';
+        //fetchPosts();
       })
       .catch(err => {
         console.error('Error:', err.message);
@@ -160,3 +161,24 @@ function Create() {
 
 }
 Create();
+function fetchPosts() {
+  fetch('/api/fetch_posts')
+    .then(res => res.json())
+    .then(posts => {
+      const postsContainer = document.getElementById('postsContainer');
+      postsContainer.innerHTML = ''; 
+      posts.forEach(post => {
+        const postCard = document.createElement('div');
+        postCard.className = 'post-card';
+        postCard.innerHTML = `
+          <h3>${post.title}</h3>
+          <p>${post.description}</p>
+          <p>Topics: ${post.topics.join(', ')}</p>
+          <p>Posted by: ${post.author} on ${new Date(post.created_at).toLocaleDateString()}</p>
+        `;
+        postsContainer.appendChild(postCard);
+      });
+    })
+    .catch(err => console.error('Error fetching posts:', err));
+}
+//fetchPosts();

@@ -21,3 +21,10 @@ CREATE TABLE
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
         FOREIGN KEY (user_id) REFERENCES users (id)
     );
+
+CREATE TABLE
+    sessions (
+        id TEXT PRIMARY KEY,
+        user_id INTEGER,
+        expires_at DATETIME
+    );

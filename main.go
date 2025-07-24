@@ -15,7 +15,7 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 
 func main() {
 	databases.InitDB("forum.db")
-
+	defer databases.DB.Close()
 	fs := http.FileServer(http.Dir("static"))
 	http.Handle("/static/", http.StripPrefix("/static/", fs))
 
@@ -25,7 +25,8 @@ func main() {
 	http.HandleFunc("/logout", handlers.LogoutHandler)
 	http.HandleFunc("/api/logout", handlers.LogoutHandler)
 	http.HandleFunc("/api/anthenticated", handlers.IsAuthenticated)
-	http.HandleFunc("/api/post",handlers.PostHandler)
+	http.HandleFunc("/api/post", handlers.PostHandler)
+	http.HandleFunc("/api/fetch_posts", handlers.FetchPostsHandler)
 	fmt.Println("Server started at http://localhost:8080")
 	err := http.ListenAndServe(":8080", nil)
 	if err != nil {
