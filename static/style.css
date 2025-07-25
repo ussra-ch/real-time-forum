@@ -1,86 +1,400 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700&display=swap');
 
 /* Global Reset */
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: 'Inter', sans-serif;
+    font-family: 'Cairo', sans-serif;
 }
 
 /* Body Styling */
 body {
-    background: linear-gradient(135deg, #1e1e2f 0%, #2a2a4a 100%);
+    background: linear-gradient(135deg, #0f1419 0%, #1a2332 50%, #0f1419 100%);
+    color: #ffffff;
+    min-height: 100vh;
+    overflow: hidden;
+}
+
+/* Header */
+header {
+    background: rgba(15, 20, 25, 0.95);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(100, 255, 218, 0.2);
+    padding: 1rem;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
     display: flex;
-    width: 100%;
-    height: 100vh;
-    flex-direction: column;
+    justify-content: space-between;
     align-items: center;
-    justify-content: center;
-    color: #e0e0e0;
 }
 
-h1 {
-    font-weight: bold;
-    margin: 0;
+header::before {
+    content: 'Forum';
+    font-size: 1.8rem;
+    color: #64ffda;
+    font-weight: 700;
 }
 
-h2 {
-    text-align: center;
-}
-
-p {
-    font-size: 14px;
-    font-weight: 100;
-    line-height: 20px;
-    letter-spacing: 0.5px;
-    margin: 20px 0 30px;
-}
-
-span {
-    font-size: 12px;
-}
-
-a {
-    color: #333;
-    font-size: 14px;
-    text-decoration: none;
-    margin: 15px 0;
-}
-
-button {
-    background: linear-gradient(90deg, #00ff9d, #00c4ff);
-    color: #1a1a2e;
+/* Buttons */
+button,
+.btn {
+    background: linear-gradient(135deg, #64ffda, #00bcd4);
     border: none;
-    padding: 12px 40px;
-    border-radius: 50px;
-    font-size: 14px;
+    padding: 0.5rem 1rem;
+    border-radius: 25px;
+    color: #0f1419;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.3s ease;
-    margin-top: 15px;
+    font-size: 0.9rem;
 }
 
-button:hover {
+button:hover,
+.btn:hover {
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 255, 163, 0.5);
+    box-shadow: 0 5px 15px rgba(100, 255, 218, 0.4);
 }
 
-button:active {
-    transform: scale(0.95);
+#logout {
+    position: fixed;
+    right: 1rem;
+    top: 1rem;
+    z-index: 1001;
+    background: transparent;
+    color: #64ffda;
+    border: 2px solid #64ffda;
 }
 
-button:focus {
-    outline: none;
+#logout:hover {
+    background: #64ffda;
+    color: #0f1419;
 }
 
-button.ghost {
-    background-color: transparent;
-    border-color: #FFFFFF;
+#Create {
+    position: fixed;
+    right: 6rem;
+    top: 1rem;
+    z-index: 1001;
+}
+
+/* Main Content Layout */
+#content {
+    display: grid;
+    grid-template-columns: 250px 1fr 300px;
+    gap: 1rem;
+    padding: 1rem;
+    margin-top: 80px;
+    min-height: calc(100vh - 80px);
+}
+
+/* Categories Sidebar */
+#catego {
+    background: rgba(26, 35, 50, 0.8);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(100, 255, 218, 0.1);
+    border-radius: 15px;
+    padding: 1.5rem;
+    height: fit-content;
+    /*position: sticky;*/
+    top: 100px;
+    display: flex;
+    justify-content: space-evenly;
+}
+
+
+#catego h1 {
+    content: 'Categories';
+    display: block;
+    color: #64ffda;
+    font-size: 1.2rem;
+    margin-bottom: 1rem;
+    font-weight: 600;
+    text-align: center;
+}
+
+.catigories {
+    width: 10vw;
+    background: rgba(100, 255, 218, 0.1);
+    border: 1px solid rgba(100, 255, 218, 0.2);
+    color: #ffffff;
+    padding: 0.8rem;
+    border-radius: 25px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.catigories:hover,
+.catigories.active {
+    background: #64ffda;
+    color: #0f1419;
+    transform: translateX(-5px);
+}
+
+/* Posts Container */
+#postsContainer {
+    top: 20vh;
+    width: 60%;
+    background: rgba(26, 35, 50, 0.6);
+    border-radius: 15px;
+    padding: 1.5rem;
+    max-height: 80vh;
+    border: 1px solid rgba(100, 255, 218, 0.1);
+    overflow: auto;
+}
+
+/* Posts Styling */
+.post-card1 {
+    width: 80%;
+    background: rgba(15, 20, 25, 0.8);
+    border: 1px solid rgba(100, 255, 218, 0.2);
+    border-radius: 15px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    transition: all 0.3s ease;
+    margin: auto;
+}
+
+
+
+.post-card1:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(100, 255, 218, 0.2);
+}
+
+.post-card1 h3 {
+    color: #64ffda;
+    font-size: 1.3rem;
+    font-weight: 600;
+    margin-bottom: 0.8rem;
+}
+
+.post-card1 p {
+    color: #b3b3b3;
+    line-height: 1.6;
+    margin-bottom: 0.8rem;
+}
+
+.post-card1 p:last-of-type {
+    color: #64ffda;
+    font-size: 0.8rem;
+}
+
+/* Comment Forms */
+.commentForm {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid rgba(100, 255, 218, 0.1);
+}
+
+.commentInput {
+    flex: 1;
+    background: rgba(100, 255, 218, 0.1);
+    border: 1px solid rgba(100, 255, 218, 0.2);
+    border-radius: 20px;
+    padding: 0.5rem 1rem;
+    color: #ffffff;
+    font-size: 0.9rem;
+}
+
+.commentInput::placeholder {
+    color: #888;
+}
+
+.commentButton {
+    background: #64ffda;
+    border: none;
+    border-radius: 20px;
+    padding: 0.5rem 1rem;
+    color: #0f1419;
+    cursor: pointer;
+    font-size: 0.9rem;
+}
+
+.show {
+    background: transparent;
+    color: #64ffda;
+    border: 1px solid #64ffda;
+    border-radius: 20px;
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
+    margin-left: 0.5rem;
+}
+
+.show:hover {
+    background: #64ffda;
+    color: #0f1419;
+}
+
+/* Comments Container */
+.comments-container {
+    display: none;
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid rgba(100, 255, 218, 0.1);
+    max-height: 300px;
+    overflow: auto;
+}
+
+.comments-container div {
+    background: rgba(100, 255, 218, 0.05);
+    border-radius: 10px;
+    padding: 0.8rem;
+    margin-bottom: 0.5rem;
+    border-right: 3px solid #64ffda;
+}
+
+.comments-container strong {
+    color: #64ffda;
+    font-weight: 600;
+}
+
+.comment-date {
+    color: #666 !important;
+    font-size: 0.7rem !important;
+    margin-top: 0.5rem !important;
+}
+
+
+
+
+body::after {
+    color: #64ffda;
+    font-weight: 600;
+    text-align: center;
+}
+
+/* Create Post Card */
+#createPostCard {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(26, 35, 50, 0.95);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(100, 255, 218, 0.2);
+    border-radius: 20px;
+    padding: 2rem;
+    width: 90%;
+    max-width: 500px;
+    max-height: 80vh;
+    overflow-y: auto;
+    z-index: 2000;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+}
+
+#createPostCard .container {
+    position: static;
+    background: transparent;
+    box-shadow: none;
+    transform: none;
+    width: 100%;
+    height: auto;
+    min-height: auto;
+    padding: 0;
+    border-radius: 0;
+}
+
+#createPostCard h3 {
+    color: #64ffda;
+    font-size: 1.5rem;
+    margin-bottom: 1.5rem;
+    text-align: center;
+}
+
+.div-title,
+.div-description {
+    margin-bottom: 1.5rem;
+}
+
+.div-title label,
+.div-description label {
+    display: block;
+    color: #64ffda;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+}
+
+#createPostCard input,
+#createPostCard textarea {
+    width: 100%;
+    background: rgba(100, 255, 218, 0.1);
+    border: 1px solid rgba(100, 255, 218, 0.2);
+    border-radius: 10px;
+    padding: 0.8rem;
+    color: #ffffff;
+    font-size: 0.9rem;
+    resize: vertical;
+}
+
+#createPostCard input::placeholder,
+#createPostCard textarea::placeholder {
+    color: #888;
+}
+
+.topic-options {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.topic-options label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #ffffff;
+}
+
+.topic-options input[type="checkbox"] {
+    accent-color: #64ffda;
+    width: auto;
+}
+
+#all {
+    display: flex;
+    justify-content: space-between;
+}
+
+#user {
+    height: 70vh;
+    border: 1px solid rgba(100, 255, 218, 0.2);
+    width: 40vw;
+    display: flex;
+    flex-direction: column; 
+    justify-content: flex-start; 
+    align-items: flex-start; 
+    padding: 1rem;
+    gap: 10px; 
+}
+
+/* Login Container Updates */
+.container {
+    background: rgba(26, 35, 50, 0.95);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(100, 255, 218, 0.2);
+    border-radius: 20px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 90%;
+    max-width: 800px;
+    height: 70vh;
+    min-height: 500px;
+    overflow: hidden;
+    z-index: 3000;
 }
 
 form {
-    background-color: #FFFFFF;
+    background: rgba(26, 35, 50, 0.95);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -90,44 +404,59 @@ form {
     text-align: center;
 }
 
-input {
-    background-color: #eee;
-    border: none;
-    padding: 12px 15px;
+form h1 {
+    color: #64ffda;
+    margin-bottom: 1rem;
+}
+
+form input,
+form select {
+    background: rgba(100, 255, 218, 0.1);
+    border: 1px solid rgba(100, 255, 218, 0.2);
+    padding: 12px 16px;
     margin: 8px 0;
     width: 100%;
-}
-
-input,
-select,
-textarea {
-    background: rgba(255, 255, 255, 0.1);
-    border: none;
-    padding: 12px 16px;
-    margin: 10px 0;
-    width: 100%;
     border-radius: 8px;
-    color: #000000;
+    color: #ffffff;
     font-size: 14px;
-    transition: all 0.3s ease;
 }
 
-.container {
-    background-color: #fff;
-    border-radius: 10px;
-    box-shadow: 0 14px 28px rgba(0, 0, 0, 0.25),
-        0 10px 10px rgba(0, 0, 0, 0.22);
-    position: absolute;
-    overflow: hidden;
-    width: 768px;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    max-width: 100%;
-    height: 65vh;
-    min-height: 480px;
+form input::placeholder {
+    color: #888;
 }
 
+form a {
+    color: #64ffda;
+    text-decoration: none;
+    margin: 15px 0;
+}
+
+form a:hover {
+    text-decoration: underline;
+}
+
+.overlay {
+    background: linear-gradient(135deg, #64ffda, #00bcd4);
+    color: #0f1419;
+    position: relative;
+    left: -100%;
+    width: 200%;
+    height: 100%;
+    transform: translateX(0);
+    transition: transform 0.5s ease-in-out;
+}
+
+.ghost {
+    background-color: transparent !important;
+    border: 2px solid #0f1419 !important;
+    color: #0f1419 !important;
+}
+
+.ghost:hover {
+    background: rgba(15, 20, 25, 0.1) !important;
+}
+
+/* Form container transitions */
 .form-container {
     position: absolute;
     top: 0;
@@ -150,7 +479,6 @@ textarea {
     width: 50%;
     opacity: 0;
     z-index: 1;
-    position: absolute;
     transition: all 0.6s ease-in-out;
 }
 
@@ -191,17 +519,6 @@ textarea {
     transform: translateX(-100%);
 }
 
-.overlay {
-    background: linear-gradient(90deg, #00c4ff, #00ff9d);
-    color: #fff;
-    position: relative;
-    left: -100%;
-    width: 200%;
-    height: 100%;
-    transform: translateX(0);
-    transition: transform 0.5s ease-in-out;
-}
-
 .container.right-panel-active .overlay {
     transform: translateX(50%);
 }
@@ -237,142 +554,39 @@ textarea {
 .container.right-panel-active .overlay-right {
     transform: translateX(20%);
 }
-#logout{
-    position: absolute;
-    right: 0;
-    top: 0;
-    margin: 1vh;
-}
-#Create{
-    position: absolute;
-    left: 0;
-    top: 0;
-    margin: 1vh;
-   
-}
-#createPostCard{
-    border: 2px solid #2a2a4a;
-    background-color: #FFFFFF;
-    padding:  20px;
-    border-radius: 20px;
-    color: #2a2a4a;
-    
-}
-section .container {
-  display: none;
-  background: rgba(255, 255, 255, 0.08);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 16px;
 
+/* Responsive Design */
+@media (max-width: 1024px) {
+    #content {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
 
-  padding: 15PX;
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  animation: 0.5s animt ease-in-out;
-  z-index: 10;
+    #catego {
+        position: static;
+        order: -1;
+    }
 
+    body::after {
+        display: none;
+    }
 }
 
-.topic-options label {
-  font-weight: 400;
-  color: #444;
-  cursor: pointer;
+/* Scrollbar Styling */
+::-webkit-scrollbar {
+    width: 8px;
 }
 
-.topic-options input[type="checkbox"] {
-  margin-right: 6px;
-  transform: scale(1.1);
+::-webkit-scrollbar-track {
+    background: rgba(26, 35, 50, 0.3);
+    border-radius: 4px;
 }
 
-body:has(#Create:checked) section .container {
-  display: block;
+::-webkit-scrollbar-thumb {
+    background: rgba(100, 255, 218, 0.5);
+    border-radius: 4px;
 }
 
-body:has(#Create:checked) #mainPage {
-  opacity: 0.3;
-}
-
-@keyframes animt {
-  0% {
-    opacity: 0;
-    top: -10%;
-    transform: translate(-50%, 0);
-  }
-
-  100% {
-    opacity: 1;
-    top: 50%;
-    transform: translate(-50%, -50%);
-  }
-}
-
-
-.div-title,
-.div-description {
-  margin-bottom: 20px;
-}
-
-.div-title label,
-.div-description label {
-  display: block;
-  font-size: 14px;
-  font-weight: 600;
-  color: #e0e0e0;
-  margin-bottom: 8px;
-}
-
-.topic-options {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
-  margin-bottom: 20px;
-}
-
-.topic-options label {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 14px;
-  color: #e0e0e0;
-}
-
-.topic-options input[type="checkbox"] {
-  width: auto;
-  cursor: pointer;
-}
-.post-card1 {
-  background: #fff;
-  border: 1px solid #ddd;
-  border-left: 5px solid #4CAF50;
-  border-radius: 10px;
-  padding: 20px;
-  margin: 15px 0;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.06);
-  transition: transform 0.2s, box-shadow 0.2s;
-}
-
-.post-card1:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 6px 12px rgba(0,0,0,0.1);
-}
-
-.post-card1 h3 {
-  margin-top: 0;
-  color: #333;
-  font-size: 22px;
-}
-
-.post-card1 p {
-  margin: 8px 0;
-  color: #555;
-  font-size: 16px;
-}
-
-.post-card1 .topics {
-  color: #888;
-  font-style: italic;
-  font-size: 14px;
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(100, 255, 218, 0.7);
 }

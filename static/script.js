@@ -183,8 +183,8 @@ function fetchPosts() {
             <input type="text" name="post_id" value="${post.id}" hidden>
               <input type="text" name="content" class="commentInput" placeholder="Write a comment..." required>
               <button type="submit" class="commentButton">Comment</button>
-              </form>
               <button  class="show">show Comment</button>
+              </form>
           `;
         const div = document.createElement('div');
         div.className = 'comments-container';
@@ -192,7 +192,7 @@ function fetchPosts() {
         postsContainer.prepend(postCard);
         document.querySelector('.show').addEventListener('click', (e) => {
           div.style.display = div.style.display === 'none' ? 'block' : 'none';
-          
+
         });
         loadComments(post.id, div);
         comment();
@@ -204,8 +204,8 @@ fetchPosts();
 function catigories() {
   let categories = ['All', 'Music', 'Sport', 'Gaming', 'Health', 'General'];
   const categoDiv = document.getElementById('catego');
-
   categories.forEach(element => {
+
     const boutton = document.createElement('button');
     boutton.className = 'catigories';
     boutton.innerText = element;
@@ -230,16 +230,17 @@ function catigories() {
                   <input type="text" name="post_id" value="${post.id}" hidden>
                   <input type="text" name"content" class="commentInput" placeholder="Write a comment..." required>
                   <button type="submit" class="commentButton">Comment</button>
-                  <button  class="show">Comment</button>
+                  <button  class="show">show Comment</button>
               </form>
+              
             `;
               const div = document.createElement('div');
               div.className = 'comments-container';
               postCard.appendChild(div);
               postsContainer.prepend(postCard);
               document.querySelector('.show').addEventListener('click', (e) => {
-                //div.style.display = div.style.display === 'none' ? 'block' : 'none';
-               
+                div.style.display = div.style.display === 'none' ? 'block' : 'none';
+
               });
               loadComments(post.id, div);
             }
@@ -305,3 +306,21 @@ function loadComments(postId, container) {
       });
     });
 }
+function fetchUser() {
+  const usern = document.getElementById('user')
+  fetch('/user').then(r => r.json()).then(users => {
+    users.forEach(user => {
+      const div = document.createElement('div');
+      div.innerHTML=`
+      <i class="fa-solid fa-user"></i> ${user}
+      `
+      div.style.border = '1px solid #ccc';
+      div.style.padding = '8px';
+      div.style.borderRadius = '70px';
+      div.style.width='50%'
+      div.style.background = ' rgba(26, 35, 50, 0.95)';
+      usern.appendChild(div);
+    })
+  })
+}
+fetchUser()

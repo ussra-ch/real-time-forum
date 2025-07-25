@@ -35,6 +35,7 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 		Value:    Nickname,
 		Path:     "/",
 		HttpOnly: true,
+		MaxAge: 3600,
 	})
 
 	http.Redirect(w, r, "/", http.StatusSeeOther)
