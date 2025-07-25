@@ -282,7 +282,7 @@ function comment() {
         .catch(err => {
           console.error("Error:", err);
         });
-
+        fetchPosts()
     });
   });
 }
