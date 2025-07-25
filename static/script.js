@@ -216,7 +216,9 @@ function catigories() {
           const postsContainer = document.getElementById('postsContainer');
           postsContainer.innerHTML = '';
           posts.forEach(post => {
-            if (post.interest == element || element === 'All') {
+            console.log(post.interest);
+
+            if (post.interest.split(',').includes(element) || element === 'All') {
               const topics = post.interest ? post.interest.split(',') : [];
 
               const postCard = document.createElement('div');
@@ -282,7 +284,7 @@ function comment() {
         .catch(err => {
           console.error("Error:", err);
         });
-        fetchPosts()
+      fetchPosts()
     });
   });
 }
@@ -294,7 +296,6 @@ function loadComments(postId, container) {
     .then(res => res.json())
     .then(comments => {
       comments.forEach(comment => {
-        console.log(comment.PostID, postId);
         if (comment.PostID != postId) return;
 
         const p = document.createElement("div");
@@ -311,13 +312,13 @@ function fetchUser() {
   fetch('/user').then(r => r.json()).then(users => {
     users.forEach(user => {
       const div = document.createElement('div');
-      div.innerHTML=`
+      div.innerHTML = `
       <i class="fa-solid fa-user"></i> ${user}
       `
       div.style.border = '1px solid #ccc';
       div.style.padding = '8px';
       div.style.borderRadius = '70px';
-      div.style.width='50%'
+      div.style.width = '50%'
       div.style.background = ' rgba(26, 35, 50, 0.95)';
       usern.appendChild(div);
     })
