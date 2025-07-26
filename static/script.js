@@ -311,11 +311,19 @@ function fetchUser() {
 
 
   fetch('/user').then(r => r.json()).then(users => {
-   
-    users.onlineUsers.sort();
-    users.offlineUsers.sort();
+    console.log(users);
+    let on = new Set(), off = new Set()
+    if (users.onlineUsers) {
+      users.onlineUsers.sort((a, b) => { a - b })
+      on = [...new Set(users.onlineUsers)];
 
-    users.onlineUsers.forEach(user => {
+    }
+    if (users.offlineUsers) {
+
+      users.offlineUsers.sort((a, b) => { a - b });
+      off = [...new Set(users.offlineUsers)]
+    }
+    on.forEach(user => {
       const div = document.createElement('div');
       div.innerHTML = `<i class="fa-solid fa-user"></i> ${user}`;
       div.style.color = 'rgb(89, 230, 187)';
@@ -327,7 +335,7 @@ function fetchUser() {
       usern.appendChild(div);
     });
 
-    users.offlineUsers.forEach(user => {
+    off.forEach(user => {
       const div = document.createElement('div');
       div.innerHTML = `<i class="fa-solid fa-user"></i> ${user}`;
       div.style.border = '1px solid #ccc';

@@ -72,6 +72,16 @@ func IsAuthenticated(w http.ResponseWriter, r *http.Request) {
 }
 
 func LogoutHandler(w http.ResponseWriter, r *http.Request) {
+	cookie, err := r.Cookie("session")
+	if err != nil {
+		http.Redirect(w, r, "/login", http.StatusSeeOther)
+		return
+	}
+
+	_, err = databases.DB.Exec("DELETE FROM sessions WHERE id = ?", cookie.Value)
+	if err != nil {
+		log.Println("Failed to delete session:", err)
+	}
 	http.SetCookie(w, &http.Cookie{
 		Name:     "session",
 		Value:    "",
