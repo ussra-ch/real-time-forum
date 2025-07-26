@@ -128,8 +128,7 @@ function Create() {
   CreateCard.style.display = 'none';
 
   Create.addEventListener('click', (e) => {
-
-    CreateCard.style.display = 'block';
+    CreateCard.style.display = CreateCard.style.display === 'none' ? 'block' : 'none';
   });
   document.getElementById('createPostForm').addEventListener('submit', async function (e) {
     e.preventDefault();
@@ -311,7 +310,7 @@ function fetchUser() {
   const usern = document.getElementById('user')
   fetch('/user').then(r => r.json()).then(users => {
     console.log(users);
-    
+
     users.forEach(user => {
       const div = document.createElement('div');
       div.innerHTML = `
