@@ -307,22 +307,37 @@ function loadComments(postId, container) {
     });
 }
 function fetchUser() {
-  const usern = document.getElementById('user')
-  fetch('/user').then(r => r.json()).then(users => {
-    console.log(users);
+  const usern = document.getElementById('user');
 
-    users.forEach(user => {
+
+  fetch('/user').then(r => r.json()).then(users => {
+   
+    users.onlineUsers.sort();
+    users.offlineUsers.sort();
+
+    users.onlineUsers.forEach(user => {
       const div = document.createElement('div');
-      div.innerHTML = `
-      <i class="fa-solid fa-user"></i> ${user}
-      `
+      div.innerHTML = `<i class="fa-solid fa-user"></i> ${user}`;
+      div.style.color = 'rgb(89, 230, 187)';
       div.style.border = '1px solid #ccc';
       div.style.padding = '8px';
       div.style.borderRadius = '70px';
-      div.style.width = '50%'
-      div.style.background = ' rgba(26, 35, 50, 0.95)';
+      div.style.width = '50%';
+      div.style.background = 'rgba(26, 35, 50, 0.95)';
       usern.appendChild(div);
-    })
-  })
+    });
+
+    users.offlineUsers.forEach(user => {
+      const div = document.createElement('div');
+      div.innerHTML = `<i class="fa-solid fa-user"></i> ${user}`;
+      div.style.border = '1px solid #ccc';
+      div.style.padding = '8px';
+      div.style.borderRadius = '70px';
+      div.style.width = '50%';
+      div.style.background = 'rgba(26, 35, 50, 0.95)';
+      usern.appendChild(div);
+    });
+  });
 }
+
 fetchUser()
