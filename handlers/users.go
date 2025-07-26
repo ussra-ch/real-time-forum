@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"database/sql"
 	"encoding/json"
 	"fmt"
 	"log"
@@ -10,18 +11,23 @@ import (
 )
 
 func FetchUsers(w http.ResponseWriter, r *http.Request) {
-	
-	cookie, err := r.Cookie("sessionId")
+	cookie, err := r.Cookie("session")
 	if err != nil {
+		fmt.Println("No sessionId cookie:", err)
 		w.Write([]byte(`{"loggedIn": false}`))
 		return
 	}
 
-	query1 := `SELECT user_id FROM sessions WHERE id = ? AND expires_at > DATETIME('now')`
+	query := `SELECT user_id FROM sessions WHERE id = ? AND expires_at > DATETIME('now')`
 	var userID int
-	err = databases.DB.QueryRow(query1, cookie.Value).Scan(&userID)
-	if err != nil {
+	err = databases.DB.QueryRow(query, cookie.Value).Scan(&userID)
+	if err == sql.ErrNoRows {
+		fmt.Println("No session found in DB for:", cookie.Value)
 		w.Write([]byte(`{"loggedIn": false}`))
+		return
+	} else if err != nil {
+		log.Println("DB error:", err)
+		http.Error(w, "Database error", http.StatusInternalServerError)
 		return
 	}
 
@@ -44,7 +50,6 @@ func FetchUsers(w http.ResponseWriter, r *http.Request) {
 	if err = rows.Err(); err != nil {
 		log.Fatal(err)
 	}
-	fmt.Println(nicknames)
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(nicknames)
 }

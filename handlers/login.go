@@ -1,23 +1,37 @@
 package handlers
 
 import (
+	"crypto/rand"
 	"database/sql"
+	"encoding/hex"
 	"log"
 	"net/http"
 	"time"
 
+	"handlers/databases"
+
 	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
-	"handlers/databases"
 )
+
+func generateSessionID() string {
+	bytes := make([]byte, 16)
+	_, err := rand.Read(bytes)
+	if err != nil {
+		panic(err)
+	}
+	return hex.EncodeToString(bytes)
+}
 
 func LoginHandler(w http.ResponseWriter, r *http.Request) {
 	r.ParseForm()
-	Nickname := r.FormValue("Nickname")
+	nickname := r.FormValue("Nickname")
 	password := r.FormValue("password")
+
 	var dbPassword string
-	err := databases.DB.QueryRow("SELECT password FROM users WHERE nickname = ?", Nickname).Scan(&dbPassword)
-	if err == sql.ErrNoRows {
+	var userID int
+	err := databases.DB.QueryRow("SELECT id, password FROM users WHERE nickname = ?", nickname).Scan(&userID, &dbPassword)
+	if err == sql.ErrNoRows || bcrypt.CompareHashAndPassword([]byte(dbPassword), []byte(password)) != nil {
 		http.Error(w, "Invalid Nickname or password", http.StatusUnauthorized)
 		return
 	} else if err != nil {
@@ -25,17 +39,24 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Database error", http.StatusInternalServerError)
 		return
 	}
-	if bcrypt.CompareHashAndPassword([]byte(dbPassword), []byte(password)) != nil {
-		http.Error(w, "Invalid Nickname or password", http.StatusUnauthorized)
+
+	sessionID := generateSessionID()
+	_, err = databases.DB.Exec(`
+		INSERT INTO sessions (id, user_id, expires_at)
+		VALUES (?, ?, DATETIME('now', '+1 hour'))
+	`, sessionID, userID)
+	if err != nil {
+		log.Println(err)
+		http.Error(w, "Failed to create session", http.StatusInternalServerError)
 		return
 	}
-	// Set session cookie
+
 	http.SetCookie(w, &http.Cookie{
 		Name:     "session",
-		Value:    Nickname,
+		Value:    sessionID,
 		Path:     "/",
 		HttpOnly: true,
-		MaxAge: 3600,
+		MaxAge:   3600,
 	})
 
 	http.Redirect(w, r, "/", http.StatusSeeOther)
