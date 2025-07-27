@@ -4,9 +4,12 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
+	"io"
 	"log"
 	"net/http"
+	"os"
 	"strings"
+	"time"
 
 	"handlers/databases"
 )
@@ -23,19 +26,21 @@ func PostHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var pd PostData
-	if err := json.NewDecoder(r.Body).Decode(&pd); err != nil {
-		http.Error(w, "Bad Request", http.StatusBadRequest)
+	err := r.ParseMultipartForm(10 << 20) // 10MB
+	if err != nil {
+		http.Error(w, "Error parsing form", http.StatusBadRequest)
 		return
 	}
-	fmt.Println("Received post data:", pd)
 
-	cookie, err := r.Cookie("sessionId")
+	title := r.FormValue("title")
+	description := r.FormValue("description")
+	topics := r.Form["topics"]
+
+	cookie, err := r.Cookie("session")
 	if err != nil {
 		w.Write([]byte(`{"loggedIn": false}`))
 		return
 	}
-
 	query1 := `SELECT user_id FROM sessions WHERE id = ? AND expires_at > DATETIME('now')`
 	var userID int
 	err = databases.DB.QueryRow(query1, cookie.Value).Scan(&userID)
@@ -44,30 +49,53 @@ func PostHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	var filename string
+	file, handler, err := r.FormFile("photo")
+	if err == nil {
+		defer file.Close()
+		filename = fmt.Sprintf("static/uploads/%d_%s", time.Now().UnixNano(), handler.Filename)
+		dst, err := os.Create(filename)
+		if err != nil {
+			fmt.Println(err)
+			http.Error(w, "Cannot save photo", http.StatusInternalServerError)
+			return
+		}
+		defer dst.Close()
+		_, err = io.Copy(dst, file)
+		if err != nil {
+			http.Error(w, "Failed to save photo", http.StatusInternalServerError)
+			return
+		}
+	} else {
+		filename = ""
+	}
+
 	query := `
-		INSERT INTO posts (title, content, interest, user_id)
-		VALUES (?, ?, ?, ?)
+		INSERT INTO posts (title, content, interest, user_id, photo)
+		VALUES (?, ?, ?, ?, ?)
 	`
-	res, err := databases.DB.Exec(query, pd.Title, pd.Description, strings.Join(pd.Topics, ","), userID)
+	res, err := databases.DB.Exec(query, title, description, strings.Join(topics, ","), userID, filename)
 	if err != nil {
 		log.Println("Insert post error:", err)
 		http.Error(w, "Database error", http.StatusInternalServerError)
 		return
 	}
-	post_id, err := res.LastInsertId()
+
+	postID, err := res.LastInsertId()
 	if err != nil {
-		log.Println("Error getting inserted user ID:", err)
+		log.Println("Error getting inserted post ID:", err)
 		http.Error(w, "Database error", http.StatusInternalServerError)
 		return
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(map[string]string{
+	json.NewEncoder(w).Encode(map[string]interface{}{
 		"message":  "Data received successfully",
-		"title":    pd.Title,
-		"content":  pd.Description,
-		"interest": strings.Join(pd.Topics, ","),
-		"post_id": fmt.Sprintf("%d", post_id),
+		"title":    title,
+		"content":  description,
+		"interest": strings.Join(topics, ","),
+		"photo":    filename,
+		"post_id":  postID,
 	})
 }
 
@@ -95,8 +123,14 @@ func FetchPostsHandler(w http.ResponseWriter, r *http.Request) {
 
 		if err := rows.Scan(&id, &userID, &content, &title, &interest, &photo, &createdAt); err != nil {
 			log.Println("Error scanning row:", err)
-			http.Error(w, "Database error", http.StatusInternalServerError)
-			return
+			continue
+		}
+
+		var nickname string
+		err = databases.DB.QueryRow(`SELECT nickname FROM users WHERE id = ?`, userID).Scan(&nickname)
+		if err != nil {
+			log.Println("Nickname not found for user_id:", userID)
+			nickname = "Unknown"
 		}
 
 		post := map[string]interface{}{
@@ -107,12 +141,12 @@ func FetchPostsHandler(w http.ResponseWriter, r *http.Request) {
 			"interest":   interest,
 			"photo":      nil,
 			"created_at": createdAt,
+			"nickname":   nickname,
 		}
 
 		if photo.Valid {
 			post["photo"] = photo.String
 		}
-
 		posts = append(posts, post)
 	}
 

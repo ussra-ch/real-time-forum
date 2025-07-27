@@ -110,6 +110,10 @@ function Create() {
   <div class="div-description">
   <label for="description">description :</label>
   <textarea name="description" id="description" rows="4" required></textarea>
+  <div class="div-photo">
+  <label for="photo">Upload Photo:</label>
+  <input type="file" id="photo" name="photo" accept="image/*">
+  </div>
   </div>
   <div class="topic-options">
   <label><input type="checkbox" id="music" name="topic" value="Music"> Music</label>
@@ -135,21 +139,21 @@ function Create() {
 
     const selectedTopics = Array.from(document.querySelectorAll('input[name="topic"]:checked')).map(el => el.value);
 
-    const data = {
-      title: this.title.value,
-      description: this.description.value,
-      topics: selectedTopics,
-    };
+    const formData = new FormData();
+    formData.append('title', this.title.value);
+    formData.append('description', this.description.value);
+    selectedTopics.forEach(topic => formData.append('topics', topic)); // بنفس الاسم لأن السيرفر يستقبلها كمصفوفة
+    if (this.photo.files[0]) {
+      formData.append('photo', this.photo.files[0]);
+    }
 
     fetch('/api/post', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(data),
+      body: formData
     })
       .then(r => r.json())
       .then(data => {
+        console.log(data);
         CreateCard.style.display = 'none';
         fetchPosts();
       })
@@ -172,19 +176,23 @@ function fetchPosts() {
 
         const postCard = document.createElement('div');
         postCard.className = 'post-card1';
+        console.log(post);
+
 
         postCard.innerHTML = `
-          <h3>${post.title}</h3>
-          <p>${post.content}</p>
-          <p>Topics: ${topics.join(', ')}</p>
-          <p>Posted by: User #${post.user_id} on ${new Date(post.created_at).toLocaleDateString()}</p>
-           <form class="commentForm">
-            <input type="text" name="post_id" value="${post.id}" hidden>
-              <input type="text" name="content" class="commentInput" placeholder="Write a comment..." required>
-              <button type="submit" class="commentButton">Comment</button>
-              <button  class="show">show Comment</button>
-              </form>
-          `;
+        <h3>${post.title}</h3>
+        <p>${post.content}</p>
+        <p>Topics: ${topics.join(', ')}</p>
+        ${post.photo ? `<img src="${post.photo}" alt="Post image" style="max-width:100%;">` : ''}
+        <p>Posted by: User #${post.nickname || "Unknown"} on ${new Date(post.created_at).toLocaleDateString()}</p>
+        <form class="commentForm">
+         <input type="hidden" name="post_id" value="${post.id}">
+          <input type="text" name="content" class="commentInput" placeholder="Write a comment..." required>
+          <button type="submit" class="commentButton">Comment</button>
+          <button type="button" class="show">Show Comments</button>
+        </form>
+      `;
+
         const div = document.createElement('div');
         div.className = 'comments-container';
         postCard.appendChild(div);
@@ -226,7 +234,7 @@ function catigories() {
               <h3>${post.title}</h3>
               <p>${post.content}</p>
               <p>Topics: ${topics.join(', ')}</p>
-              <p>Posted by: User #${post.user_id} on ${new Date(post.created_at).toLocaleDateString()}</p>
+              <p>Posted by: User #${post.Name} on ${new Date(post.created_at).toLocaleDateString()}</p>
               <form class="commentForm">
                   <input type="text" name="post_id" value="${post.id}" hidden>
                   <input type="text" name"content" class="commentInput" placeholder="Write a comment..." required>

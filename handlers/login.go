@@ -153,7 +153,7 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	http.SetCookie(w, &http.Cookie{
-		Name:     "sessionId",
+		Name:     "session",
 		Value:    sessionID,
 		Path:     "/",
 		Expires:  expiresAt,
@@ -164,7 +164,7 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetUserIDFromSession(r *http.Request) (int64, error) {
-	cookie, err := r.Cookie("sessionId")
+	cookie, err := r.Cookie("session")
 	if err != nil {
 		return 0, err
 	}

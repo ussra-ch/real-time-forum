@@ -23,7 +23,7 @@ func CommentHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	fmt.Println("cd:", cd)
 	// Get user ID from session
-	cookie, err := r.Cookie("sessionId")
+	cookie, err := r.Cookie("session")
 	if err != nil {
 		w.Write([]byte(`{"loggedIn": false}`))
 		return
