@@ -332,26 +332,50 @@ function fetchUser() {
       off = [...new Set(users.offlineUsers)]
     }
     on.forEach(user => {
+      const btn = document.createElement('button')
+      btn.innerHTML = `
+      <i class="fa-solid fa-message"></i>`
+      btn.style.marginRight = '0'
       const div = document.createElement('div');
       div.innerHTML = `<i class="fa-solid fa-user"></i> ${user}`;
       div.style.color = 'rgb(89, 230, 187)';
+      div.style.display = 'flex';
+      div.style.justifyContent = 'space-between';
+      div.style.alignItems = 'center'
       div.style.border = '1px solid #ccc';
       div.style.padding = '8px';
       div.style.borderRadius = '70px';
-      div.style.width = '50%';
+      div.style.width = '60%';
+      div.style.maxWidth = '200px'
       div.style.background = 'rgba(26, 35, 50, 0.95)';
+      div.append(btn)
       usern.appendChild(div);
+      btn.addEventListener('click', () => {
+        
+      })
     });
 
     off.forEach(user => {
+      const btn = document.createElement('button')
+      btn.innerHTML = `
+      <i class="fa-solid fa-message"></i>`
+      btn.style.marginRight = '0'
       const div = document.createElement('div');
       div.innerHTML = `<i class="fa-solid fa-user"></i> ${user}`;
+      div.style.display = 'flex';
+      div.style.justifyContent = 'space-between';
+      div.style.alignItems = 'center'
       div.style.border = '1px solid #ccc';
       div.style.padding = '8px';
       div.style.borderRadius = '70px';
-      div.style.width = '50%';
+      div.style.width = '60%';
+      div.style.maxWidth = '200px'
       div.style.background = 'rgba(26, 35, 50, 0.95)';
+      div.append(btn)
       usern.appendChild(div);
+      btn.addEventListener('click', () => {
+
+      })
     });
   });
 }
