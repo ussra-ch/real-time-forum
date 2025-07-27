@@ -2,6 +2,7 @@ import { login } from "./login.js";
 
 export function logout() {
   const Logout = document.getElementById('logout');
+
   Logout.addEventListener('click', () => {
     fetch('/api/logout', {
       method: 'POST',
@@ -14,4 +15,5 @@ export function logout() {
       }
     });
   });
+
 }

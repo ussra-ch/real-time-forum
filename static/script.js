@@ -9,6 +9,11 @@ import { fetchUser } from "./users.js";
 function main() {
   logindiv();
   login()
+
+}
+main()
+ export function islogin() {
+
   logout();
   Create();
   fetchPosts();
@@ -16,4 +21,3 @@ function main() {
   comment();
   fetchUser()
 }
-main()

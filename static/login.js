@@ -1,6 +1,6 @@
 import { fetchUser } from "./users.js";
 import { loginDiv, content } from "./var.js";
-
+import { islogin } from "./script.js";
 
 export function logindiv() {
     loginDiv.className = 'container';
@@ -71,7 +71,6 @@ export function logindiv() {
             body: JSON.stringify(data)
         }).then(res => {
             login();
-            fetchUser()
         })
             .catch(err => console.error('Login error:', err));
     })
@@ -89,7 +88,6 @@ export function logindiv() {
             body: JSON.stringify(data)
         }).then(res => {
             login();
-            fetchUser()
         })
             .catch(err => console.error('Login error:', err));
     })
@@ -101,16 +99,44 @@ export function logindiv() {
         container.classList.remove("right-panel-active");
     });
 }
-export function login() {
+export  function login() {
+    const body = document.querySelector('body')
 
     fetch('/api/anthenticated')
         .then(res => {
             if (res.ok) {
-                loginDiv.style.display = 'none'
-                content.style.display = 'block'
+                body.innerHTML = `
+                <div id="content">
+                <header>
+                <button id="logout" style="z-index: 10;">log out</button>
+                <button id="Create" style="z-index: 10;">+</button>
+                </header>
+                <div id="catego"></div>
+                <div id="all">
+             <div id="postsContainer"></div>
+            <div id="user">
+            <h3>Notifications</h3>
+            <div id="not"></div>
+            <h3 style="color: rgb(89, 230, 187);"><i class="fa-solid fa-certificate"></i>onling</h3>
+            <div id="users"></div>
+            </div>
+            </div>
+            
+            
+            </div>
+            
+            <script type="module" src="static/script.js"></script>
+            `
+                fetchUser()
+                islogin()
+                return true
             } else {
-                loginDiv.style.display = 'block'
-                content.style.display = 'none'
+                body.innerHTML = `
+                
+    <script type="module" src="static/script.js"></script>
+    `
+                logindiv()
+                return false
             }
         })
 }
