@@ -1,3 +1,4 @@
+import { fetchUser } from "./users.js";
 import { loginDiv, content } from "./var.js";
 
 
@@ -70,6 +71,7 @@ export function logindiv() {
             body: JSON.stringify(data)
         }).then(res => {
             login();
+            fetchUser()
         })
             .catch(err => console.error('Login error:', err));
     })
@@ -87,6 +89,7 @@ export function logindiv() {
             body: JSON.stringify(data)
         }).then(res => {
             login();
+            fetchUser()
         })
             .catch(err => console.error('Login error:', err));
     })
