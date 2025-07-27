@@ -4,6 +4,8 @@ import (
 	"crypto/rand"
 	"database/sql"
 	"encoding/hex"
+	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 	"time"
@@ -23,15 +25,19 @@ func generateSessionID() string {
 	return hex.EncodeToString(bytes)
 }
 
-func LoginHandler(w http.ResponseWriter, r *http.Request) {
-	r.ParseForm()
-	nickname := r.FormValue("Nickname")
-	password := r.FormValue("password")
+type a struct {
+	Nickname string `json:Nickname`
+	Password string `json:password`
+}
 
+func LoginHandler(w http.ResponseWriter, r *http.Request) {
+	var aa a
+	err := json.NewDecoder(r.Body).Decode(&aa)
+	fmt.Println(aa.Nickname)
 	var dbPassword string
 	var userID int
-	err := databases.DB.QueryRow("SELECT id, password FROM users WHERE nickname = ?", nickname).Scan(&userID, &dbPassword)
-	if err == sql.ErrNoRows || bcrypt.CompareHashAndPassword([]byte(dbPassword), []byte(password)) != nil {
+	err = databases.DB.QueryRow("SELECT id, password FROM users WHERE nickname = ?", aa.Nickname).Scan(&userID, &dbPassword)
+	if err == sql.ErrNoRows || bcrypt.CompareHashAndPassword([]byte(dbPassword), []byte(aa.Password)) != nil {
 		http.Error(w, "Invalid Nickname or password", http.StatusUnauthorized)
 		return
 	} else if err != nil {
@@ -58,8 +64,6 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 		HttpOnly: true,
 		MaxAge:   3600,
 	})
-
-	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
 
 func IsAuthenticated(w http.ResponseWriter, r *http.Request) {
@@ -93,18 +97,21 @@ func LogoutHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 }
 
-func RegisterHandler(w http.ResponseWriter, r *http.Request) {
-	r.ParseForm()
-	username := r.FormValue("Nickname")
-	email := r.FormValue("email")
-	gender := r.FormValue("gender")
-	age := r.FormValue("age")
-	firstName := r.FormValue("first_name")
-	lastName := r.FormValue("last_name")
-	password := r.FormValue("password")
+type data struct {
+	Nickname  string `json:Nickname`
+	Email     string `json:email`
+	Gender    string `json:gender`
+	Age       string `json:age`
+	Firstname string `json:first_name`
+	Lastname  string `json:last_name`
+	Password  string `json:password`
+}
 
+func RegisterHandler(w http.ResponseWriter, r *http.Request) {
+	var aa data
+	err := json.NewDecoder(r.Body).Decode(&aa)
 	var exists int
-	err := databases.DB.QueryRow("SELECT COUNT(*) FROM users WHERE email = ?", email).Scan(&exists)
+	err = databases.DB.QueryRow("SELECT COUNT(*) FROM users WHERE email = ?", aa.Email).Scan(&exists)
 	if err != nil {
 		log.Println("Error checking email:", err)
 		http.Error(w, "Database error", http.StatusInternalServerError)
@@ -116,7 +123,7 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(aa.Password), bcrypt.DefaultCost)
 	if err != nil {
 		http.Error(w, "Error encrypting password", http.StatusInternalServerError)
 		return
@@ -125,7 +132,7 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 	res, err := databases.DB.Exec(`
 		INSERT INTO users (nickname, age, gender, first_name, last_name, email, password)
 		VALUES (?, ?, ?, ?, ?, ?, ?)`,
-		username, age, gender, firstName, lastName, email, hashedPassword)
+		aa.Nickname, aa.Age, aa.Gender, aa.Firstname, aa.Lastname, aa.Email, hashedPassword)
 	if err != nil {
 		log.Println("Error inserting user:", err)
 		http.Error(w, "Database error", http.StatusInternalServerError)
@@ -159,8 +166,6 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 		Expires:  expiresAt,
 		HttpOnly: true,
 	})
-
-	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
 
 func GetUserIDFromSession(r *http.Request) (int64, error) {
