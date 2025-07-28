@@ -1,4 +1,3 @@
-
 import { comment } from "./comment.js";
 import { loadComments } from "./comment.js";
 export function catigories() {

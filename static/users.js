@@ -1,4 +1,4 @@
-
+import { mesaageDiv } from "./messag.js";
 export function fetchUser() {
   const usern = document.getElementById('users');
 
@@ -30,13 +30,14 @@ export function fetchUser() {
       div.style.padding = '8px';
       div.style.borderRadius = '70px';
       div.style.width = '60%';
-       div.style.margin='10px'
+      div.style.margin = '10px'
       div.style.maxWidth = '200px'
       div.style.background = 'rgba(26, 35, 50, 0.95)';
       div.append(btn)
       usern.appendChild(div);
       btn.addEventListener('click', () => {
-
+        if (document.getElementById('messag')) document.getElementById('messag').remove()
+        mesaageDiv(user)
       })
     });
 
@@ -55,12 +56,13 @@ export function fetchUser() {
       div.style.borderRadius = '70px';
       div.style.width = '60%';
       div.style.maxWidth = '200px'
-      div.style.margin='10px'
+      div.style.margin = '10px'
       div.style.background = 'rgba(26, 35, 50, 0.95)';
       div.append(btn)
       usern.appendChild(div);
       btn.addEventListener('click', () => {
-
+        //if (document.getElementById('messag')) document.getElementById('messag').remove()
+        mesaageDiv(user)
       })
     });
   });
