@@ -48,7 +48,7 @@ export function Create() {
         const formData = new FormData();
         formData.append('title', this.title.value);
         formData.append('description', this.description.value);
-        selectedTopics.forEach(topic => formData.append('topics', topic)); // بنفس الاسم لأن السيرفر يستقبلها كمصفوفة
+        selectedTopics.forEach(topic => formData.append('topics', topic));
         if (this.photo.files[0]) {
             formData.append('photo', this.photo.files[0]);
         }

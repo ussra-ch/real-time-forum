@@ -15,26 +15,26 @@ export function catigories() {
           const postsContainer = document.getElementById('postsContainer');
           postsContainer.innerHTML = '';
           posts.forEach(post => {
-            console.log(post.interest);
-
+            const topics = post.interest ? post.interest.split(',') : [];
             if (post.interest.split(',').includes(element) || element === 'All') {
-              const topics = post.interest ? post.interest.split(',') : [];
-
               const postCard = document.createElement('div');
               postCard.className = 'post-card1';
+
+
               postCard.innerHTML = `
-              <h3>${post.title}</h3>
-              <p>${post.content}</p>
-              <p>Topics: ${topics.join(', ')}</p>
-              <p>Posted by: User #${post.Name} on ${new Date(post.created_at).toLocaleDateString()}</p>
-              <form class="commentForm">
-                  <input type="text" name="post_id" value="${post.id}" hidden>
-                  <input type="text" name"content" class="commentInput" placeholder="Write a comment..." required>
-                  <button type="submit" class="commentButton">Comment</button>
-                  <button  class="show">show Comment</button>
-              </form>
-              
-            `;
+        <h3>${post.title}</h3>
+        <p>${post.content}</p>
+        <p>Topics: ${topics.join(', ')}</p>
+        ${post.photo ? `<img src="${post.photo}" alt="Post image" style="max-width:100%;">` : ''}
+        <p>Posted by: User #${post.nickname || "Unknown"} on ${new Date(post.created_at).toLocaleDateString()}</p>
+        <form class="commentForm">
+         <input type="hidden" name="post_id" value="${post.id}">
+          <input type="text" name="content" class="commentInput" placeholder="Write a comment..." required>
+          <button type="submit" class="commentButton">Comment</button>
+          <button type="button" class="show">Show Comments</button>
+        </form>
+      `;
+
               const div = document.createElement('div');
               div.className = 'comments-container';
               postCard.appendChild(div);
@@ -44,8 +44,8 @@ export function catigories() {
 
               });
               loadComments(post.id, div);
+              comment();
             }
-
           });
         })
         .catch(err => console.error('Error fetching posts:', err));
