@@ -26,7 +26,7 @@ func PostHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err := r.ParseMultipartForm(10 << 20) // 10MB
+	err := r.ParseMultipartForm(10 << 20) 
 	if err != nil {
 		http.Error(w, "Error parsing form", http.StatusBadRequest)
 		return

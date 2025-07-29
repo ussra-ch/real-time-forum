@@ -10,7 +10,7 @@
 
 /* Body Styling */
 body {
-    background: linear-gradient(135deg, #0f1419 0%, #1a2332 50%, #0f1419 100%);
+    background: #0f1419;
     color: #ffffff;
     min-height: 100vh;
     overflow: hidden;
@@ -20,7 +20,9 @@ body {
 header {
     background: rgba(15, 20, 25, 0.95);
     backdrop-filter: blur(10px);
-    border-bottom: 1px solid rgba(100, 255, 218, 0.2);
+    margin: 10px;
+    border: 1px solid #00b4d8;
+    border-radius: 20px;
     padding: 1rem;
     position: fixed;
     top: 0;
@@ -30,21 +32,22 @@ header {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    height: 6vh;
 }
 
 header::before {
     content: 'Forum';
     font-size: 1.8rem;
-    color: #64ffda;
+    color: #ffffff;
     font-weight: 700;
 }
 
 /* Buttons */
 button,
 .btn {
-    background: linear-gradient(135deg, #64ffda, #00bcd4);
+    background: #00b4d8;
     border: none;
-    padding: 0.5rem 1rem;
+    padding: 0.3rem 1rem;
     border-radius: 25px;
     color: #0f1419;
     font-weight: 600;
@@ -60,24 +63,24 @@ button:hover,
 }
 
 #logout {
-    position: fixed;
+    position: absolute;
     right: 1rem;
-    top: 1rem;
+    top: 0.7vh;
     z-index: 1001;
     background: transparent;
-    color: #64ffda;
-    border: 2px solid #64ffda;
+    color: #00b4d8;
+    border: 2px solid #00b4d8;
 }
 
 #logout:hover {
-    background: #64ffda;
+    background: #00b4d8;
     color: #0f1419;
 }
 
 #Create {
     position: fixed;
-    right: 6rem;
-    top: 1rem;
+    right: 6.5rem;
+    top: 0.5rem;
     z-index: 1001;
 }
 
@@ -110,7 +113,7 @@ button:hover,
 #catego h1 {
     content: 'Categories';
     display: block;
-    color: #64ffda;
+    color: #00b4d8;
     font-size: 1.2rem;
     margin-bottom: 1rem;
     font-weight: 600;
@@ -119,7 +122,7 @@ button:hover,
 
 .catigories {
     width: 10vw;
-    background: rgba(100, 255, 218, 0.1);
+    background:#00b4d8;
     border: 1px solid rgba(100, 255, 218, 0.2);
     color: #ffffff;
     padding: 0.8rem;
@@ -131,7 +134,7 @@ button:hover,
 
 .catigories:hover,
 .catigories.active {
-    background: #64ffda;
+    background: #00b4d8;
     color: #0f1419;
     transform: translateX(-5px);
 }
@@ -140,18 +143,17 @@ button:hover,
 #postsContainer {
     top: 20vh;
     width: 60%;
-    background: rgba(26, 35, 50, 0.6);
     border-radius: 15px;
     padding: 1.5rem;
     max-height: 80vh;
-    border: 1px solid rgba(100, 255, 218, 0.1);
+    border: 1px solid rgba(100, 255, 218, 0.2);
     overflow: auto;
 }
 
 /* Posts Styling */
 .post-card1 {
     width: 80%;
-    background: rgba(15, 20, 25, 0.8);
+    background: rgba(26, 35, 50, 0.6);
     border: 1px solid rgba(100, 255, 218, 0.2);
     border-radius: 15px;
     padding: 1.5rem;
@@ -164,11 +166,11 @@ button:hover,
 
 .post-card1:hover {
     transform: translateY(-5px);
-    box-shadow: 0 10px 30px rgba(100, 255, 218, 0.2);
+    box-shadow: 0 10px 30px #00b4d8;
 }
 
 .post-card1 h3 {
-    color: #64ffda;
+    color: #00b4d8;
     font-size: 1.3rem;
     font-weight: 600;
     margin-bottom: 0.8rem;
@@ -181,7 +183,7 @@ button:hover,
 }
 
 .post-card1 p:last-of-type {
-    color: #64ffda;
+    color: #00b4d8;
     font-size: 0.8rem;
 }
 
@@ -209,7 +211,7 @@ button:hover,
 }
 
 .commentButton {
-    background: #64ffda;
+    background: #00b4d8;
     border: none;
     border-radius: 20px;
     padding: 0.5rem 1rem;
@@ -220,8 +222,8 @@ button:hover,
 
 .show {
     background: transparent;
-    color: #64ffda;
-    border: 1px solid #64ffda;
+    color: #00b4d8;
+    border: 1px solid #00b4d8;
     border-radius: 20px;
     padding: 0.5rem 1rem;
     font-size: 0.9rem;
@@ -252,7 +254,7 @@ button:hover,
 }
 
 .comments-container strong {
-    color: #64ffda;
+    color: #00b4d8;
     font-weight: 600;
 }
 
@@ -376,6 +378,9 @@ body::after {
     padding: 1rem;
     gap: 10px;
     max-height: 70vh;
+    background-color: #0f1419;
+    margin-left: 20px;
+    border-radius: 20px;
 }
 
 #users {
@@ -385,87 +390,89 @@ body::after {
     border: 1px solid rgba(100, 255, 218, 0.2);
     max-height: 70%;
     overflow: auto;
+    background-color: rgba(26, 35, 50, 0.6);
 }
+
 #messag {
-  position: fixed;
-  bottom: 2vh;
-  left:  2vw;
-  height: 65vh;
-  width: 300px;
-  display: flex;
-  flex-direction: column;
-  background: rgba(30, 40, 55, 0.97);
-  border: 1px solid #00bcd4;
-  border-radius: 12px;
-  box-shadow: 0 8px 16px rgba(0, 188, 212, 0.2);
-  overflow: hidden;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  z-index: 1000;
+    position: fixed;
+    bottom: 2vh;
+    left: 2vw;
+    height: 65vh;
+    width: 300px;
+    display: flex;
+    flex-direction: column;
+    background: rgba(30, 40, 55, 0.97);
+    border: 1px solid #00bcd4;
+    border-radius: 12px;
+    box-shadow: 0 8px 16px rgba(0, 188, 212, 0.2);
+    overflow: hidden;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    z-index: 1000;
 }
 
 #messag .head {
-  flex: 0 0 50px;
-  background-color: #00bcd4;
-  color: white;
-  font-weight: bold;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.1em;
-  letter-spacing: 0.5px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    flex: 0 0 50px;
+    background-color: #00bcd4;
+    color: white;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1em;
+    letter-spacing: 0.5px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 #messag .body {
-  flex: 1;
-  padding: 10px;
-  background-color: rgba(15, 20, 25, 0.95);
-  overflow-y: auto;
-  color: white;
-  width: 90%;
+    flex: 1;
+    padding: 10px;
+    background-color: rgba(15, 20, 25, 0.95);
+    overflow-y: auto;
+    color: white;
+    width: 90%;
 }
 
 .input-area {
-  display: flex;
-  padding: 8px;
-  border-top: 1px solid #00bcd4;
-  background-color: #1e2835;
-  height: 20%;
+    display: flex;
+    padding: 8px;
+    border-top: 1px solid #00bcd4;
+    background-color: #1e2835;
+    height: 20%;
 }
 
 .chat-input {
-  flex: 1;
-  padding: 8px 10px;
-  border: none;
-  border-radius: 6px;
-  outline: none;
-  font-size: 0.95em;
-  background-color: #293241;
-  color: #fff;
+    flex: 1;
+    padding: 8px 10px;
+    border: none;
+    border-radius: 6px;
+    outline: none;
+    font-size: 0.95em;
+    background-color: #293241;
+    color: #fff;
 }
 
 .send-btn {
-  background-color: #00bcd4;
-  border: none;
-  margin-left: 6px;
-  padding: 0 14px;
-  border-radius: 6px;
-  color: white;
-  cursor: pointer;
-  transition: background 0.2s;
+    background-color: #00bcd4;
+    border: none;
+    margin-left: 6px;
+    padding: 0 14px;
+    border-radius: 6px;
+    color: white;
+    cursor: pointer;
+    transition: background 0.2s;
 }
 
 .send-btn:hover {
-  background-color: #009db3;
+    background-color: #009db3;
 }
 
 .my-message {
-  background-color: #00bcd4;
-  color: white;
-  padding: 6px 10px;
-  border-radius: 10px;
-  margin: 6px 0;
-  align-self: flex-end;
+    background-color: #00bcd4;
+    color: white;
+    padding: 6px 10px;
+    border-radius: 10px;
+    margin: 6px 0;
+    align-self: flex-end;
 }
 
 
@@ -474,6 +481,7 @@ body::after {
     border-radius: 20px;
     width: 100%;
     border: 1px solid rgba(100, 255, 218, 0.2);
+    background-color: rgba(26, 35, 50, 0.6);
 }
 
 /* Login Container Updates */
@@ -685,10 +693,10 @@ form a:hover {
 }
 
 ::-webkit-scrollbar-thumb {
-    background: rgba(100, 255, 218, 0.5);
+    background: #00b4d8;
     border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-    background: rgba(100, 255, 218, 0.7);
+    background: #00b4d8;
 }
