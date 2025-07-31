@@ -19,21 +19,21 @@ func IsLoggedIn(r *http.Request) (bool, int) {
 		SELECT user_id FROM sessions 
 		WHERE id = ? AND expires_at > DATETIME('now')
 	`, cookie.Value).Scan(&userID)
-
 	if err != nil {
 		return false, 0
 	}
 
 	return true, userID
 }
+
 func FetchUsers(w http.ResponseWriter, r *http.Request) {
 	loggedIn, userID := IsLoggedIn(r)
 	if !loggedIn {
 		w.Header().Set("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(map[string]interface{}{
-			"loggedIn":    false,
-			"nickname":    nil,
-			"onlineUsers": []string{},
+			"loggedIn":     false,
+			"nickname":     nil,
+			"onlineUsers":  []string{},
 			"offlineUsers": []string{},
 		})
 		return
@@ -48,7 +48,7 @@ func FetchUsers(w http.ResponseWriter, r *http.Request) {
 	}
 
 	rows, err := databases.DB.Query(`
-		SELECT u.nickname 
+		SELECT u.nickname, u.id
 		FROM users u
 		JOIN sessions s ON u.id = s.user_id
 		WHERE s.expires_at > DATETIME('now') AND u.id != ?
@@ -58,17 +58,24 @@ func FetchUsers(w http.ResponseWriter, r *http.Request) {
 	}
 	defer rows.Close()
 
-	var onlineUsers []string
+	type User struct {
+		Nickname string `json:"nickname"`
+		UserId   int    `json:"userId"`
+	}
+	var onlineUsers []User
 	for rows.Next() {
 		var nickname string
-		if err := rows.Scan(&nickname); err != nil {
+		var userId int
+		if err := rows.Scan(&nickname, &userId); err != nil {
 			log.Fatal(err)
 		}
-		onlineUsers = append(onlineUsers, nickname)
+
+		onlineUsers = append(onlineUsers, User{Nickname: nickname, UserId: userId})
 	}
 
 	row, err := databases.DB.Query(`
-		SELECT nickname FROM users
+		SELECT u.nickname, u.id
+		FROM users u
 		WHERE id != ? AND id NOT IN (
 			SELECT user_id FROM sessions WHERE expires_at > DATETIME('now')
 		)
@@ -78,20 +85,26 @@ func FetchUsers(w http.ResponseWriter, r *http.Request) {
 	}
 	defer row.Close()
 
-	var offlineUsers []string
+	var offlineUsers []User
 	for row.Next() {
+		// fmt.Println("row is :", rows)
 		var nickname string
-		if err := row.Scan(&nickname); err != nil {
+		var userId int
+		if err := row.Scan(&nickname, &userId); err != nil {
+			// fmt.Println("121212")
 			log.Fatal(err)
 		}
-		offlineUsers = append(offlineUsers, nickname)
+		// fmt.Println(User{nickname: nickname, userId: userId})
+		offlineUsers = append(offlineUsers, User{Nickname: nickname, UserId: userId})
 	}
 
 	w.Header().Set("Content-Type", "application/json")
+	// fmt.Println(offlineUsers)
 	json.NewEncoder(w).Encode(map[string]interface{}{
 		"loggedIn":     true,
 		"nickname":     myNickname,
 		"onlineUsers":  onlineUsers,
 		"offlineUsers": offlineUsers,
+		"UserId":       userID,
 	})
 }

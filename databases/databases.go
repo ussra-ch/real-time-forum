@@ -56,6 +56,13 @@ CREATE TABLE IF NOT EXISTS comments (
 			FOREIGN KEY (post_id) REFERENCES posts(id) ON DELETE CASCADE,
 			FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 		);
+CREATE TABLE IF NOT EXISTS messages (
+    id SERIAL PRIMARY KEY,
+    sender_id INT NOT NULL,
+    receiver_id INT NOT NULL,
+    content TEXT NOT NULL,
+    sent_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
 `
 
 	_, err = DB.Exec(createPostsTable)

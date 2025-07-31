@@ -30,6 +30,7 @@ func main() {
 	http.HandleFunc("/comment", handlers.CommentHandler)
 	http.HandleFunc("/api/fetch_comments", handlers.FetchCommentsHandler)
 	http.HandleFunc("/user",handlers.FetchUsers)
+	http.HandleFunc("/chat",handlers.WebSocketHandler)
 	fmt.Println("Server started at http://localhost:8080")
 	err := http.ListenAndServe(":8080", nil)
 	if err != nil {

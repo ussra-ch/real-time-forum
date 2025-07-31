@@ -29,13 +29,13 @@ var (
 )
 
 // Client represents a single chat user connected via WebSocket
-type Client struct {
-	Hub      *Hub
-	ID       string
-	Username string
-	Conn     *websocket.Conn
-	Send     chan []byte // allows me to send messages to the client concurrently without blocking the main loop
-}
+// type Client struct {
+// 	Hub      *Hub
+// 	ID       string
+// 	Username string
+// 	Conn     *websocket.Conn
+// 	Send     chan []byte // allows me to send messages to the client concurrently without blocking the main loop
+// }
 
 type Message struct {
 	SenderID       string    `json:"senderId"`

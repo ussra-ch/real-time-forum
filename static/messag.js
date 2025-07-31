@@ -1,4 +1,5 @@
-export function mesaageDiv(user) {
+import { webSockert } from "./websocket.js"
+export function mesaageDiv(user, userId, receiverId) {
     const body = document.querySelector('body')
     const div = document.createElement('div')
     div.id = 'messag'
@@ -19,8 +20,10 @@ export function mesaageDiv(user) {
         const input = div.querySelector('.chat-input')
         const message = input.value.trim()
         if (message !== "") {
+            // console.log(1);
+            
+            webSockert(userId, receiverId, input.value)
             input.value = ''
-
         }
     })
 }

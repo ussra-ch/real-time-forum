@@ -81,9 +81,12 @@ export function fetchPosts() {
                 const postCard = document.createElement('div');
                 postCard.className = 'post-card1';
 
-
+                
+              
+               
+                
                 postCard.innerHTML = `
-        <h3>${post.title}</h3>
+                <h3>${post.title}</h3>
         <p>${post.content}</p>
         <p>Topics: ${topics.join(', ')}</p>
         ${post.photo ? `<img src="${post.photo}" alt="Post image" style="max-width:100%;">` : ''}

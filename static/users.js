@@ -11,8 +11,7 @@ export function fetchUser() {
 
     }
     if (users.offlineUsers) {
-
-      users.offlineUsers.sort((a, b) => { a - b });
+      users.offlineUsers.sort((a, b) => { a.nickname- b.nickname}); // matnsaaaaawch diro to lowerCase
       off = [...new Set(users.offlineUsers)]
     }
     on.forEach(user => {
@@ -21,7 +20,7 @@ export function fetchUser() {
       <i class="fa-solid fa-message"></i>`
       btn.style.marginRight = '0'
       const div = document.createElement('div');
-      div.innerHTML = `<i class="fa-solid fa-user"></i> ${user}`;
+      div.innerHTML = `<i class="fa-solid fa-user"></i> ${user.nickname}`;
       div.style.color = 'rgb(89, 230, 187)';
       div.style.display = 'flex';
       div.style.justifyContent = 'space-between';
@@ -37,9 +36,12 @@ export function fetchUser() {
       usern.appendChild(div);
       btn.addEventListener('click', () => {
         if (document.getElementById('messag')) document.getElementById('messag').remove()
-        mesaageDiv(user)
+          // console.log(user.nickname, users.id, user.userId);
+          
+        mesaageDiv(user.nickname, users.UserId, user.userId)
       })
     });
+
 
     off.forEach(user => {
       const btn = document.createElement('button')
@@ -47,7 +49,7 @@ export function fetchUser() {
       <i class="fa-solid fa-message"></i>`
       btn.style.marginRight = '0'
       const div = document.createElement('div');
-      div.innerHTML = `<i class="fa-solid fa-user"></i> ${user}`;
+      div.innerHTML = `<i class="fa-solid fa-user"></i> ${user.nickname}`;
       div.style.display = 'flex';
       div.style.justifyContent = 'space-between';
       div.style.alignItems = 'center'
@@ -61,8 +63,7 @@ export function fetchUser() {
       div.append(btn)
       usern.appendChild(div);
       btn.addEventListener('click', () => {
-        //if (document.getElementById('messag')) document.getElementById('messag').remove()
-        mesaageDiv(user)
+        mesaageDiv(user.nickname, users.UserId, user.userId)
       })
     });
   });
