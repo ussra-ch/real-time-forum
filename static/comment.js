@@ -1,9 +1,9 @@
-import { fetchPosts } from "./post.js";
 export function comment() {
 
     const forms = document.querySelectorAll('.commentForm');
 
     forms.forEach((form) => {
+      
         form.addEventListener("submit", function (e) {
             e.preventDefault();
 
@@ -11,7 +11,7 @@ export function comment() {
             const comment = commentInput.value;
 
             const post_id = form.querySelector("[name='post_id']").value;
-
+            
             fetch("/comment", {
                 method: "POST",
                 headers: {
@@ -26,12 +26,11 @@ export function comment() {
                 .catch(err => {
                     console.error("Error:", err);
                 });
-            fetchPosts()
         });
     });
 }
 export function loadComments(postId, container) {
-
+    container.innerHTML = ``
     fetch('/api/fetch_comments')
         .then(res => res.json())
         .then(comments => {
@@ -40,9 +39,9 @@ export function loadComments(postId, container) {
 
                 const p = document.createElement("div");
                 p.innerHTML = `
-        <p><strong>${comment.Name}:</strong> ${comment.Content}</p>
-        <p class="comment-date">${new Date(comment.CreatedAt).toLocaleDateString()}</p>
-      `;
+                    <p><strong>${comment.Name}:</strong> ${comment.Content}</p>
+                    <p class="comment-date">${new Date(comment.CreatedAt).toLocaleDateString()}</p>
+                `;
                 container.appendChild(p);
             });
         });
