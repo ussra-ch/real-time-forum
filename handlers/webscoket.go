@@ -49,7 +49,7 @@ func WebSocketHandler(w http.ResponseWriter, r *http.Request) {
 		var messageStruct Message
 		err = json.Unmarshal(message, &messageStruct)
 		// fmt.Println()
-		_, err = databases.DB.Exec(`INSERT INTO CUSTOMERS (sender_id,receiver_id,content,sent_at)
+		_, err = databases.DB.Exec(`INSERT INTO messages (sender_id,receiver_id,content,sent_at)
 					VALUES (?, ?, ?, DATETIME('now'));`, messageStruct.SenderId, messageStruct.ReceiverId, messageStruct.MessageContent)
 		if err != nil {
 			fmt.Println("Error storing the message in DB : ", err)
