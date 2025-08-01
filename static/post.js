@@ -80,6 +80,7 @@ export function fetchPosts() {
                 postCard.innerHTML = `
                 <h3>${post.title}</h3>
         <p>${post.content}</p>
+        <button onclec=""></button>
         <p>Topics: ${topics.join(', ')}</p>
         ${post.photo ? `<img src="${post.photo}" alt="Post image" style="max-width:100%;">` : ''}
         <p>Posted by: User #${post.nickname || "Unknown"} on ${new Date(post.created_at).toLocaleDateString()}</p>
