@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"time"
 
 	"handlers/databases"
 
@@ -23,25 +24,26 @@ var Upgrader = websocket.Upgrader{
 }
 
 type Message struct {
-	SenderId       string `json:"senderId"`
-	ReceiverId     string `json:"receiverId"`
+	SenderId       int    `json:"senderId"`
+	ReceiverId     int    `json:"receiverId"`
 	MessageContent string `json:"messageContent"`
 }
 
+var ConnectedUsers = make(map[int]*websocket.Conn)
 // Send
 func WebSocketHandler(w http.ResponseWriter, r *http.Request) {
 	conn, err := Upgrader.Upgrade(w, r, nil)
+	_, userId := IsLoggedIn(r)
+	ConnectedUsers[userId] = conn
 	if err != nil {
 		fmt.Println("error when upgrading the http: ", err)
 		return
 	}
 
 	defer conn.Close()
+
 	for {
 		messageType, message, err := conn.ReadMessage()
-		fmt.Println(messageType)
-		fmt.Println(len(string(message)))
-		fmt.Println(string(message))
 		if err != nil {
 			fmt.Println("error when reading the upcoming message : ", err)
 			return
@@ -49,16 +51,56 @@ func WebSocketHandler(w http.ResponseWriter, r *http.Request) {
 		var messageStruct Message
 		err = json.Unmarshal(message, &messageStruct)
 		// fmt.Println()
-		_, err = databases.DB.Exec(`INSERT INTO messages (sender_id,receiver_id,content,sent_at)
-					VALUES (?, ?, ?, DATETIME('now'));`, messageStruct.SenderId, messageStruct.ReceiverId, messageStruct.MessageContent)
+		_, err = databases.DB.Exec(`INSERT INTO messages (sender_id,receiver_id,content)
+					VALUES (?, ?, ?);`, messageStruct.SenderId, messageStruct.ReceiverId, messageStruct.MessageContent)
 		if err != nil {
 			fmt.Println("Error storing the message in DB : ", err)
 		}
-		fmt.Println("The message is :", messageStruct.MessageContent)
-		err = conn.WriteMessage(messageType, []byte(messageStruct.MessageContent))
-		if err != nil {
-			fmt.Println("Error storing the message in DB : ", err)
+		if (ConnectedUsers[messageStruct.ReceiverId] != nil){
+			err = ConnectedUsers[messageStruct.ReceiverId].WriteMessage(messageType, []byte(messageStruct.MessageContent))
+			if err != nil {
+				fmt.Println("Error storing the message in DB : ", err)
+			}
 		}
 
 	}
+}
+
+func FetchMessages(w http.ResponseWriter, r *http.Request) {
+	// fetch data
+	if r.Method != http.MethodGet {
+		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
+		return
+	}
+	_, userId := IsLoggedIn(r)
+	query := `SELECT * from messages WHERE sender_id = ? OR receiver_id = ?
+	ORDER BY sent_at DESC
+	LIMIT 10;`
+	rows, err := databases.DB.Query(query, userId, userId)
+	if err != nil {
+		fmt.Println("error geting messages from db : ", err)
+	}
+	var messages []map[string]interface{}
+	for rows.Next(){
+		var id, userId, sender_id int
+		var content string
+		var time time.Time
+
+		if err := rows.Scan(&id, &sender_id, &userId, &content, &time); err != nil{
+			fmt.Println("error in a message")
+		}
+		message := map[string]interface{}{
+			"id":         id,
+			"sender_id":    sender_id,
+			"userId": userId,
+			"content":    content,
+			"time": time,
+		}
+		messages = append(messages, message)
+		// fmt.Println(id, sender_id, userId, content, time)
+	}
+
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(messages)
 }

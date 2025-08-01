@@ -1,4 +1,18 @@
 categories table (databse)
 category-post table (databse)
+
 edit + delete post
 user's profile
+empty posts/comments errors
+loging using email/username machi email bohdo
+posts/comments ratelimit
+check dyal token fih mochkila
+check empty posts, message, comments size in backend 
+comment 3la comment
+
+show notifcations
+sort online users based on the newest conversations
+refresh dyal lpage ratelimit
+scroll
+
+front
