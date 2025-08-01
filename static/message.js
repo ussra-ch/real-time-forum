@@ -22,7 +22,13 @@ export function mesaageDiv(user, userId, receiverId) {
         e.preventDefault()
         const input = div.querySelector('.chat-input')
         const message = input.value.trim()
+        let chatBody = document.getElementById('chat-body')
         if (message !== "") {
+             let newMsg = document.createElement('div')
+                    newMsg.className = 'messageSent'
+                    newMsg.innerHTML = `<h3>${message}</h3>
+                    <h7>${Date.now()}}</h7>`
+                    chatBody.append(newMsg)
             webSocket(userId, receiverId, input.value)
             input.value = ''
         }
@@ -38,9 +44,9 @@ function fetchMessages(userId, receiverId) {
             // console.log(messages);
             messages.reverse().forEach(message => {
                 let body = document.getElementById('chat-body')
-                console.log(message);
-                console.log(message.receiverId, userId);
-                console.log(message.userId, receiverId);
+                // console.log(message);
+                // console.log(message.receiverId, userId);
+                // console.log(message.userId, receiverId);
                 if (message.userId == userId && message.sender_id == receiverId) {
                     let newMsg = document.createElement('div')
                     newMsg.className = 'messageSent'

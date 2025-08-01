@@ -29,15 +29,19 @@ type Message struct {
 	MessageContent string `json:"messageContent"`
 }
 
+var ConnectedUsers = make(map[int]*websocket.Conn)
 // Send
 func WebSocketHandler(w http.ResponseWriter, r *http.Request) {
 	conn, err := Upgrader.Upgrade(w, r, nil)
+	_, userId := IsLoggedIn(r)
+	ConnectedUsers[userId] = conn
 	if err != nil {
 		fmt.Println("error when upgrading the http: ", err)
 		return
 	}
 
 	defer conn.Close()
+
 	for {
 		messageType, message, err := conn.ReadMessage()
 		if err != nil {
@@ -52,9 +56,11 @@ func WebSocketHandler(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			fmt.Println("Error storing the message in DB : ", err)
 		}
-		err = conn.WriteMessage(messageType, []byte(messageStruct.MessageContent))
-		if err != nil {
-			fmt.Println("Error storing the message in DB : ", err)
+		if (ConnectedUsers[messageStruct.ReceiverId] != nil){
+			err = ConnectedUsers[messageStruct.ReceiverId].WriteMessage(messageType, []byte(messageStruct.MessageContent))
+			if err != nil {
+				fmt.Println("Error storing the message in DB : ", err)
+			}
 		}
 
 	}
