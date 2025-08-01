@@ -393,7 +393,7 @@ body::after {
     background-color: rgba(26, 35, 50, 0.6);
 }
 
-#messag {
+#message {
     position: fixed;
     bottom: 2vh;
     left: 2vw;
@@ -410,7 +410,7 @@ body::after {
     z-index: 1000;
 }
 
-#messag .head {
+#message .head {
     flex: 0 0 50px;
     background-color: #00bcd4;
     color: white;
@@ -423,7 +423,7 @@ body::after {
     border-bottom: 1px solid rgba(255, 255, 255, 0.2);
 }
 
-#messag .body {
+#message .body {
     flex: 1;
     padding: 10px;
     background-color: rgba(15, 20, 25, 0.95);

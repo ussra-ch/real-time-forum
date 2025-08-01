@@ -5,7 +5,6 @@ import (
 	"database/sql"
 	"encoding/hex"
 	"encoding/json"
-	"fmt"
 	"log"
 	"net/http"
 	"time"
@@ -33,7 +32,7 @@ type a struct {
 func LoginHandler(w http.ResponseWriter, r *http.Request) {
 	var aa a
 	err := json.NewDecoder(r.Body).Decode(&aa)
-	fmt.Println(aa.Nickname)
+	// fmt.Println(aa.Nickname)
 	var dbPassword string
 	var userID int
 	err = databases.DB.QueryRow("SELECT id, password FROM users WHERE nickname = ?", aa.Nickname).Scan(&userID, &dbPassword)

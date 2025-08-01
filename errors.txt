@@ -2,3 +2,4 @@ categories table (databse)
 category-post table (databse)
 edit + delete post
 user's profile
+empty posts/comments errors

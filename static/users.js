@@ -1,4 +1,4 @@
-import { mesaageDiv } from "./messag.js";
+import { mesaageDiv } from "./message.js";
 export function fetchUser() {
   const usern = document.getElementById('users');
 
@@ -6,15 +6,18 @@ export function fetchUser() {
   fetch('/user').then(r => r.json()).then(users => {
     let on = new Set(), off = new Set()
     if (users.onlineUsers) {
-      users.onlineUsers.sort((a, b) => { a - b })
+      users.onlineUsers.sort((a, b) => { a.nickname - b.nickname})
       on = [...new Set(users.onlineUsers)];
-
     }
+    // console.log(users);
+    
     if (users.offlineUsers) {
       users.offlineUsers.sort((a, b) => { a.nickname- b.nickname}); // matnsaaaaawch diro to lowerCase
       off = [...new Set(users.offlineUsers)]
     }
     on.forEach(user => {
+      // console.log(user);
+      
       const btn = document.createElement('button')
       btn.innerHTML = `
       <i class="fa-solid fa-message"></i>`
@@ -35,9 +38,9 @@ export function fetchUser() {
       div.append(btn)
       usern.appendChild(div);
       btn.addEventListener('click', () => {
-        if (document.getElementById('messag')) document.getElementById('messag').remove()
-          // console.log(user.nickname, users.id, user.userId);
-          
+        
+        if (document.getElementById('message')) document.getElementById('message').remove()
+        // console.log(user.nickname, users.UserId, user.userId);
         mesaageDiv(user.nickname, users.UserId, user.userId)
       })
     });

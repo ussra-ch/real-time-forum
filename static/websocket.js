@@ -1,16 +1,19 @@
-export function webSockert(senderId, receiverId, messageContent) {
+export function webSocket(senderId, receiverId, messageContent) {
     const ws = new WebSocket("ws://localhost:8080/chat")
 
-
+    // console.log(senderId, receiverId, messageContent);
+    
     if (!senderId || !receiverId || !messageContent) {
         return
     }
-
+    
     const payload = {
         senderId,
         receiverId,
         messageContent,
     };
+    // console.log(payload);
+    
     ws.onopen = () => {
         ws.send(JSON.stringify(payload));
         console.log('Connected!')

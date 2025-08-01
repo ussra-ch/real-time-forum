@@ -21,7 +21,7 @@ func CommentHandler(w http.ResponseWriter, r *http.Request) {
 		fmt.Println("Error decoding comment data:", err)
 		return
 	}
-	fmt.Println("cd:", cd)
+	// fmt.Println("cd:", cd)
 	// Get user ID from session
 	cookie, err := r.Cookie("session")
 	if err != nil {

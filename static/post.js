@@ -42,9 +42,7 @@ export function Create() {
     });
     document.getElementById('createPostForm').addEventListener('submit', async function (e) {
         e.preventDefault();
-
         const selectedTopics = Array.from(document.querySelectorAll('input[name="topic"]:checked')).map(el => el.value);
-
         const formData = new FormData();
         formData.append('title', this.title.value);
         formData.append('description', this.description.value);
@@ -77,14 +75,8 @@ export function fetchPosts() {
             postsContainer.innerHTML = '';
             posts.forEach(post => {
                 const topics = post.interest ? post.interest.split(',') : [];
-
                 const postCard = document.createElement('div');
                 postCard.className = 'post-card1';
-
-                
-              
-               
-                
                 postCard.innerHTML = `
                 <h3>${post.title}</h3>
         <p>${post.content}</p>
@@ -98,7 +90,6 @@ export function fetchPosts() {
           <button type="button" class="show">Show Comments</button>
         </form>
       `;
-
                 const div = document.createElement('div');
                 div.className = 'comments-container';
                 postCard.appendChild(div);
