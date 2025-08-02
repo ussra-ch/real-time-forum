@@ -1,6 +1,6 @@
 import { comment } from "./comment.js";
 import { loadComments } from "./comment.js";
-import { deletepost } from "./delete.js";
+import { deletepost, editpost } from "./delete.js";
 window.deletepost = deletepost;
 
 
@@ -83,7 +83,6 @@ export function fetchPosts() {
                 postCard.innerHTML = `
                 <h3>${post.title}</h3>
         <p>${post.content}</p>
-       <button onclick="deletepost(${post.id})">Delete</button>
         <p>Topics: ${topics.join(', ')}</p>
         ${post.photo ? `<img src="${post.photo}" alt="Post image" style="max-width:100%;">` : ''}
         <p>Posted by: User #${post.nickname || "Unknown"} on ${new Date(post.created_at).toLocaleDateString()}</p>
@@ -94,6 +93,24 @@ export function fetchPosts() {
           <button type="button" class="show">Show Comments</button>
         </form>
       `;
+                if (post.myId == post.user_id) {
+                    const button = document.createElement('button')
+                    button.textContent = 'Delete'
+                    postCard.prepend(button)
+                    button.addEventListener('click', () => {
+                        deletepost(post.id)
+                    })
+                    const ed = document.createElement('button')
+                    ed.textContent = 'Edit'
+                    postCard.prepend(ed)
+                    ed.addEventListener('click', () => {
+
+                        editpost(post.id, post.title, post.content)
+                    })
+                }
+
+
+
                 const div = document.createElement('div');
                 div.className = 'comments-container';
                 postCard.appendChild(div);

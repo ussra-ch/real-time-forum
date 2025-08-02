@@ -26,7 +26,7 @@ func PostHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err := r.ParseMultipartForm(10 << 20) 
+	err := r.ParseMultipartForm(10 << 20)
 	if err != nil {
 		http.Error(w, "Error parsing form", http.StatusBadRequest)
 		return
@@ -104,6 +104,7 @@ func FetchPostsHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
 		return
 	}
+	_, UserID := IsLoggedIn(r)
 
 	query := `SELECT id, user_id, content, title, interest, photo, created_at FROM posts`
 	rows, err := databases.DB.Query(query)
@@ -142,6 +143,7 @@ func FetchPostsHandler(w http.ResponseWriter, r *http.Request) {
 			"photo":      nil,
 			"created_at": createdAt,
 			"nickname":   nickname,
+			"myId":       UserID,
 		}
 
 		if photo.Valid {

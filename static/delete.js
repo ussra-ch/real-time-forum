@@ -23,3 +23,33 @@ export function deletepost(postId) {
             console.error("Error deleting post:", err);
         });
 }
+export function editpost(postId, postTitle, postContent) {
+    const newTitle = prompt("Title:", postTitle);
+    const newContent = prompt("content:", postContent);
+
+    if (newTitle === null || newContent === null) return;
+
+    fetch('/edit', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            id: postId,
+            title: newTitle,
+            content: newContent
+        }),
+    })
+        .then(res => {
+            if (!res.ok) {
+                throw new Error("error");
+            }
+            return res.text();
+        })
+        .then(() => {
+            fetchPosts();
+        })
+        .catch(err => {
+            console.error("error", err);
+        });
+}
