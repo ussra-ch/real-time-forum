@@ -27,40 +27,52 @@ type Message struct {
 	SenderId       int    `json:"senderId"`
 	ReceiverId     int    `json:"receiverId"`
 	MessageContent string `json:"messageContent"`
+	// ClientStatus   bool   `json:"clientStatus"`
 }
 
-var ConnectedUsers = make(map[int]*websocket.Conn)
+var (
+	ConnectedUsers      = make(map[int]*websocket.Conn)
+	// openedConversations = make(map[int]int)
+)
+
 // Send
 func WebSocketHandler(w http.ResponseWriter, r *http.Request) {
 	conn, err := Upgrader.Upgrade(w, r, nil)
-	_, userId := IsLoggedIn(r)
-	ConnectedUsers[userId] = conn
 	if err != nil {
 		fmt.Println("error when upgrading the http: ", err)
 		return
 	}
-
+	_, userId := IsLoggedIn(r)
+	ConnectedUsers[userId] = conn
+	
+	
 	defer conn.Close()
-
+	
 	for {
+		// fmt.Println(conn.ReadMessage())
 		messageType, message, err := conn.ReadMessage()
 		if err != nil {
 			fmt.Println("error when reading the upcoming message : ", err)
 			return
 		}
+		// fmt.Println("0000")
 		var messageStruct Message
+		// fmt.Println("1111")
 		err = json.Unmarshal(message, &messageStruct)
-		// fmt.Println()
 		_, err = databases.DB.Exec(`INSERT INTO messages (sender_id,receiver_id,content)
 					VALUES (?, ?, ?);`, messageStruct.SenderId, messageStruct.ReceiverId, messageStruct.MessageContent)
 		if err != nil {
 			fmt.Println("Error storing the message in DB : ", err)
 		}
-		if (ConnectedUsers[messageStruct.ReceiverId] != nil){
+		fmt.Println("2222")
+		if ConnectedUsers[messageStruct.ReceiverId] != nil {
+			fmt.Println("3333")
 			err = ConnectedUsers[messageStruct.ReceiverId].WriteMessage(messageType, []byte(messageStruct.MessageContent))
 			if err != nil {
 				fmt.Println("Error storing the message in DB : ", err)
 			}
+		} else {
+			fmt.Println("4444")
 		}
 
 	}
@@ -81,25 +93,24 @@ func FetchMessages(w http.ResponseWriter, r *http.Request) {
 		fmt.Println("error geting messages from db : ", err)
 	}
 	var messages []map[string]interface{}
-	for rows.Next(){
+	for rows.Next() {
 		var id, userId, sender_id int
 		var content string
 		var time time.Time
 
-		if err := rows.Scan(&id, &sender_id, &userId, &content, &time); err != nil{
+		if err := rows.Scan(&id, &sender_id, &userId, &content, &time); err != nil {
 			fmt.Println("error in a message")
 		}
 		message := map[string]interface{}{
-			"id":         id,
-			"sender_id":    sender_id,
-			"userId": userId,
-			"content":    content,
-			"time": time,
+			"id":        id,
+			"sender_id": sender_id,
+			"userId":    userId,
+			"content":   content,
+			"time":      time,
 		}
 		messages = append(messages, message)
 		// fmt.Println(id, sender_id, userId, content, time)
 	}
-
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(messages)

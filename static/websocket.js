@@ -1,7 +1,6 @@
+import { ws } from "./var.js";
 export function webSocket(senderId, receiverId, messageContent) {
-    const ws = new WebSocket("ws://localhost:8080/chat")
-
-    // console.log(senderId, receiverId, messageContent);
+    console.log("js webSocket: 1111");
     
     if (!senderId || !receiverId || !messageContent) {
         return
@@ -11,6 +10,7 @@ export function webSocket(senderId, receiverId, messageContent) {
         senderId,
         receiverId,
         messageContent,
+        // userStatus,
     };
     // console.log(payload);
     

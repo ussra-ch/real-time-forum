@@ -1,5 +1,7 @@
 import { webSocket } from "./websocket.js"
 export function mesaageDiv(user, userId, receiverId) {
+    // console.log();
+
     const body = document.querySelector('body')
     if (document.getElementById('message')) {
         document.getElementById('message').remove()
@@ -16,22 +18,43 @@ export function mesaageDiv(user, userId, receiverId) {
             <button type="submit" class="send-btn"><i class="fa-solid fa-paper-plane"></i></button>
         </form>
     `
+    const deleteButton = document.createElement('button')
+    const icon = document.createElement('i');
+    icon.className = 'fas fa-trash';
+    deleteButton.id = 'closeConversation'
+    deleteButton.appendChild(icon);
+    deleteButton.appendChild(document.createTextNode(' Delete'));
+    let divHeader = div.getElementsByClassName('head')[0]
+    divHeader.append(deleteButton)
     body.append(div)
+    //throtlle khas tkoun hna
     fetchMessages(userId, receiverId)
+
     div.querySelector('.input-area').addEventListener('submit', (e) => {
         e.preventDefault()
-        const input = div.querySelector('.chat-input')
-        const message = input.value.trim()
-        let chatBody = document.getElementById('chat-body')
-        if (message !== "") {
-             let newMsg = document.createElement('div')
-                    newMsg.className = 'messageSent'
-                    newMsg.innerHTML = `<h3>${message}</h3>
-                    <h7>${Date.now()}}</h7>`
-                    chatBody.append(newMsg)
-            webSocket(userId, receiverId, input.value)
-            input.value = ''
-        }
+        // if (userStatus) {
+            const input = div.querySelector('.chat-input')
+            const message = input.value.trim()
+            let chatBody = document.getElementById('chat-body')
+            if (message !== "") {
+                let newMsg = document.createElement('div')
+                newMsg.className = 'messageSent'
+                newMsg.innerHTML = `<h3>${message}</h3>
+                        <h7>${Date.now()}}</h7>`
+                chatBody.append(newMsg)
+                webSocket(userId, receiverId, input.value)
+                input.value = ''
+            }
+        // } else {
+        //     const notif = document.getElementById('not')
+        //     const newNotif = document.createElement('div')
+        //     newNotif.id = 'notification'
+        //     // newNotif.innerHTML = `<h5> ${}`
+        // }
+    })
+
+    deleteButton.addEventListener('click', ()=>{
+        div.remove()
     })
 }
 

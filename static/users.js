@@ -1,4 +1,5 @@
 import { mesaageDiv } from "./message.js";
+import { clientStatus } from "./var.js";
 export function fetchUser() {
   const usern = document.getElementById('users');
 
@@ -6,18 +7,18 @@ export function fetchUser() {
   fetch('/user').then(r => r.json()).then(users => {
     let on = new Set(), off = new Set()
     if (users.onlineUsers) {
-      users.onlineUsers.sort((a, b) => { a.nickname - b.nickname})
+      users.onlineUsers.sort((a, b) => { a.nickname - b.nickname })
       on = [...new Set(users.onlineUsers)];
     }
     // console.log(users);
-    
+
     if (users.offlineUsers) {
-      users.offlineUsers.sort((a, b) => { a.nickname- b.nickname}); // matnsaaaaawch diro to lowerCase
+      users.offlineUsers.sort((a, b) => { a.nickname - b.nickname }); // matnsaaaaawch diro to lowerCase
       off = [...new Set(users.offlineUsers)]
     }
     on.forEach(user => {
       // console.log(user);
-      
+
       const btn = document.createElement('button')
       btn.innerHTML = `
       <i class="fa-solid fa-message"></i>`
@@ -37,10 +38,11 @@ export function fetchUser() {
       div.style.background = 'rgba(26, 35, 50, 0.95)';
       div.append(btn)
       usern.appendChild(div);
+      
+
       btn.addEventListener('click', () => {
-        
         if (document.getElementById('message')) document.getElementById('message').remove()
-        // console.log(user.nickname, users.UserId, user.userId);
+        // clientStatus = true
         mesaageDiv(user.nickname, users.UserId, user.userId)
       })
     });
