@@ -67,7 +67,7 @@ func FetchUsers(w http.ResponseWriter, r *http.Request) {
 		var nickname string
 		var userId int
 		if err := rows.Scan(&nickname, &userId); err != nil {
-			log.Fatal(err)
+			log.Fatal( err)
 		}
 
 		onlineUsers = append(onlineUsers, User{Nickname: nickname, UserId: userId})

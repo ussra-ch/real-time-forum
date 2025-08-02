@@ -89,7 +89,7 @@ export function fetchPosts() {
         <p>Topics: ${topics.join(', ')}</p>
         ${post.photo ? `<img src="${post.photo}" alt="Post image" style="max-width:100%;">` : ''}
         <p>Posted by: User #${post.nickname || "Unknown"} on ${new Date(post.created_at).toLocaleDateString()}</p>
-        <form class="commentForm">
+         <form class="commentForm">
          <input type="hidden" name="post_id" value="${post.id}">
           <input type="text" name="content" class="commentInput" placeholder="Write a comment..." required>
           <button type="submit" class="commentButton">Comment</button>
@@ -100,14 +100,15 @@ export function fetchPosts() {
                     const button = document.createElement('button')
                     button.textContent = 'Delete'
                     postCard.prepend(button)
-                    button.addEventListener('click', () => {
+                    button.addEventListener('click', (e) => {
+                        e.preventDefault()
                         deletepost(post.id)
                     })
                     const ed = document.createElement('button')
                     ed.textContent = 'Edit'
                     postCard.prepend(ed)
-                    ed.addEventListener('click', () => {
-
+                    ed.addEventListener('click', (e) => {
+                        e.preventDefault()
                         editpost(post.id, post.title, post.content)
                     })
                 }
@@ -120,12 +121,14 @@ export function fetchPosts() {
                 postsContainer.prepend(postCard);
                 div.style.display = 'none'
                 document.querySelector('.show').addEventListener('click', (e) => {
+                    e.preventDefault()
                     div.style.display = div.style.display === 'none' ? 'block' : 'none';
 
+                    loadComments(post.id, div);
                 });
-                loadComments(post.id, div);
-                comment();
             });
+            comment()
         })
         .catch(err => console.error('Error fetching posts:', err));
+  
 }

@@ -106,6 +106,8 @@ export function login() {
     fetch('/api/anthenticated')
         .then(r => r.json())
         .then(res => {
+        
+            
             let profil = `<i class="fa-solid fa-user"></i>`
             if (res.photo) {
                 profil = `<img src="${res.photo}" alt="Profile Picture">`
@@ -177,10 +179,12 @@ export function login() {
                 return true
             } else {
                 body.innerHTML = `    
-    <script type="module" src="static/script.js"></script>
-    `
+                    <script type="module" src="static/script.js"></script>
+                    `
                 logindiv()
                 return false
             }
-        })
+        }).catch(err => console.error('Error:', err));
+
+        
 }

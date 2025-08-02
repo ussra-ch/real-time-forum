@@ -36,7 +36,7 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 	// fmt.Println(aa.Nickname)
 	var dbPassword string
 	var userID int
-	err = databases.DB.QueryRow("SELECT id, password FROM users WHERE nickname = ?", aa.Nickname).Scan(&userID, &dbPassword)
+	err = databases.DB.QueryRow("SELECT id, password FROM users WHERE( nickname = ? or email = ?)", aa.Nickname, aa.Nickname).Scan(&userID, &dbPassword)
 	if err == sql.ErrNoRows || bcrypt.CompareHashAndPassword([]byte(dbPassword), []byte(aa.Password)) != nil {
 		http.Error(w, "Invalid Nickname or password", http.StatusUnauthorized)
 		return
@@ -67,14 +67,18 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func IsAuthenticated(w http.ResponseWriter, r *http.Request) {
-	cookie, err := r.Cookie("session")
-	if err != nil || cookie.Value == "" {
-		http.Error(w, "Not authenticated", http.StatusUnauthorized)
+	islogin, userID := IsLoggedIn(r)
+	if !islogin {
+		w.WriteHeader(http.StatusUnauthorized)
+		json.NewEncoder(w).Encode(map[string]any{
+			"ok":    false,
+			"error": "User not authenticated",
+		})
 		return
 	}
-	_, userID := IsLoggedIn(r)
+
 	var nickname, age, photo, email string
-	err = databases.DB.QueryRow("SELECT nickname, age, email,photo FROM users WHERE id = ?", userID).Scan(&nickname, &age, &email, &photo)
+	err := databases.DB.QueryRow("SELECT nickname, age, email,photo FROM users WHERE id = ?", userID).Scan(&nickname, &age, &email, &photo)
 	if err != nil {
 		fmt.Println("err", err)
 	}
@@ -93,6 +97,7 @@ func IsAuthenticated(w http.ResponseWriter, r *http.Request) {
 func LogoutHandler(w http.ResponseWriter, r *http.Request) {
 	cookie, err := r.Cookie("session")
 	if err != nil {
+		fmt.Println(err)
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 		return
 	}

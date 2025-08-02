@@ -21,14 +21,14 @@ func CommentHandler(w http.ResponseWriter, r *http.Request) {
 		fmt.Println("Error decoding comment data:", err)
 		return
 	}
-	// fmt.Println("cd:", cd)
+
 	// Get user ID from session
 	cookie, err := r.Cookie("session")
 	if err != nil {
 		w.Write([]byte(`{"loggedIn": false}`))
 		return
 	}
-
+	fmt.Println("1")
 	var userID int
 	err = databases.DB.QueryRow(`SELECT user_id FROM sessions WHERE id = ?`, cookie.Value).Scan(&userID)
 	if err != nil {
@@ -36,15 +36,18 @@ func CommentHandler(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte(`{"loggedIn": false}`))
 		return
 	}
+	fmt.Println("2")
 	// Insert comment
 	_, err = databases.DB.Exec(`
 		INSERT INTO comments (post_id, user_id, content)
 		VALUES (?, ?, ?)
 	`, cd.PostID, userID, cd.Content)
 	if err != nil {
+		fmt.Println(err)
 		http.Error(w, "Database error", http.StatusInternalServerError)
 		return
 	}
+	
 	fmt.Println("Comment created successfully for post ID:", cd.PostID, userID)
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(map[string]string{

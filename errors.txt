@@ -4,7 +4,7 @@ category-post table (databse)
 ///edit + delete post
 ///user's profile
 ///empty posts/comments errors
-loging using email/username machi email bohdo
+///loging using email/username machi email bohdo
 posts/comments ratelimit
 check dyal token fih mochkila
 check empty posts, message, comments size in backend 
