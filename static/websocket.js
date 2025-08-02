@@ -1,11 +1,10 @@
 import { ws } from "./var.js";
 export function webSocket(senderId, receiverId, messageContent) {
-    console.log("js webSocket: 1111");
-    
+
     if (!senderId || !receiverId || !messageContent) {
         return
     }
-    
+
     const payload = {
         senderId,
         receiverId,
@@ -13,18 +12,37 @@ export function webSocket(senderId, receiverId, messageContent) {
         // userStatus,
     };
     // console.log(payload);
-    
-    ws.onopen = () => {
+
+    if (ws.readyState === WebSocket.OPEN) {
         ws.send(JSON.stringify(payload));
-        console.log('Connected!')
+    } else {
+        console.warn("WebSocket not open. Message not sent.");
+    }
+}
+export function initWebSocket(onMessageCallback) {
+    ws.onopen = () => {
+        console.log("WebSocket connected");
+        socket.send(JSON.stringify({ type: "identify", userId: senderId }));
     };
 
     ws.onmessage = (event) => {
-        let chatBody = document.getElementById('chat-body')
-        let newMsg = document.createElement('div')
-        newMsg.innerHTML = `<h3>${event.data}</h3>`
-        chatBody.append(newMsg)
-    }
-    ws.onerror = (err) => console.error('Error:', err);
-    ws.onclose = () => console.log('Closed');
+        console.log("Received:", event);
+        if (typeof onMessageCallback === 'function') {
+            onMessageCallback(event.data);
+        }
+        const data = JSON.parse(event.data);
+
+        if (data.type === "userStatus") {
+            const { userId, isOnline } = data;
+            updateUIUserStatus(userId, isOnline);
+        }
+    };
+
+    ws.onerror = (err) => {
+
+    };
+
+    ws.onclose = () => {
+        console.log("WebSocket closed");
+    };
 }

@@ -5,6 +5,7 @@ import { Create } from "./post.js"
 import { fetchPosts } from "./post.js";
 import { catigories } from "./sort.js";
 import { comment } from "./comment.js";
+import { initWebSocket } from "./websocket.js";
 
 function main() {
   logindiv();
@@ -12,8 +13,13 @@ function main() {
 
 }
 main()
- export function islogin() {
-  w
+export function islogin() {
+  initWebSocket((msg) => {
+    let chatBody = document.getElementById('chat-body');
+    let newMsg = document.createElement('div');
+    newMsg.innerHTML = `<h3>${msg}</h3>`;
+    chatBody.append(newMsg);
+  });
   logout();
   Create();
   fetchPosts();

@@ -65,6 +65,9 @@ function fetchMessages(userId, receiverId) {
         .then(messages => {
             // console.log('dkhal lhnaa');
             // console.log(messages);
+            if (!messages) {
+                return
+            }
             messages.reverse().forEach(message => {
                 let body = document.getElementById('chat-body')
                 // console.log(message);
