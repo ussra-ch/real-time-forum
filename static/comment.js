@@ -35,6 +35,9 @@ export function loadComments(postId, container) {
     fetch('/api/fetch_comments')
         .then(res => res.json())
         .then(comments => {
+            if (!comments) {
+                return
+            }
             comments.forEach(comment => {
                 if (comment.PostID != postId) return;
 

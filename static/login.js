@@ -106,11 +106,15 @@ export function login() {
     fetch('/api/anthenticated')
         .then(r => r.json())
         .then(res => {
+            let profil = `<i class="fa-solid fa-user"></i>`
+            if (res.photo) {
+                profil = `<img src="${res.photo}" alt="Profile Picture">`
+            }
             if (res.ok) {
                 body.innerHTML = `
                 <div id="content">
                 <header>
-                <button id="profile" style="z-index: 10;"><img src="${res.photo}" alt="Profile Picture"></button>
+                <button id="profile" style="z-index: 10;">${profil} </button>
                 <button id="Create" style="z-index: 10;">+</button>
                 </header>
                 <div id="catego"></div>

@@ -76,6 +76,9 @@ export function fetchPosts() {
         .then(posts => {
             const postsContainer = document.getElementById('postsContainer');
             postsContainer.innerHTML = '';
+            if (!posts) {
+                return
+            }
             posts.forEach(post => {
                 const topics = post.interest ? post.interest.split(',') : [];
                 const postCard = document.createElement('div');
@@ -115,6 +118,7 @@ export function fetchPosts() {
                 div.className = 'comments-container';
                 postCard.appendChild(div);
                 postsContainer.prepend(postCard);
+                div.style.display = 'none'
                 document.querySelector('.show').addEventListener('click', (e) => {
                     div.style.display = div.style.display === 'none' ? 'block' : 'none';
 
