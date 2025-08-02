@@ -35,6 +35,10 @@ func PostHandler(w http.ResponseWriter, r *http.Request) {
 	title := r.FormValue("title")
 	description := r.FormValue("description")
 	topics := r.Form["topics"]
+	if title == "" || description == "" {
+		http.Error(w, "Error parsing form", http.StatusBadRequest)
+		return
+	}
 
 	cookie, err := r.Cookie("session")
 	if err != nil {

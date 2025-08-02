@@ -6,8 +6,8 @@ category-post table (databse)
 ///empty posts/comments errors
 ///loging using email/username machi email bohdo
 posts/comments ratelimit
-check dyal token fih mochkila
-check empty posts, message, comments size in backend 
+///check dyal token fih mochkila
+///check empty posts, message, comments size in backend 
 comment 3la comment
 
 show notifcations

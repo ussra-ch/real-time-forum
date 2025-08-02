@@ -30,6 +30,7 @@ type Message struct {
 }
 
 var ConnectedUsers = make(map[int]*websocket.Conn)
+
 // Send
 func WebSocketHandler(w http.ResponseWriter, r *http.Request) {
 	conn, err := Upgrader.Upgrade(w, r, nil)
@@ -53,10 +54,10 @@ func WebSocketHandler(w http.ResponseWriter, r *http.Request) {
 		// fmt.Println()
 		_, err = databases.DB.Exec(`INSERT INTO messages (sender_id,receiver_id,content)
 					VALUES (?, ?, ?);`, messageStruct.SenderId, messageStruct.ReceiverId, messageStruct.MessageContent)
-		if err != nil {
+		if err != nil || messageStruct.MessageContent == "" {
 			fmt.Println("Error storing the message in DB : ", err)
 		}
-		if (ConnectedUsers[messageStruct.ReceiverId] != nil){
+		if ConnectedUsers[messageStruct.ReceiverId] != nil {
 			err = ConnectedUsers[messageStruct.ReceiverId].WriteMessage(messageType, []byte(messageStruct.MessageContent))
 			if err != nil {
 				fmt.Println("Error storing the message in DB : ", err)
@@ -81,25 +82,24 @@ func FetchMessages(w http.ResponseWriter, r *http.Request) {
 		fmt.Println("error geting messages from db : ", err)
 	}
 	var messages []map[string]interface{}
-	for rows.Next(){
+	for rows.Next() {
 		var id, userId, sender_id int
 		var content string
 		var time time.Time
 
-		if err := rows.Scan(&id, &sender_id, &userId, &content, &time); err != nil{
+		if err := rows.Scan(&id, &sender_id, &userId, &content, &time); err != nil {
 			fmt.Println("error in a message")
 		}
 		message := map[string]interface{}{
-			"id":         id,
-			"sender_id":    sender_id,
-			"userId": userId,
-			"content":    content,
-			"time": time,
+			"id":        id,
+			"sender_id": sender_id,
+			"userId":    userId,
+			"content":   content,
+			"time":      time,
 		}
 		messages = append(messages, message)
 		// fmt.Println(id, sender_id, userId, content, time)
 	}
-
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(messages)
