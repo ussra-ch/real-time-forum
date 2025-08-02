@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"encoding/hex"
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 	"time"
@@ -71,7 +72,22 @@ func IsAuthenticated(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Not authenticated", http.StatusUnauthorized)
 		return
 	}
-	w.Write([]byte(cookie.Value))
+	_, userID := IsLoggedIn(r)
+	var nickname, age, photo, email string
+	err = databases.DB.QueryRow("SELECT nickname, age, email,photo FROM users WHERE id = ?", userID).Scan(&nickname, &age, &email, &photo)
+	if err != nil {
+		fmt.Println("err", err)
+	}
+	user := map[string]interface{}{
+		"ok":       true,
+		"nickname": nickname,
+		"age":      age,
+		"photo":    photo,
+		"email":    email,
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(user)
 }
 
 func LogoutHandler(w http.ResponseWriter, r *http.Request) {

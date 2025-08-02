@@ -1,7 +1,7 @@
 categories table (databse)
 category-post table (databse)
 
-edit + delete post
+///edit + delete post
 user's profile
 empty posts/comments errors
 loging using email/username machi email bohdo

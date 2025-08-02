@@ -1,6 +1,7 @@
 import { fetchUser } from "./users.js";
 import { loginDiv, content } from "./var.js";
 import { islogin } from "./script.js";
+import { profile } from "./profile.js";
 
 export function logindiv() {
     loginDiv.className = 'container';
@@ -99,16 +100,17 @@ export function logindiv() {
         container.classList.remove("right-panel-active");
     });
 }
-export  function login() {
+export function login() {
     const body = document.querySelector('body')
 
     fetch('/api/anthenticated')
+        .then(r => r.json())
         .then(res => {
             if (res.ok) {
                 body.innerHTML = `
                 <div id="content">
                 <header>
-                <button id="logout" style="z-index: 10;">log out</button>
+                <button id="profile" style="z-index: 10;"><img src="${res.photo}" alt="Profile Picture"></button>
                 <button id="Create" style="z-index: 10;">+</button>
                 </header>
                 <div id="catego"></div>
@@ -127,12 +129,50 @@ export  function login() {
             
             <script type="module" src="static/script.js"></script>
             `
-                fetchUser()
-                islogin()
+
+                const div = document.createElement('div');
+                div.innerHTML = `
+                    <button id="logout">Logout</button>
+                    <button id="editProfail">Edit Profile</button>
+                `;
+                body.append(div);
+
+
+                div.style.position = 'absolute';
+                div.style.top = '8vh';
+                div.style.height = '20vh'
+                div.style.right = '0';
+                div.style.background = 'rgba(26, 35, 50, 0.8)';
+                div.style.padding = '10px';
+                div.style.boxShadow = '0 2px 8px rgba(0,0,0,0.2)';
+                div.style.zIndex = '1000';
+                div.style.display = 'none';
+                const logoutBtn = document.getElementById('logout');
+                const editBtn = document.getElementById('editProfail');
+
+                logoutBtn.style.margin = '5px';
+                editBtn.style.position = 'relative';
+                editBtn.style.top = '8vh';
+                editBtn.style.height = '5vh';
+
+
+                document.getElementById('profile').addEventListener('click', () => {
+                    if (div.style.display === 'none') {
+                        div.style.display = 'flex';
+                    } else {
+                        div.style.display = 'none';
+                    }
+                });
+                document.getElementById('editProfail').addEventListener('click', () => {
+                    profile(res.age, res.email, res.nickname, res.photo)
+                })
+
+                fetchUser();
+                islogin();
+
                 return true
             } else {
-                body.innerHTML = `
-                
+                body.innerHTML = `    
     <script type="module" src="static/script.js"></script>
     `
                 logindiv()
