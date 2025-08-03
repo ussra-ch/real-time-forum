@@ -107,7 +107,12 @@ export function logindiv() {
 
 function islogin() {
     initWebSocket((msg) => {
+        console.log(msg);
+        
         let chatBody = document.getElementById('chat-body');
+        if (!chatBody) {
+            return
+        }
         let newMsg = document.createElement('div');
         newMsg.innerHTML = `<h3>${msg}</h3>`;
         chatBody.append(newMsg);

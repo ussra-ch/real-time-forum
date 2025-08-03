@@ -43,40 +43,49 @@ func WebSocketHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	_, userId := IsLoggedIn(r)
 
-	if value := ConnectedUsers[userId]; value == nil{
+	if _, exists := ConnectedUsers[userId]; !exists {
 		newUser := make(map[string]interface{})
 		newUser["type"] = "online"
 		newUser["userId"] = userId
-
 		toSend, err := json.Marshal(newUser)
-		if err != nil{
+		if err != nil {
 			fmt.Println("error when sending the user's status : ", err)
 		}
-		for _, value := range ConnectedUsers{
+		fmt.Println("11")
+		for _, value := range ConnectedUsers {
+
 			fmt.Println("dkhal l loop bach ysift status dluser")
 			value.WriteMessage(websocket.TextMessage, []byte(toSend))
 		}
 	}
 	ConnectedUsers[userId] = conn
 
-	defer conn.Close()
-	// fmt.Println("1111111")
+	defer func(){
+			delete(ConnectedUsers, userId)
+		 conn.Close()
+	}()
+
 	for {
-		// fmt.Println(conn.ReadMessage())
-		messageType, message, err := conn.NextReader()
-		
+		_, message, err := conn.NextReader()
 		if err != nil {
 			fmt.Println("error when reading the upcoming message : ", err)
 			return
 		}
-		// fmt.Println("0000")
+
 		var messageStruct Message
 		decoder := json.NewDecoder(message)
-		fmt.Println(decoder)
 		err = decoder.Decode(&messageStruct)
-		if err != nil{
+
+		messageobj := make(map[string]interface{})
+		messageobj["type"] = "message"
+		messageobj["SenderId"] = messageStruct.SenderId
+		messageobj["ReceiverId"] = messageStruct.ReceiverId
+		messageobj["content"] = messageStruct.MessageContent
+		Messag, err := json.Marshal(messageobj)
+		if err != nil {
 			fmt.Println("erooooooor f decoder")
 		}
+
 		_, err = databases.DB.Exec(`INSERT INTO messages (sender_id,receiver_id,content)
 					VALUES (?, ?, ?);`, messageStruct.SenderId, messageStruct.ReceiverId, messageStruct.MessageContent)
 		if err != nil {
@@ -84,8 +93,8 @@ func WebSocketHandler(w http.ResponseWriter, r *http.Request) {
 		}
 		// fmt.Println("2222")
 		if ConnectedUsers[messageStruct.ReceiverId] != nil {
-			// fmt.Println("3333")
-			err = ConnectedUsers[messageStruct.ReceiverId].WriteMessage(messageType, []byte(messageStruct.MessageContent))
+
+			err = ConnectedUsers[messageStruct.ReceiverId].WriteMessage(websocket.TextMessage, []byte(Messag))
 			if err != nil {
 				fmt.Println("Error storing the message in DB : ", err)
 			}
@@ -94,6 +103,7 @@ func WebSocketHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 	}
+
 }
 
 func FetchMessages(w http.ResponseWriter, r *http.Request) {

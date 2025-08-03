@@ -14,10 +14,7 @@ export function fetchUser(id) {
       if (users.UserId == user.userId) {
         continue
       }
-      console.log(user);
       let profil = `<i class="fa-solid fa-user"></i>`
-      console.log(user.photo);
-
       if (user.photo.Valid) {
         profil = `<img src="${user.photo.String}" class="profil" class="profil" alt="Profile Picture">`
       }
@@ -27,9 +24,7 @@ export function fetchUser(id) {
       btn.style.marginRight = '0'
       const div = document.createElement('div');
       div.innerHTML = `${profil} ${user.nickname}`;
-      console.log(id);
       if (id == user.userId) {
-
         div.style.color = 'rgb(89, 230, 187)';
       }
       div.style.display = 'flex';

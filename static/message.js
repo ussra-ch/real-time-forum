@@ -37,11 +37,13 @@ export function mesaageDiv(user, userId, receiverId) {
         const message = input.value.trim()
         let chatBody = document.getElementById('chat-body')
         if (message !== "") {
+            console.log(1);
             let newMsg = document.createElement('div')
             newMsg.className = 'messageSent'
             newMsg.innerHTML = `<h3>${message}</h3>
                         <h7>${Date.now()}}</h7>`
             chatBody.append(newMsg)
+            
             webSocket(userId, receiverId, input.value)
             input.value = ''
         }

@@ -1,5 +1,5 @@
 import { ws } from "./var.js";
-import { fetchUser } from "./users.js"; 
+import { fetchUser } from "./users.js";
 // import { connectedUsers } from "./var.js";
 
 export function webSocket(senderId, receiverId, messageContent) {
@@ -16,11 +16,9 @@ export function webSocket(senderId, receiverId, messageContent) {
     };
     // console.log(payload);
 
-    if (ws.readyState === WebSocket.OPEN) {
-        ws.send(JSON.stringify(payload));
-    } else {
-        console.warn("WebSocket not open. Message not sent.");
-    }
+
+    ws.send(JSON.stringify(payload));
+
 }
 export function initWebSocket(onMessageCallback) {
     ws.onopen = () => {
@@ -30,16 +28,14 @@ export function initWebSocket(onMessageCallback) {
     };
 
     ws.onmessage = (event) => {
-        console.log("Received:", event);
-        // if (typeof onMessageCallback === 'function') {
-            // onMessageCallback(event.data);
-        // }
+        console.log("Received:",);
 
         const data = JSON.parse(event.data);
-        console.log('-------', event.data);        
-        if (data.type === "online") {
-            console.log(1212);
+        if (data.type === "message") {
+            console.log(22);
             
+            onMessageCallback(event.data);
+        } else {
             fetchUser(data.userId)
         }
     };
