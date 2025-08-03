@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"database/sql"
 	"encoding/json"
 	"log"
 	"net/http"
@@ -48,7 +49,7 @@ func FetchUsers(w http.ResponseWriter, r *http.Request) {
 	}
 
 	rows, err := databases.DB.Query(`
-		SELECT u.nickname, u.id
+		SELECT u.nickname, u.id, u.photo
 		FROM users u
 		JOIN sessions s ON u.id = s.user_id
 		WHERE s.expires_at > DATETIME('now') AND u.id != ?
@@ -59,18 +60,20 @@ func FetchUsers(w http.ResponseWriter, r *http.Request) {
 	defer rows.Close()
 
 	type User struct {
-		Nickname string `json:"nickname"`
-		UserId   int    `json:"userId"`
+		Nickname string         `json:"nickname"`
+		UserId   int            `json:"userId"`
+		Photo    sql.NullString `json:"photo"`
 	}
 	var onlineUsers []User
 	for rows.Next() {
+		var photo sql.NullString
 		var nickname string
 		var userId int
-		if err := rows.Scan(&nickname, &userId); err != nil {
-			log.Fatal( err)
+		if err := rows.Scan(&nickname, &userId, &photo); err != nil {
+			log.Fatal("error", err)
 		}
 
-		onlineUsers = append(onlineUsers, User{Nickname: nickname, UserId: userId})
+		onlineUsers = append(onlineUsers, User{Nickname: nickname, UserId: userId, Photo: photo})
 	}
 
 	row, err := databases.DB.Query(`
