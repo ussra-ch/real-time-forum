@@ -14,6 +14,9 @@ export function catigories() {
         .then(res => res.json())
         .then(posts => {
           const postsContainer = document.getElementById('postsContainer');
+          if (!posts) {
+            return
+          }
           postsContainer.innerHTML = '';
           posts.forEach(post => {
             const topics = post.interest ? post.interest.split(',') : [];

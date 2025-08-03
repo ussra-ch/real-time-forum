@@ -130,5 +130,5 @@ export function fetchPosts() {
             comment()
         })
         .catch(err => console.error('Error fetching posts:', err));
-  
+
 }
