@@ -1,8 +1,9 @@
 import { fetchPosts } from "./post.js";
+
+
+//add new comment
 export function comment() {
-
     const forms = document.querySelectorAll('.commentForm');
-
     forms.forEach((form) => {
         form.addEventListener("submit", function (e) {
             e.preventDefault();
@@ -30,8 +31,10 @@ export function comment() {
         });
     });
 }
-export function loadComments(postId, container) {
 
+
+//fetch comments (l kola post)
+export function loadComments(postId, container) {
     fetch('/api/fetch_comments')
         .then(res => res.json())
         .then(comments => {

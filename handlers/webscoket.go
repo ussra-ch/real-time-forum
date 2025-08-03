@@ -30,10 +30,9 @@ type Message struct {
 	// ClientStatus   bool   `json:"clientStatus"`
 }
 
-var (
-	ConnectedUsers      = make(map[int]*websocket.Conn)
-	// openedConversations = make(map[int]int)
-)
+var ConnectedUsers = make(map[int]*websocket.Conn)
+
+// openedConversations = make(map[int]int)
 
 // Send
 func WebSocketHandler(w http.ResponseWriter, r *http.Request) {
@@ -43,36 +42,55 @@ func WebSocketHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	_, userId := IsLoggedIn(r)
+
+	if value := ConnectedUsers[userId]; value == nil{
+		newUser := make(map[string]interface{})
+		newUser["type"] = "online"
+		newUser["userId"] = userId
+
+		toSend, err := json.Marshal(newUser)
+		if err != nil{
+			fmt.Println("error when sending the user's status : ", err)
+		}
+		for _, value := range ConnectedUsers{
+			fmt.Println("dkhal l loop bach ysift status dluser")
+			value.WriteMessage(websocket.TextMessage, []byte(toSend))
+		}
+	}
 	ConnectedUsers[userId] = conn
-	
-	
+
 	defer conn.Close()
-	
+	// fmt.Println("1111111")
 	for {
 		// fmt.Println(conn.ReadMessage())
-		messageType, message, err := conn.ReadMessage()
+		messageType, message, err := conn.NextReader()
+		
 		if err != nil {
 			fmt.Println("error when reading the upcoming message : ", err)
 			return
 		}
 		// fmt.Println("0000")
 		var messageStruct Message
-		// fmt.Println("1111")
-		err = json.Unmarshal(message, &messageStruct)
+		decoder := json.NewDecoder(message)
+		fmt.Println(decoder)
+		err = decoder.Decode(&messageStruct)
+		if err != nil{
+			fmt.Println("erooooooor f decoder")
+		}
 		_, err = databases.DB.Exec(`INSERT INTO messages (sender_id,receiver_id,content)
 					VALUES (?, ?, ?);`, messageStruct.SenderId, messageStruct.ReceiverId, messageStruct.MessageContent)
 		if err != nil {
 			fmt.Println("Error storing the message in DB : ", err)
 		}
-		fmt.Println("2222")
+		// fmt.Println("2222")
 		if ConnectedUsers[messageStruct.ReceiverId] != nil {
-			fmt.Println("3333")
+			// fmt.Println("3333")
 			err = ConnectedUsers[messageStruct.ReceiverId].WriteMessage(messageType, []byte(messageStruct.MessageContent))
 			if err != nil {
 				fmt.Println("Error storing the message in DB : ", err)
 			}
 		} else {
-			fmt.Println("4444")
+			// fmt.Println("4444")
 		}
 
 	}

@@ -1,5 +1,8 @@
 import { login } from "./login.js";
 
+
+
+//katloggouti (katfetshi data mn backend bach katms7 session)
 export function logout() {
   const Logout = document.getElementById('logout');
 

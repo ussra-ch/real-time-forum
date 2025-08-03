@@ -19,3 +19,4 @@ front
 
 
 online/offline users
+limit websocket size (machi ri l buffer)

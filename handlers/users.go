@@ -34,7 +34,7 @@ func FetchUsers(w http.ResponseWriter, r *http.Request) {
 			"loggedIn":     false,
 			"nickname":     nil,
 			"onlineUsers":  []string{},
-			"offlineUsers": []string{},
+			// "offlineUsers": []string{},
 		})
 		return
 	}
@@ -49,9 +49,7 @@ func FetchUsers(w http.ResponseWriter, r *http.Request) {
 
 	rows, err := databases.DB.Query(`
 		SELECT u.nickname, u.id
-		FROM users u
-		JOIN sessions s ON u.id = s.user_id
-		WHERE s.expires_at > DATETIME('now') AND u.id != ?
+	 	FROM users u
 	`, userID)
 	if err != nil {
 		log.Fatal(err)
@@ -73,30 +71,27 @@ func FetchUsers(w http.ResponseWriter, r *http.Request) {
 		onlineUsers = append(onlineUsers, User{Nickname: nickname, UserId: userId})
 	}
 
-	row, err := databases.DB.Query(`
-		SELECT u.nickname, u.id
-		FROM users u
-		WHERE id != ? AND id NOT IN (
-			SELECT user_id FROM sessions WHERE expires_at > DATETIME('now')
-		)
-	`, userID)
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer row.Close()
+	// row, err := databases.DB.Query(`
+	// 	SELECT u.nickname, u.id
+	// 	FROM users u
+	// `, userID)
+	// if err != nil {
+	// 	log.Fatal(err)
+	// }
+	// defer row.Close()
 
-	var offlineUsers []User
-	for row.Next() {
-		// fmt.Println("row is :", rows)
-		var nickname string
-		var userId int
-		if err := row.Scan(&nickname, &userId); err != nil {
-			// fmt.Println("121212")
-			log.Fatal(err)
-		}
-		// fmt.Println(User{nickname: nickname, userId: userId})
-		offlineUsers = append(offlineUsers, User{Nickname: nickname, UserId: userId})
-	}
+	// var offlineUsers []User
+	// for row.Next() {
+	// 	// fmt.Println("row is :", rows)
+	// 	var nickname string
+	// 	var userId int
+	// 	if err := row.Scan(&nickname, &userId); err != nil {
+	// 		// fmt.Println("121212")
+	// 		log.Fatal(err)
+	// 	}
+	// 	// fmt.Println(User{nickname: nickname, userId: userId})
+	// 	offlineUsers = append(offlineUsers, User{Nickname: nickname, UserId: userId})
+	// }
 
 	w.Header().Set("Content-Type", "application/json")
 	// fmt.Println(offlineUsers)
@@ -104,7 +99,7 @@ func FetchUsers(w http.ResponseWriter, r *http.Request) {
 		"loggedIn":     true,
 		"nickname":     myNickname,
 		"onlineUsers":  onlineUsers,
-		"offlineUsers": offlineUsers,
+		// "offlineUsers": offlineUsers,
 		"UserId":       userID,
 	})
 }

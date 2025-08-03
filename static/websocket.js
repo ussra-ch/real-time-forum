@@ -1,4 +1,7 @@
 import { ws } from "./var.js";
+import { fetchUser } from "./users.js"; 
+// import { connectedUsers } from "./var.js";
+
 export function webSocket(senderId, receiverId, messageContent) {
 
     if (!senderId || !receiverId || !messageContent) {
@@ -22,19 +25,22 @@ export function webSocket(senderId, receiverId, messageContent) {
 export function initWebSocket(onMessageCallback) {
     ws.onopen = () => {
         console.log("WebSocket connected");
-        socket.send(JSON.stringify({ type: "identify", userId: senderId }));
+        connectedUsers.set(id, 'online');
+        // ws.send(JSON.stringify({ type: "identify", userId: senderId }));
     };
 
     ws.onmessage = (event) => {
         console.log("Received:", event);
-        if (typeof onMessageCallback === 'function') {
-            onMessageCallback(event.data);
-        }
-        const data = JSON.parse(event.data);
+        // if (typeof onMessageCallback === 'function') {
+            // onMessageCallback(event.data);
+        // }
 
-        if (data.type === "userStatus") {
-            const { userId, isOnline } = data;
-            updateUIUserStatus(userId, isOnline);
+        const data = JSON.parse(event.data);
+        console.log('-------', event.data);        
+        if (data.type === "online") {
+            console.log(1212);
+            
+            fetchUser(data.userId)
         }
     };
 

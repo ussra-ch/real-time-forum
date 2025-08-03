@@ -33,18 +33,18 @@ export function mesaageDiv(user, userId, receiverId) {
     div.querySelector('.input-area').addEventListener('submit', (e) => {
         e.preventDefault()
         // if (userStatus) {
-            const input = div.querySelector('.chat-input')
-            const message = input.value.trim()
-            let chatBody = document.getElementById('chat-body')
-            if (message !== "") {
-                let newMsg = document.createElement('div')
-                newMsg.className = 'messageSent'
-                newMsg.innerHTML = `<h3>${message}</h3>
+        const input = div.querySelector('.chat-input')
+        const message = input.value.trim()
+        let chatBody = document.getElementById('chat-body')
+        if (message !== "") {
+            let newMsg = document.createElement('div')
+            newMsg.className = 'messageSent'
+            newMsg.innerHTML = `<h3>${message}</h3>
                         <h7>${Date.now()}}</h7>`
-                chatBody.append(newMsg)
-                webSocket(userId, receiverId, input.value)
-                input.value = ''
-            }
+            chatBody.append(newMsg)
+            webSocket(userId, receiverId, input.value)
+            input.value = ''
+        }
         // } else {
         //     const notif = document.getElementById('not')
         //     const newNotif = document.createElement('div')
@@ -53,7 +53,7 @@ export function mesaageDiv(user, userId, receiverId) {
         // }
     })
 
-    deleteButton.addEventListener('click', ()=>{
+    deleteButton.addEventListener('click', () => {
         div.remove()
     })
 }

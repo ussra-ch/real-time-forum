@@ -1,7 +1,14 @@
 import { fetchUser } from "./users.js";
 import { loginDiv, content } from "./var.js";
-import { islogin } from "./script.js";
+import { logout } from "./logout.js"
+import { Create } from "./post.js"
+import { fetchPosts } from "./post.js";
+import { catigories } from "./sort.js";
+import { comment } from "./comment.js";
+import { initWebSocket } from "./websocket.js";
 
+
+//katjib div dyal login w register (tant que l user ma3andouch session)
 export function logindiv() {
     loginDiv.className = 'container';
     loginDiv.id = 'container';
@@ -59,7 +66,6 @@ export function logindiv() {
 
     document.getElementById('login').addEventListener("click", (e) => {
         e.preventDefault()
-
         const formData = new FormData(form)
         const data = Object.fromEntries(formData.entries())
 
@@ -79,7 +85,6 @@ export function logindiv() {
         e.preventDefault()
         const formData = new FormData(reForm)
         const data = Object.fromEntries(formData.entries())
-
         fetch('/register', {
             method: 'POST',
             headers: {
@@ -99,9 +104,25 @@ export function logindiv() {
         container.classList.remove("right-panel-active");
     });
 }
+
+function islogin() {
+  initWebSocket((msg) => {
+    let chatBody = document.getElementById('chat-body');
+    let newMsg = document.createElement('div');
+    newMsg.innerHTML = `<h3>${msg}</h3>`;
+    chatBody.append(newMsg);
+  });
+  logout();
+  Create();
+  fetchPosts();
+  catigories();
+  comment();
+}
+
+
+//check if the user is logged in or not (katchuf session)
 export  function login() {
     const body = document.querySelector('body')
-
     fetch('/api/anthenticated')
         .then(res => {
             if (res.ok) {
@@ -117,26 +138,24 @@ export  function login() {
             <div id="user">
             <h3>Notifications</h3>
             <div id="not"></div>
-            <h3 style="color: rgb(89, 230, 187);"><i class="fa-solid fa-certificate"></i>onling</h3>
+            <h3 style="color: rgb(89, 230, 187);"><i class="fa-solid fa-certificate"></i>online</h3>
             <div id="users"></div>
             </div>
             </div>
-            
-            
             </div>
             
-            <script type="module" src="static/script.js"></script>
+            <script type="module" src="static/main.js"></script>
             `
-                fetchUser()
+                // fetchUser()
                 islogin()
                 return true
             } else {
                 body.innerHTML = `
-                
-    <script type="module" src="static/script.js"></script>
+    <script type="module" src="static/main.js"></script>
     `
                 logindiv()
                 return false
             }
         })
 }
+

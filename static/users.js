@@ -1,6 +1,9 @@
 import { mesaageDiv } from "./message.js";
-import { clientStatus } from "./var.js";
-export function fetchUser() {
+// import { clientStatus } from "./var.js";
+// import { connectedUsers } from "./var.js";
+
+
+export function fetchUser(id) {
   const usern = document.getElementById('users');
 
   usern.innerHTML = ``
@@ -12,20 +15,20 @@ export function fetchUser() {
     }
     // console.log(users);
 
-    if (users.offlineUsers) {
-      users.offlineUsers.sort((a, b) => { a.nickname - b.nickname }); // matnsaaaaawch diro to lowerCase
-      off = [...new Set(users.offlineUsers)]
-    }
+    // if (users.offlineUsers) {
+    //   users.offlineUsers.sort((a, b) => { a.nickname - b.nickname }); // matnsaaaaawch diro to lowerCase
+    //   off = [...new Set(users.offlineUsers)]
+    // }
     on.forEach(user => {
-      // console.log(user);
-
       const btn = document.createElement('button')
       btn.innerHTML = `
       <i class="fa-solid fa-message"></i>`
       btn.style.marginRight = '0'
       const div = document.createElement('div');
       div.innerHTML = `<i class="fa-solid fa-user"></i> ${user.nickname}`;
-      div.style.color = 'rgb(89, 230, 187)';
+      if (id = user.userId){
+        div.style.color = 'rgb(89, 230, 187)';
+      }
       div.style.display = 'flex';
       div.style.justifyContent = 'space-between';
       div.style.alignItems = 'center'
@@ -48,28 +51,28 @@ export function fetchUser() {
     });
 
 
-    off.forEach(user => {
-      const btn = document.createElement('button')
-      btn.innerHTML = `
-      <i class="fa-solid fa-message"></i>`
-      btn.style.marginRight = '0'
-      const div = document.createElement('div');
-      div.innerHTML = `<i class="fa-solid fa-user"></i> ${user.nickname}`;
-      div.style.display = 'flex';
-      div.style.justifyContent = 'space-between';
-      div.style.alignItems = 'center'
-      div.style.border = '1px solid #ccc';
-      div.style.padding = '8px';
-      div.style.borderRadius = '70px';
-      div.style.width = '60%';
-      div.style.maxWidth = '200px'
-      div.style.margin = '10px'
-      div.style.background = 'rgba(26, 35, 50, 0.95)';
-      div.append(btn)
-      usern.appendChild(div);
-      btn.addEventListener('click', () => {
-        mesaageDiv(user.nickname, users.UserId, user.userId)
-      })
-    });
+    // off.forEach(user => {
+    //   const btn = document.createElement('button')
+    //   btn.innerHTML = `
+    //   <i class="fa-solid fa-message"></i>`
+    //   btn.style.marginRight = '0'
+    //   const div = document.createElement('div');
+    //   div.innerHTML = `<i class="fa-solid fa-user"></i> ${user.nickname}`;
+    //   div.style.display = 'flex';
+    //   div.style.justifyContent = 'space-between';
+    //   div.style.alignItems = 'center'
+    //   div.style.border = '1px solid #ccc';
+    //   div.style.padding = '8px';
+    //   div.style.borderRadius = '70px';
+    //   div.style.width = '60%';
+    //   div.style.maxWidth = '200px'
+    //   div.style.margin = '10px'
+    //   div.style.background = 'rgba(26, 35, 50, 0.95)';
+    //   div.append(btn)
+    //   usern.appendChild(div);
+    //   btn.addEventListener('click', () => {
+    //     mesaageDiv(user.nickname, users.UserId, user.userId)
+    //   })
+    // });
   });
 }
