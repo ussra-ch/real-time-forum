@@ -1,5 +1,7 @@
 import { fetchUser } from "./users.js";
 import { loginDiv, content } from "./var.js";
+import { profile } from "./profile.js"
+
 import { logout } from "./logout.js"
 import { Create } from "./post.js"
 import { fetchPosts } from "./post.js";
@@ -7,8 +9,6 @@ import { catigories } from "./sort.js";
 import { comment } from "./comment.js";
 import { initWebSocket } from "./websocket.js";
 
-
-//katjib div dyal login w register (tant que l user ma3andouch session)
 export function logindiv() {
     loginDiv.className = 'container';
     loginDiv.id = 'container';
@@ -106,30 +106,35 @@ export function logindiv() {
 }
 
 function islogin() {
-  initWebSocket((msg) => {
-    let chatBody = document.getElementById('chat-body');
-    let newMsg = document.createElement('div');
-    newMsg.innerHTML = `<h3>${msg}</h3>`;
-    chatBody.append(newMsg);
-  });
-  logout();
-  Create();
-  fetchPosts();
-  catigories();
-  comment();
+    initWebSocket((msg) => {
+        let chatBody = document.getElementById('chat-body');
+        let newMsg = document.createElement('div');
+        newMsg.innerHTML = `<h3>${msg}</h3>`;
+        chatBody.append(newMsg);
+    });
+    logout();
+    Create();
+    fetchPosts();
+    catigories();
+    comment();
 }
 
-
-//check if the user is logged in or not (katchuf session)
-export  function login() {
+export function login() {
     const body = document.querySelector('body')
     fetch('/api/anthenticated')
+        .then(r => r.json())
         .then(res => {
+
+
+            let profil = `<i class="fa-solid fa-user"></i>`
+            if (res.photo) {
+                profil = `<img src="${res.photo}" alt="Profile Picture">`
+            }
             if (res.ok) {
                 body.innerHTML = `
                 <div id="content">
                 <header>
-                <button id="logout" style="z-index: 10;">log out</button>
+                <button id="profile" style="z-index: 10;">${profil} </button>
                 <button id="Create" style="z-index: 10;">+</button>
                 </header>
                 <div id="catego"></div>
@@ -146,16 +151,56 @@ export  function login() {
             
             <script type="module" src="static/main.js"></script>
             `
-                // fetchUser()
-                islogin()
+                const div = document.createElement('div');
+                div.innerHTML = `
+                    <button id="logout">Logout</button>
+                    <button id="editProfail">Edit Profile</button>
+                `;
+                body.append(div);
+
+
+                div.style.position = 'absolute';
+                div.style.top = '8vh';
+                div.style.height = '20vh'
+                div.style.right = '0';
+                div.style.background = 'rgba(26, 35, 50, 0.8)';
+                div.style.padding = '10px';
+                div.style.boxShadow = '0 2px 8px rgba(0,0,0,0.2)';
+                div.style.zIndex = '1000';
+                div.style.display = 'none';
+                const logoutBtn = document.getElementById('logout');
+                const editBtn = document.getElementById('editProfail');
+
+                logoutBtn.style.margin = '5px';
+                editBtn.style.position = 'relative';
+                editBtn.style.top = '8vh';
+                editBtn.style.height = '5vh';
+
+
+                document.getElementById('profile').addEventListener('click', () => {
+                    if (div.style.display === 'none') {
+                        div.style.display = 'flex';
+                    } else {
+                        div.style.display = 'none';
+                    }
+                });
+                document.getElementById('editProfail').addEventListener('click', () => {
+                    profile(res.age, res.email, res.nickname, res.photo)
+                })
+
+                fetchUser();
+                islogin();
                 return true
             } else {
                 body.innerHTML = `
+                
     <script type="module" src="static/main.js"></script>
     `
                 logindiv()
                 return false
             }
-        })
+        }).catch(err => console.error('Error:', err));
+
+
 }
 

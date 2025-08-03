@@ -24,7 +24,8 @@ func InitDB(filepath string) {
 		first_name TEXT NOT NULL,
 		last_name TEXT NOT NULL,
 		email TEXT NOT NULL UNIQUE,
-		password TEXT NOT NULL
+		password TEXT NOT NULL,
+		photo TEXT
 	);`
 
 	_, err = DB.Exec(createUsersTable)
@@ -42,27 +43,27 @@ func InitDB(filepath string) {
 		FOREIGN KEY(user_id) REFERENCES users(id)
 	);
 	CREATE TABLE IF NOT EXISTS sessions (
-		id TEXT PRIMARY KEY,
-		user_id INTEGER NOT NULL,
-		expires_at DATETIME NOT NULL,
-		FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+    id TEXT PRIMARY KEY,
+    user_id INTEGER NOT NULL,
+    expires_at DATETIME NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+CREATE TABLE IF NOT EXISTS comments (
+			id INTEGER PRIMARY KEY AUTOINCREMENT,
+			post_id INTEGER NOT NULL,
+			user_id INTEGER NOT NULL,
+			content TEXT NOT NULL,
+			created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+			FOREIGN KEY (post_id) REFERENCES posts(id) ON DELETE CASCADE,
+			FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 		);
-	CREATE TABLE IF NOT EXISTS comments (
-				id INTEGER PRIMARY KEY AUTOINCREMENT,
-				post_id INTEGER NOT NULL,
-				user_id INTEGER NOT NULL,
-				content TEXT NOT NULL,
-				created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-				FOREIGN KEY (post_id) REFERENCES posts(id) ON DELETE CASCADE,
-				FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
-			);
-	CREATE TABLE IF NOT EXISTS messages (
-		id INTEGER PRIMARY KEY AUTOINCREMENT,
-		sender_id INT NOT NULL,
-		receiver_id INT NOT NULL,
-		content TEXT NOT NULL,
-		sent_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-	);
+CREATE TABLE IF NOT EXISTS messages (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    sender_id INT NOT NULL,
+    receiver_id INT NOT NULL,
+    content TEXT NOT NULL,
+    sent_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
 `
 
 	_, err = DB.Exec(createPostsTable)

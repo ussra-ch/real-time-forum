@@ -1,6 +1,7 @@
 categories table (databse)
 category-post table (databse)
 
+<<<<<<< HEAD
 edit + delete post
 user's profile
 empty posts/comments errors
@@ -8,6 +9,15 @@ loging using email/username machi email bohdo
 posts/comments ratelimit
 check dyal token fih mochkila
 check empty posts, message, comments size in backend 
+=======
+///edit + delete post
+///user's profile
+///empty posts/comments errors
+///loging using email/username machi email bohdo
+posts/comments ratelimit
+///check dyal token fih mochkila
+///check empty posts, message, comments size in backend 
+>>>>>>> error
 comment 3la comment
 
 show notifcations
@@ -15,8 +25,12 @@ sort online users based on the newest conversations
 refresh dyal lpage ratelimit
 scroll
 
+<<<<<<< HEAD
 front
 
 
 online/offline users
 limit websocket size (machi ri l buffer)
+=======
+front
+>>>>>>> error

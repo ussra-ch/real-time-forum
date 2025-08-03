@@ -1,5 +1,8 @@
 import { comment } from "./comment.js";
 import { loadComments } from "./comment.js";
+import { deletepost, editpost } from "./delete.js";
+window.deletepost = deletepost;
+
 
 export function Create() {
     const Create = document.getElementById('Create')
@@ -73,6 +76,9 @@ export function fetchPosts() {
         .then(posts => {
             const postsContainer = document.getElementById('postsContainer');
             postsContainer.innerHTML = '';
+            if (!posts) {
+                return
+            }
             posts.forEach(post => {
                 const topics = post.interest ? post.interest.split(',') : [];
                 const postCard = document.createElement('div');
@@ -83,24 +89,46 @@ export function fetchPosts() {
         <p>Topics: ${topics.join(', ')}</p>
         ${post.photo ? `<img src="${post.photo}" alt="Post image" style="max-width:100%;">` : ''}
         <p>Posted by: User #${post.nickname || "Unknown"} on ${new Date(post.created_at).toLocaleDateString()}</p>
-        <form class="commentForm">
+         <form class="commentForm">
          <input type="hidden" name="post_id" value="${post.id}">
           <input type="text" name="content" class="commentInput" placeholder="Write a comment..." required>
           <button type="submit" class="commentButton">Comment</button>
           <button type="button" class="show">Show Comments</button>
         </form>
       `;
+if (post.myId == post.user_id) {
+                    const button = document.createElement('button')
+                    button.textContent = 'Delete'
+                    postCard.prepend(button)
+                    button.addEventListener('click', (e) => {
+                        e.preventDefault()
+                        deletepost(post.id)
+                    })
+                    const ed = document.createElement('button')
+                    ed.textContent = 'Edit'
+                    postCard.prepend(ed)
+                    ed.addEventListener('click', (e) => {
+                        e.preventDefault()
+                        editpost(post.id, post.title, post.content)
+                    })
+                }
+
+
+
                 const div = document.createElement('div');
                 div.className = 'comments-container';
                 postCard.appendChild(div);
                 postsContainer.prepend(postCard);
+                div.style.display = 'none'
                 document.querySelector('.show').addEventListener('click', (e) => {
+                    e.preventDefault()
                     div.style.display = div.style.display === 'none' ? 'block' : 'none';
 
+                    loadComments(post.id, div);
                 });
-                loadComments(post.id, div);
-                comment();
             });
+            comment()
         })
         .catch(err => console.error('Error fetching posts:', err));
+
 }

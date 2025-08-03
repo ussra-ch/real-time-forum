@@ -109,6 +109,37 @@ button:hover,
     justify-content: space-evenly;
 }
 
+#profile {
+    border: none;
+    padding: 0;
+    cursor: pointer;
+}
+
+#profile img {
+    width: 50px;
+    height: 40px;
+    position: absolute;
+    top: 0.7vh;
+    right: 3vw;
+    object-fit: cover;
+    border-radius: 50%;
+
+}
+
+#profile i {
+    width: 3vw;
+    height: 2vh;
+    top: 0.7vh;
+    right: 3vw;
+    border-radius: 50%;
+
+}
+
+.profil {
+    width: 25%;
+    height: 4vh;
+    border-radius: 50%;
+}
 
 #catego h1 {
     content: 'Categories';
@@ -122,7 +153,7 @@ button:hover,
 
 .catigories {
     width: 10vw;
-    background:#00b4d8;
+    background: #00b4d8;
     border: 1px solid rgba(100, 255, 218, 0.2);
     color: #ffffff;
     padding: 0.8rem;

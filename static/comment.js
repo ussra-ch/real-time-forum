@@ -1,18 +1,17 @@
 import { fetchPosts } from "./post.js";
-
-
-//add new comment
 export function comment() {
     const forms = document.querySelectorAll('.commentForm');
+
     forms.forEach((form) => {
-        form.addEventListener("submit", function (e) {
-            e.preventDefault();
+        console.log(1);
+        form.addEventListener("submit", (e) => {
+            e.preventDefault()
 
             const commentInput = form.querySelector(".commentInput");
             const comment = commentInput.value;
 
             const post_id = form.querySelector("[name='post_id']").value;
-
+            if (!comment) return;
             fetch("/comment", {
                 method: "POST",
                 headers: {
@@ -27,7 +26,6 @@ export function comment() {
                 .catch(err => {
                     console.error("Error:", err);
                 });
-            fetchPosts()
         });
     });
 }
@@ -35,9 +33,13 @@ export function comment() {
 
 //fetch comments (l kola post)
 export function loadComments(postId, container) {
+   container.innerHTML = ``
     fetch('/api/fetch_comments')
         .then(res => res.json())
         .then(comments => {
+            if (!comments) {
+                return
+            }
             comments.forEach(comment => {
                 if (comment.PostID != postId) return;
 

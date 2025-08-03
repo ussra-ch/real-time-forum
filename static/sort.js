@@ -8,11 +8,15 @@ export function catigories() {
     const boutton = document.createElement('button');
     boutton.className = 'catigories';
     boutton.innerText = element;
-    boutton.addEventListener('click', () => {
+    boutton.addEventListener('click', (e) => {
+      e.preventDefault()
       fetch(`/api/fetch_posts`)
         .then(res => res.json())
         .then(posts => {
           const postsContainer = document.getElementById('postsContainer');
+          if (!posts) {
+            return
+          }
           postsContainer.innerHTML = '';
           posts.forEach(post => {
             const topics = post.interest ? post.interest.split(',') : [];
@@ -41,15 +45,15 @@ export function catigories() {
               postsContainer.prepend(postCard);
               document.querySelector('.show').addEventListener('click', (e) => {
                 div.style.display = div.style.display === 'none' ? 'block' : 'none';
-
+                loadComments(post.id, div);
               });
-              loadComments(post.id, div);
-              comment();
+              
             }
           });
+
+          comment()
         })
         .catch(err => console.error('Error fetching posts:', err));
-      comment();
 
     });
     categoDiv.appendChild(boutton);
