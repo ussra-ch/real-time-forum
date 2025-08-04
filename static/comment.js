@@ -3,7 +3,7 @@ export function comment() {
     const forms = document.querySelectorAll('.commentForm');
 
     forms.forEach((form) => {
-        console.log(1);
+        // console.log(1);
         form.addEventListener("submit", (e) => {
             e.preventDefault()
 

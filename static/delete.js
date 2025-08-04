@@ -1,7 +1,7 @@
 import { fetchPosts } from "./post.js";
 
 export function deletepost(postId) {
-    console.log("Deleting post:", postId);
+    // console.log("Deleting post:", postId);
 
     fetch('/delete', {
         method: 'POST',

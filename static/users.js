@@ -1,9 +1,14 @@
 import { mesaageDiv } from "./message.js";
-export function fetchUser(id) {
+// import { connectedUsers } from "./var.js";
+
+export function fetchUser(status) {
+  // console.log(connectedUsers);
+
   const usern = document.getElementById('users');
 
   usern.innerHTML = ``
   fetch('/user').then(r => r.json()).then(users => {
+    console.log(users);
     let on = new Set(), off = new Set()
     if (users.onlineUsers) {
       users.onlineUsers.sort((a, b) => { a.nickname - b.nickname })
@@ -11,6 +16,7 @@ export function fetchUser(id) {
     }
 
     for (const user of on) {
+      console.log(user);
       if (users.UserId == user.userId) {
         continue
       }
@@ -24,9 +30,12 @@ export function fetchUser(id) {
       btn.style.marginRight = '0'
       const div = document.createElement('div');
       div.innerHTML = `${profil} ${user.nickname}`;
-      if (id == user.userId) {
-        div.style.color = 'rgb(89, 230, 187)';
-      }
+      // for (const value of connectedUsers.values()){
+          if (user.status == 'online'){
+            // console.log(12121212);
+            div.style.color = 'rgb(89, 230, 187)';
+          }
+      // }
       div.style.display = 'flex';
       div.style.justifyContent = 'space-between';
       div.style.alignItems = 'center'

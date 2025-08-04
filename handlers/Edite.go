@@ -74,13 +74,13 @@ func EditProfil(w http.ResponseWriter, r *http.Request) {
 	nickname := r.FormValue("nickname")
 	email := r.FormValue("email")
 	age := r.FormValue("age")
-	fmt.Println(age)
+	// fmt.Println(age)
 	var photoPath string
 	file, handler, err := r.FormFile("photo")
 	if err == nil {
 		defer file.Close()
 		photoPath = fmt.Sprintf("static/uploads/%d_%s", time.Now().UnixNano(), handler.Filename)
-		fmt.Println(photoPath)
+		// fmt.Println(photoPath)
 		dst, err := os.Create(photoPath)
 		if err != nil {
 			http.Error(w, "Failed to save photo", http.StatusInternalServerError)

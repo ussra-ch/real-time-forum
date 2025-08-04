@@ -32,10 +32,9 @@ func FetchUsers(w http.ResponseWriter, r *http.Request) {
 	if !loggedIn {
 		w.Header().Set("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(map[string]interface{}{
-			"loggedIn":     false,
-			"nickname":     nil,
-			"onlineUsers":  []string{},
-			// "offlineUsers": []string{},
+			"loggedIn":    false,
+			"nickname":    nil,
+			"onlineUsers": []string{},
 		})
 		return
 	}
@@ -62,6 +61,7 @@ func FetchUsers(w http.ResponseWriter, r *http.Request) {
 		Nickname string         `json:"nickname"`
 		UserId   int            `json:"userId"`
 		Photo    sql.NullString `json:"photo"`
+		Status   string         `json:"status"`
 	}
 	var onlineUsers []User
 	for rows.Next() {
@@ -71,39 +71,24 @@ func FetchUsers(w http.ResponseWriter, r *http.Request) {
 		if err := rows.Scan(&nickname, &userId, &photo); err != nil {
 			log.Fatal("error", err)
 		}
+		// fmt.Println(ConnectedUsers[userId])
+		_, exists := ConnectedUsers[userId]
+		if exists {
+			UsersStatus[userId] = "online"
+		} else {
+			UsersStatus[userId] = "offline"
+		}
 
-		onlineUsers = append(onlineUsers, User{Nickname: nickname, UserId: userId, Photo: photo})
+		onlineUsers = append(onlineUsers, User{Nickname: nickname, UserId: userId, Photo: photo, Status: UsersStatus[userId]})
 	}
-
-	// row, err := databases.DB.Query(`
-	// 	SELECT u.nickname, u.id
-	// 	FROM users u
-	// `, userID)
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
-	// defer row.Close()
-
-	// var offlineUsers []User
-	// for row.Next() {
-	// 	// fmt.Println("row is :", rows)
-	// 	var nickname string
-	// 	var userId int
-	// 	if err := row.Scan(&nickname, &userId); err != nil {
-	// 		// fmt.Println("121212")
-	// 		log.Fatal(err)
-	// 	}
-	// 	// fmt.Println(User{nickname: nickname, userId: userId})
-	// 	offlineUsers = append(offlineUsers, User{Nickname: nickname, UserId: userId})
-	// }
 
 	w.Header().Set("Content-Type", "application/json")
 	// fmt.Println(offlineUsers)
 	json.NewEncoder(w).Encode(map[string]interface{}{
-		"loggedIn":     true,
-		"nickname":     myNickname,
-		"onlineUsers":  onlineUsers,
-		// "offlineUsers": offlineUsers,
-		"UserId":       userID,
+		"loggedIn":    true,
+		"nickname":    myNickname,
+		"onlineUsers": onlineUsers,
+		"UserId":      userID,
+		"status":      UsersStatus[userID],
 	})
 }

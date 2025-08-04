@@ -51,7 +51,7 @@ func WebSocketHandler(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			fmt.Println("error when sending the user's status : ", err)
 		}
-		fmt.Println("11")
+		// fmt.Println("11")
 		for _, value := range ConnectedUsers {
 
 			fmt.Println("dkhal l loop bach ysift status dluser")

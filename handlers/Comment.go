@@ -49,7 +49,7 @@ func CommentHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fmt.Println("Comment created successfully for post ID:", cd.PostID, userID)
+	// fmt.Println("Comment created successfully for post ID:", cd.PostID, userID)
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(map[string]string{
 		"message": "Comment created successfully",

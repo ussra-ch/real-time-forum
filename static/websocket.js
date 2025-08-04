@@ -23,16 +23,14 @@ export function webSocket(senderId, receiverId, messageContent) {
 export function initWebSocket(onMessageCallback) {
     ws.onopen = () => {
         console.log("WebSocket connected");
-        connectedUsers.set(id, 'online');
         // ws.send(JSON.stringify({ type: "identify", userId: senderId }));
     };
 
     ws.onmessage = (event) => {
         console.log("Received:",);
-
         const data = JSON.parse(event.data);
         if (data.type === "message") {
-            console.log(22);
+            // console.log(22);
             
             onMessageCallback(event.data);
         } else {
@@ -41,10 +39,11 @@ export function initWebSocket(onMessageCallback) {
     };
 
     ws.onerror = (err) => {
-
+        console.log('traat error : ', err);
     };
 
-    ws.onclose = () => {
+    ws.onclose = (event) => {
         console.log("WebSocket closed");
+        console.log('Reason:', event.reason);
     };
 }

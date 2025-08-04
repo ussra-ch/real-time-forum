@@ -8,6 +8,8 @@ import { fetchPosts } from "./post.js";
 import { catigories } from "./sort.js";
 import { comment } from "./comment.js";
 import { initWebSocket } from "./websocket.js";
+// import { connectedUsers } from "./var.js";
+
 
 export function logindiv() {
     loginDiv.className = 'container';
@@ -107,7 +109,7 @@ export function logindiv() {
 
 function islogin() {
     initWebSocket((msg) => {
-        console.log(msg);
+        // console.log(msg);
         
         let chatBody = document.getElementById('chat-body');
         if (!chatBody) {
@@ -125,12 +127,11 @@ function islogin() {
 }
 
 export function login() {
+    // console.log('dkhal l log function');
     const body = document.querySelector('body')
     fetch('/api/anthenticated')
         .then(r => r.json())
         .then(res => {
-
-
             let profil = `<i class="fa-solid fa-user"></i>`
             if (res.photo) {
                 profil = `<img src="${res.photo}" alt="Profile Picture">`
@@ -144,15 +145,15 @@ export function login() {
                 </header>
                 <div id="catego"></div>
                 <div id="all">
-             <div id="postsContainer"></div>
-            <div id="user">
-            <h3>Notifications</h3>
-            <div id="not"></div>
-            <h3 style="color: rgb(89, 230, 187);"><i class="fa-solid fa-certificate"></i>online</h3>
-            <div id="users"></div>
-            </div>
-            </div>
-            </div>
+                <div id="postsContainer"></div>
+                <div id="user">
+                <h3>Notifications</h3>
+                <div id="not"></div>
+                <h3 style="color: rgb(89, 230, 187);"><i class="fa-solid fa-certificate"></i>online</h3>
+                <div id="users"></div>
+                </div>
+                </div>
+                </div>
             
             <script type="module" src="static/main.js"></script>
             `
@@ -162,7 +163,6 @@ export function login() {
                     <button id="editProfail">Edit Profile</button>
                 `;
                 body.append(div);
-
 
                 div.style.position = 'absolute';
                 div.style.top = '8vh';
@@ -193,19 +193,20 @@ export function login() {
                     profile(res.age, res.email, res.nickname, res.photo)
                 })
 
-                fetchUser();
+                // console.log(res);
+                // connectedUsers.set(res.id, 'online');
+                // console.log('User added to connectedUsers:', res.id, connectedUsers.get(res.id));
+                fetchUser(res.status);
                 islogin();
+
                 return true
             } else {
                 body.innerHTML = `
-                
-    <script type="module" src="static/main.js"></script>
-    `
+                    <script type="module" src="static/main.js"></script>
+                    `
                 logindiv()
                 return false
             }
         }).catch(err => console.error('Error:', err));
-
-
 }
 

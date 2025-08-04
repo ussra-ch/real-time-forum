@@ -1,0 +1,29 @@
+// chat
+
+
+user --> server
+ws connection has been created
+
+CASE 1:
+- userA --> server --> userb : bjuj bihum halin conversation
+    * server :
+        - ayakhd mn userA --> sauvegardi l msg f db 3la assas mam9rich (seen = false) --> aysifto l userb
+    *  userb :
+        - m3a rareceivi lmsg : l front aytl3 lmsg + radi ydir ws request l backen bach tbdl seen = true
+
+
+CASE 2:
+- userA --> server --> userb : l userb mahalch l conversation
+    * server :
+        - ayakhd mn userA --> sauvegardi l msg f db 3la assas mam9rich (seen = false) --> aysifto l userb
+    * userb :
+        - radi t receiviha wradi tala3 notification
+
+GENERAL CASE :
+- awl mara radi ydkhl luser l conversation radi njib akhir 10 msgs wradi n pingi l backen bach ybdl l values d seen l true
+
+/////////////// ONLINE WL OFFLINE
+
+m3a radi ytloga l user :
+    lfront 
+

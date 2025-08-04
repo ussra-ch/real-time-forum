@@ -1,4 +1,5 @@
 import { login } from "./login.js";
+import { connectedUsers } from "./var.js";
 
 
 
@@ -13,6 +14,7 @@ export function logout() {
     }).then(res => {
       if (res.ok) {
         login()
+        // connectedUsers.set(res.id, 'offline');
       } else {
         console.log("Logout failed");
       }

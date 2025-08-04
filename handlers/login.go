@@ -9,12 +9,12 @@ import (
 	"log"
 	"net/http"
 	"time"
-
 	"handlers/databases"
-
 	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
 )
+
+var UsersStatus = make(map[int]string)
 
 func generateSessionID() string {
 	bytes := make([]byte, 16)
@@ -88,13 +88,37 @@ func IsAuthenticated(w http.ResponseWriter, r *http.Request) {
 		"age":      age,
 		"photo":    photo,
 		"email":    email,
+		"id": userID,
+		// "status": "online",
 	}
+	// fmt.Println("11111")
+	// fmt.Println("connected users are :",ConnectedUsers)
+	// _, exists := ConnectedUsers[userID]
+    // if !exists {
+	// 	// fmt.Println(exists)
+        UsersStatus[userID] = "online"
+    // } else {
+    //     UsersStatus[userID] = "offline"
+    // }
+	// _, exists := ConnectedUsers[userID]
+	// if exists {
+    //     fmt.Printf("Key '%d' is present %d\n", userID)
+    // } else {
+    //     fmt.Printf("Key '%d' is not present\n", userID)
+    // }
+	// fmt.Println(UsersStatus)
+	// UsersStatus[userID] = "online"
+	// fmt.Println(UsersStatus)
+
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(user)
 }
 
 func LogoutHandler(w http.ResponseWriter, r *http.Request) {
+	_, userID := IsLoggedIn(r)
+	UsersStatus[userID] = "offline"
+	fmt.Println("in logout :", UsersStatus)
 	cookie, err := r.Cookie("session")
 	if err != nil {
 		fmt.Println(err)
