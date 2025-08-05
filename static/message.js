@@ -44,7 +44,7 @@ export function mesaageDiv(user, userId, receiverId) {
                         <h7>${Date.now()}}</h7>`
             chatBody.append(newMsg)
             
-            webSocket(userId, receiverId, input.value)
+            webSocket(userId, receiverId, input.value, false)
             input.value = ''
         }
         // } else {

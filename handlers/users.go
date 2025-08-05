@@ -5,9 +5,19 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
+	"sync"
 
 	"handlers/databases"
 )
+
+var mu sync.Mutex
+
+type User struct {
+	Nickname string         `json:"nickname"`
+	UserId   int            `json:"userId"`
+	Photo    sql.NullString `json:"photo"`
+	Status   string         `json:"status"`
+}
 
 func IsLoggedIn(r *http.Request) (bool, int) {
 	cookie, err := r.Cookie("session")
@@ -57,12 +67,6 @@ func FetchUsers(w http.ResponseWriter, r *http.Request) {
 	}
 	defer rows.Close()
 
-	type User struct {
-		Nickname string         `json:"nickname"`
-		UserId   int            `json:"userId"`
-		Photo    sql.NullString `json:"photo"`
-		Status   string         `json:"status"`
-	}
 	var onlineUsers []User
 	for rows.Next() {
 		var photo sql.NullString
@@ -72,18 +76,28 @@ func FetchUsers(w http.ResponseWriter, r *http.Request) {
 			log.Fatal("error", err)
 		}
 		// fmt.Println(ConnectedUsers[userId])
+			mu.Lock()
 		_, exists := ConnectedUsers[userId]
+			mu.Unlock()
 		if exists {
+			mu.Lock()
 			UsersStatus[userId] = "online"
+			mu.Unlock()
 		} else {
+			mu.Lock()
+			// fmt.Println(userId)
 			UsersStatus[userId] = "offline"
-		}
+			mu.Unlock()
 
+		}
+		mu.Lock()
 		onlineUsers = append(onlineUsers, User{Nickname: nickname, UserId: userId, Photo: photo, Status: UsersStatus[userId]})
+		mu.Unlock()
 	}
 
 	w.Header().Set("Content-Type", "application/json")
 	// fmt.Println(offlineUsers)
+	mu.Lock()
 	json.NewEncoder(w).Encode(map[string]interface{}{
 		"loggedIn":    true,
 		"nickname":    myNickname,
@@ -91,4 +105,5 @@ func FetchUsers(w http.ResponseWriter, r *http.Request) {
 		"UserId":      userID,
 		"status":      UsersStatus[userID],
 	})
+	mu.Unlock()
 }

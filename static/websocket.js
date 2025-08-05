@@ -2,7 +2,7 @@ import { ws } from "./var.js";
 import { fetchUser } from "./users.js";
 // import { connectedUsers } from "./var.js";
 
-export function webSocket(senderId, receiverId, messageContent) {
+export function webSocket(senderId, receiverId, messageContent, seen) {
 
     if (!senderId || !receiverId || !messageContent) {
         return
@@ -12,6 +12,7 @@ export function webSocket(senderId, receiverId, messageContent) {
         senderId,
         receiverId,
         messageContent,
+        seen,
         // userStatus,
     };
     // console.log(payload);
@@ -31,7 +32,7 @@ export function initWebSocket(onMessageCallback) {
         const data = JSON.parse(event.data);
         if (data.type === "message") {
             // console.log(22);
-            
+            // fetchUser(data.userId)
             onMessageCallback(event.data);
         } else {
             fetchUser(data.userId)

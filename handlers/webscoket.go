@@ -27,6 +27,7 @@ type Message struct {
 	SenderId       int    `json:"senderId"`
 	ReceiverId     int    `json:"receiverId"`
 	MessageContent string `json:"messageContent"`
+	Seen           bool   `json:"seen"`
 	// ClientStatus   bool   `json:"clientStatus"`
 }
 
@@ -42,7 +43,7 @@ func WebSocketHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	_, userId := IsLoggedIn(r)
-
+	mu.Lock()
 	if _, exists := ConnectedUsers[userId]; !exists {
 		newUser := make(map[string]interface{})
 		newUser["type"] = "online"
@@ -53,16 +54,19 @@ func WebSocketHandler(w http.ResponseWriter, r *http.Request) {
 		}
 		// fmt.Println("11")
 		for _, value := range ConnectedUsers {
-
-			fmt.Println("dkhal l loop bach ysift status dluser")
+			// fmt.Println("dkhal l loop bach ysift status dluser")
 			value.WriteMessage(websocket.TextMessage, []byte(toSend))
 		}
 	}
-	ConnectedUsers[userId] = conn
 
-	defer func(){
-			delete(ConnectedUsers, userId)
-		 conn.Close()
+	ConnectedUsers[userId] = conn
+	mu.Unlock()
+
+	defer func() {
+		mu.Lock()
+		delete(ConnectedUsers, userId)
+		conn.Close()
+		mu.Unlock()
 	}()
 
 	for {
@@ -74,36 +78,42 @@ func WebSocketHandler(w http.ResponseWriter, r *http.Request) {
 
 		var messageStruct Message
 		decoder := json.NewDecoder(message)
-		err = decoder.Decode(&messageStruct)
+		_ = decoder.Decode(&messageStruct)
 
 		messageobj := make(map[string]interface{})
 		messageobj["type"] = "message"
 		messageobj["SenderId"] = messageStruct.SenderId
 		messageobj["ReceiverId"] = messageStruct.ReceiverId
 		messageobj["content"] = messageStruct.MessageContent
+		messageobj["seen"] = messageStruct.Seen
 		Messag, err := json.Marshal(messageobj)
 		if err != nil {
 			fmt.Println("erooooooor f decoder")
 		}
 
-		_, err = databases.DB.Exec(`INSERT INTO messages (sender_id,receiver_id,content)
-					VALUES (?, ?, ?);`, messageStruct.SenderId, messageStruct.ReceiverId, messageStruct.MessageContent)
+		_, err = databases.DB.Exec(`INSERT INTO messages (sender_id,receiver_id,content,seen )
+					VALUES (?, ?, ?);`, messageStruct.SenderId, messageStruct.ReceiverId, messageStruct.MessageContent, false)
 		if err != nil {
 			fmt.Println("Error storing the message in DB : ", err)
 		}
 		// fmt.Println("2222")
 		if ConnectedUsers[messageStruct.ReceiverId] != nil {
-
 			err = ConnectedUsers[messageStruct.ReceiverId].WriteMessage(websocket.TextMessage, []byte(Messag))
 			if err != nil {
 				fmt.Println("Error storing the message in DB : ", err)
 			}
+			query := `UPDATE messages
+						SET seen = true
+						WHERE messages.sender_id = ? AND messages.receiver_id = ?;`
+			_, err = databases.DB.Exec(query, messageStruct.SenderId, messageStruct.ReceiverId)
+			if err != nil{
+				fmt.Println("eroooooor fach kanbdlo seen=true ")
+			}
 		} else {
-			// fmt.Println("4444")
+			fmt.Println("dkhaaal l else")
 		}
 
 	}
-
 }
 
 func FetchMessages(w http.ResponseWriter, r *http.Request) {
