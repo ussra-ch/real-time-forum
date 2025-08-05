@@ -16,7 +16,7 @@ export function fetchUser(status) {
     }
 
     for (const user of on) {
-      console.log(user);
+
       if (users.UserId == user.userId) {
         continue
       }

@@ -31,8 +31,7 @@ export function initWebSocket(onMessageCallback) {
         const data = JSON.parse(event.data);
         if (data.type === "message") {
             // console.log(22);
-            
-            onMessageCallback(event.data);
+            onMessageCallback(data.content);
         } else {
             fetchUser(data.userId)
         }

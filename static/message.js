@@ -18,6 +18,7 @@ export function mesaageDiv(user, userId, receiverId) {
             <button type="submit" class="send-btn"><i class="fa-solid fa-paper-plane"></i></button>
         </form>
     `
+
     const deleteButton = document.createElement('button')
     const icon = document.createElement('i');
     icon.className = 'fas fa-trash';
@@ -28,8 +29,19 @@ export function mesaageDiv(user, userId, receiverId) {
     divHeader.append(deleteButton)
     body.append(div)
     //throtlle khas tkoun hna
-    fetchMessages(userId, receiverId)
+    const container = document.getElementById('chat-body')
+    let offset = 0;
+    const limit = 10;
+    fetchMessages(userId, receiverId, offset, limit)
 
+    container.addEventListener("scroll", () => {
+
+        if (container.scrollTop === 0) {
+            console.log(offset, limit);
+            offset += limit;
+            fetchMessages(userId, receiverId, offset, limit)
+        }
+    });
     div.querySelector('.input-area').addEventListener('submit', (e) => {
         e.preventDefault()
         // if (userStatus) {
@@ -39,13 +51,14 @@ export function mesaageDiv(user, userId, receiverId) {
         if (message !== "") {
             // console.log(1);
             let newMsg = document.createElement('div')
-            newMsg.className = 'messageSent'
+            newMsg.className = 'messageReceived'
             newMsg.innerHTML = `<h3>${message}</h3>
-                        <h7>${Date.now()}}</h7>`
+                        <h7>${formatDate(Date.now())}</h7>`
             chatBody.append(newMsg)
-            
             webSocket(userId, receiverId, input.value)
             input.value = ''
+            const container = document.getElementById('chat-body')
+            container.scrollTop = container.scrollHeight;
         }
         // } else {
         //     const notif = document.getElementById('not')
@@ -61,34 +74,45 @@ export function mesaageDiv(user, userId, receiverId) {
 }
 
 
-function fetchMessages(userId, receiverId) {
-    fetch("/api/fetchMessages")
+function fetchMessages(userId, receiverId, offset, limit) {
+    const body = document.getElementById('chat-body');
+    var previousScrollHeight = body.scrollHeight;
+    console.log(1);
+
+
+    fetch(`/api/fetchMessages?offset=${offset}&limit=${limit}&sender=${receiverId} `, {
+        method: 'GET'
+    })
         .then(response => response.json())
         .then(messages => {
-            // console.log('dkhal lhnaa');
-            // console.log(messages);
             if (!messages) {
                 return
             }
-            messages.reverse().forEach(message => {
-                let body = document.getElementById('chat-body')
-                // console.log(message);
-                // console.log(message.receiverId, userId);
-                // console.log(message.userId, receiverId);
+            for (const message of messages) {
                 if (message.userId == userId && message.sender_id == receiverId) {
                     let newMsg = document.createElement('div')
                     newMsg.className = 'messageSent'
                     newMsg.style.background = 'blue'
                     newMsg.innerHTML = `<h3>${message.content}</h3>
-            <h7>${message.time}</h7>`
-                    body.append(newMsg)
+                                        <h7>${formatDate(message.time)}</h7>`
+                    body.prepend(newMsg)
                 } else if (message.userId == receiverId && message.sender_id == userId) {
                     let newMsg = document.createElement('div')
                     newMsg.className = 'messageReceived'
                     newMsg.innerHTML = `<h3>${message.content}</h3>
-            <h7>${message.time}</h7>`
-                    body.append(newMsg)
+                                        <h7>${formatDate(message.time)}</h7>`
+                    body.prepend(newMsg)
                 }
-            });
+            }
+            const newScrollHeight = body.scrollHeight;
+            body.scrollTop += (newScrollHeight - previousScrollHeight);
         })
+}
+export function formatDate(timestampInSeconds) {
+    const isoString = timestampInSeconds;
+    const date = new Date(isoString);
+    const hours = date.getHours().toString().padStart(2, '0');
+    const minutes = date.getMinutes().toString().padStart(2, '0');
+    const time = `${hours}:${minutes}`;
+    return time;
 }
