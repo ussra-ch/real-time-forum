@@ -27,3 +27,15 @@ GENERAL CASE :
 m3a radi ytloga l user :
     lfront 
 
+/////////////// NOTIFICATIONS
+userA --> server --> userb
+
+userA --> server :
+    - server radi y9yed l msg f db wydir seen = false
+
+server --> userb :
+    - ila l userb 7al l conversation :
+        * print l msg wrj3 seen = true
+    - ila la :
+        * zid 1 f notifications wkhali seen = false
+        * once l user y7l l conversation rj3 seen l true
