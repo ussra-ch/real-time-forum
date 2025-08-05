@@ -14,10 +14,15 @@ export function fetchUser() {
       users.onlineUsers.sort((a, b) => {
         return a.nickname.localeCompare(b.nickname);
       });
+      users.onlineUsers.sort((a, b) => {
+        return new Date(b.time) - new Date(a.time); 
+      });
+
       on = [...new Set(users.onlineUsers)];
     }
 
     for (const user of on) {
+      console.log(user.time);
 
       if (users.UserId == user.userId) {
         continue
