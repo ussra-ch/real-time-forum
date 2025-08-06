@@ -63,15 +63,32 @@ func WebSocketHandler(w http.ResponseWriter, r *http.Request) {
 	ConnectedUsers[userId] = conn
 	mu.Unlock()
 
-	defer func(){
+	defer func() {
 		mu.Lock()
-			delete(ConnectedUsers, userId)
-		 conn.Close()
-		 mu.Unlock()
+		delete(ConnectedUsers, userId)
+		conn.Close()
+		mu.Unlock()
 	}()
 
 	for {
 		_, message, err := conn.NextReader()
+		if message == nil {
+			fmt.Println("11")
+			mu.Lock()
+			delete(ConnectedUsers, userId)
+			UsersStatus[userId] = "offline"
+			newUser := make(map[string]interface{})
+			newUser["type"] = "online"
+			newUser["userId"] = userId
+			toSend, _ := json.Marshal(newUser)
+			for _, value := range ConnectedUsers {
+				value.WriteMessage(websocket.TextMessage, []byte(toSend))
+			}
+			conn.Close()
+
+			mu.Unlock()
+
+		}
 		if err != nil {
 			fmt.Println("error when reading the upcoming message : ", err)
 			return
@@ -107,7 +124,7 @@ func WebSocketHandler(w http.ResponseWriter, r *http.Request) {
 						SET seen = true
 						WHERE messages.sender_id = ? AND messages.receiver_id = ?;`
 			_, err = databases.DB.Exec(query, messageStruct.SenderId, messageStruct.ReceiverId)
-			if err != nil{
+			if err != nil {
 				fmt.Println("eroooooor fach kanbdlo seen=true ")
 			}
 		} else {

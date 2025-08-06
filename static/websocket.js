@@ -32,9 +32,11 @@ export function initWebSocket(onMessageCallback) {
         const data = JSON.parse(event.data);
         if (data.type === "message") {
             // console.log(22);
-            
+
             onMessageCallback(data.content);
         } else {
+            console.log(data.userId);
+            
             fetchUser(data.userId)
         }
     };
@@ -46,5 +48,7 @@ export function initWebSocket(onMessageCallback) {
     ws.onclose = (event) => {
         console.log("WebSocket closed");
         console.log('Reason:', event.reason);
+        ws.send('logut')
+    
     };
 }
