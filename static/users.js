@@ -1,5 +1,7 @@
 import { mesaageDiv } from "./message.js";
+import { isConversationOpen } from "./var.js";
 // import { connectedUsers } from "./var.js";
+import { isConversationOpen } from "./var.js";
 
 export function fetchUser() {
   // console.log(connectedUsers);
@@ -33,6 +35,7 @@ console.log(22222222);
         profil = `<img src="${user.photo.String}" class="profil" class="profil" alt="Profile Picture">`
       }
       const btn = document.createElement('button')
+      btn.id = "sendButton"
       btn.innerHTML = `
       <i class="fa-solid fa-message"></i>`
       btn.style.marginRight = '0'
@@ -59,6 +62,7 @@ console.log(22222222);
 
 
       btn.addEventListener('click', () => {
+        isConversationOpen = {"senderId" : }
         if (document.getElementById('message')) document.getElementById('message').remove()
         // console.log(user.nickname, users.id, user.userId);
 

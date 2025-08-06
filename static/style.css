@@ -67,7 +67,7 @@ button:hover,
     flex-direction: column;
 }
 
-.messageSent {
+.messageReceived {
     align-self: flex-end;
     background-color: #007bff;
     color: white;
@@ -78,7 +78,7 @@ button:hover,
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
-.messageReceived {
+.messageSent{
     align-self: flex-start;
     background-color: #e4e6eb;
     color: black;

@@ -93,7 +93,7 @@ func WebSocketHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		_, err = databases.DB.Exec(`INSERT INTO messages (sender_id,receiver_id,content,seen )
-					VALUES (?, ?, ?);`, messageStruct.SenderId, messageStruct.ReceiverId, messageStruct.MessageContent, false)
+					VALUES (?, ?, ?, ?);`, messageStruct.SenderId, messageStruct.ReceiverId, messageStruct.MessageContent, false)
 		if err != nil {
 			fmt.Println("Error storing the message in DB : ", err)
 		}
