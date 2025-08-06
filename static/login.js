@@ -1,7 +1,7 @@
 import { fetchUser } from "./users.js";
 import { loginDiv, content } from "./var.js";
 import { profile } from "./profile.js"
-
+import {formatDate} from "./message.js"
 import { logout } from "./logout.js"
 import { Create } from "./post.js"
 import { fetchPosts } from "./post.js";
@@ -110,14 +110,17 @@ export function logindiv() {
 function islogin() {
     initWebSocket((msg) => {
         // console.log(msg);
-        
+
         let chatBody = document.getElementById('chat-body');
         if (!chatBody) {
             return
         }
         let newMsg = document.createElement('div');
-        newMsg.innerHTML = `<h3>${msg}</h3>`;
+        newMsg.innerHTML = `<h3>${msg}</h3>
+                            <h7>${formatDate(Date.now())}</h7>`;
+        newMsg.className = 'messageSent'
         chatBody.append(newMsg);
+        chatBody.scrollTop = chatBody.scrollHeight;
     });
     logout();
     Create();
@@ -192,13 +195,9 @@ export function login() {
                 document.getElementById('editProfail').addEventListener('click', () => {
                     profile(res.age, res.email, res.nickname, res.photo)
                 })
-
-                // console.log(res);
-                // connectedUsers.set(res.id, 'online');
-                // console.log('User added to connectedUsers:', res.id, connectedUsers.get(res.id));
+                console.log(111111111);
                 fetchUser(res.status);
                 islogin();
-
                 return true
             } else {
                 body.innerHTML = `

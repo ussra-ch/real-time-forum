@@ -3,9 +3,11 @@ package handlers
 import (
 	"database/sql"
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 	"sync"
+	"time"
 
 	"handlers/databases"
 )
@@ -67,31 +69,53 @@ func FetchUsers(w http.ResponseWriter, r *http.Request) {
 	}
 	defer rows.Close()
 
+	type User struct {
+		Nickname string         `json:"nickname"`
+		UserId   int            `json:"userId"`
+		Photo    sql.NullString `json:"photo"`
+		Status   string         `json:"status"`
+		Time     time.Time      `json:"time"`
+	}
 	var onlineUsers []User
 	for rows.Next() {
 		var photo sql.NullString
 		var nickname string
 		var userId int
+		q := `SELECT sent_at  FROM messages 
+    	WHERE (sender_id = ? AND receiver_id = ?) OR (receiver_id = ? AND sender_id = ?)
+    	ORDER BY sent_at DESC
+    	LIMIT 1`
+		row, _ := databases.DB.Query(q, userId, userID, userId, userID)
+		var T time.Time
+		for row.Next() {
+			var time time.Time
+
+			if err := row.Scan(&time); err != nil {
+				fmt.Println("error in a message")
+			}
+			T = time
+		}
 		if err := rows.Scan(&nickname, &userId, &photo); err != nil {
 			log.Fatal("error", err)
 		}
 		// fmt.Println(ConnectedUsers[userId])
-			mu.Lock()
+		mu.Lock()
 		_, exists := ConnectedUsers[userId]
 			mu.Unlock()
 		if exists {
 			mu.Lock()
 			UsersStatus[userId] = "online"
 			mu.Unlock()
-		} else {
-			mu.Lock()
-			// fmt.Println(userId)
-			UsersStatus[userId] = "offline"
-			mu.Unlock()
+		} 
+		// else {
+		// 	mu.Lock()
+		// 	// fmt.Println(userId)
+		// 	UsersStatus[userId] = "offline"
+		// 	mu.Unlock()
 
-		}
+		// }
 		mu.Lock()
-		onlineUsers = append(onlineUsers, User{Nickname: nickname, UserId: userId, Photo: photo, Status: UsersStatus[userId]})
+		onlineUsers = append(onlineUsers, User{Nickname: nickname, UserId: userId, Photo: photo, Status: UsersStatus[userId], Time: T})
 		mu.Unlock()
 	}
 

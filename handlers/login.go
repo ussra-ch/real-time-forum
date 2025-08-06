@@ -9,8 +9,11 @@ import (
 	"log"
 	"net/http"
 	"time"
+
 	"handlers/databases"
+
 	"github.com/google/uuid"
+	"github.com/gorilla/websocket"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -88,28 +91,27 @@ func IsAuthenticated(w http.ResponseWriter, r *http.Request) {
 		"age":      age,
 		"photo":    photo,
 		"email":    email,
-		"id": userID,
-		// "status": "online",
+		"id":       userID,
+		"status":   "online",
 	}
 	// fmt.Println("11111")
 	// fmt.Println("connected users are :",ConnectedUsers)
 	// _, exists := ConnectedUsers[userID]
-    // if !exists {
+	// if !exists {
 	// 	// fmt.Println(exists)
-        UsersStatus[userID] = "online"
-    // } else {
-    //     UsersStatus[userID] = "offline"
-    // }
+	UsersStatus[userID] = "online"
+	// } else {
+	//     UsersStatus[userID] = "offline"
+	// }
 	// _, exists := ConnectedUsers[userID]
 	// if exists {
-    //     fmt.Printf("Key '%d' is present %d\n", userID)
-    // } else {
-    //     fmt.Printf("Key '%d' is not present\n", userID)
-    // }
+	//     fmt.Printf("Key '%d' is present %d\n", userID)
+	// } else {
+	//     fmt.Printf("Key '%d' is not present\n", userID)
+	// }
 	// fmt.Println(UsersStatus)
 	// UsersStatus[userID] = "online"
 	// fmt.Println(UsersStatus)
-
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(user)
@@ -118,7 +120,25 @@ func IsAuthenticated(w http.ResponseWriter, r *http.Request) {
 func LogoutHandler(w http.ResponseWriter, r *http.Request) {
 	_, userID := IsLoggedIn(r)
 	UsersStatus[userID] = "offline"
-	fmt.Println("in logout :", UsersStatus)
+	delete(ConnectedUsers, userID)
+	_, userId := IsLoggedIn(r)
+	mu.Lock()
+	if _, exists := ConnectedUsers[userId]; !exists {
+		oldUser := make(map[string]interface{})
+		oldUser["type"] = "offline"
+		oldUser["userId"] = userId
+		toSend, err := json.Marshal(oldUser)
+		if err != nil {
+			fmt.Println("error when sending the user's status : ", err)
+		}
+		// fmt.Println("11")
+		for _, value := range ConnectedUsers {
+			// fmt.Println("dkhal l loop bach ysift status dluser")
+			value.WriteMessage(websocket.TextMessage, []byte(toSend))
+		}
+	}
+	mu.Unlock()
+	// fmt.Println("in logout :", UsersStatus)
 	cookie, err := r.Cookie("session")
 	if err != nil {
 		fmt.Println(err)
@@ -190,6 +210,7 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	UsersStatus[int(userID)] = "online"
 	sessionID := uuid.New().String()
 	expiresAt := time.Now().Add(24 * time.Hour)
 
@@ -202,7 +223,22 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Database error", http.StatusInternalServerError)
 		return
 	}
+	_, userId := IsLoggedIn(r)
+	mu.Lock()
 
+	if _, exists := ConnectedUsers[userId]; !exists {
+		newUser := make(map[string]interface{})
+		newUser["type"] = "online"
+		newUser["userId"] = userId
+		toSend, err := json.Marshal(newUser)
+		if err != nil {
+			fmt.Println("error when sending the user's status : ", err)
+		}
+		for _, value := range ConnectedUsers {
+			value.WriteMessage(websocket.TextMessage, []byte(toSend))
+		}
+	}
+	mu.Unlock()
 	http.SetCookie(w, &http.Cookie{
 		Name:     "session",
 		Value:    sessionID,

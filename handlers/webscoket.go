@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strconv"
 	"time"
 
 	"handlers/databases"
@@ -62,11 +63,11 @@ func WebSocketHandler(w http.ResponseWriter, r *http.Request) {
 	ConnectedUsers[userId] = conn
 	mu.Unlock()
 
-	defer func() {
+	defer func(){
 		mu.Lock()
-		delete(ConnectedUsers, userId)
-		conn.Close()
-		mu.Unlock()
+			delete(ConnectedUsers, userId)
+		 conn.Close()
+		 mu.Unlock()
 	}()
 
 	for {
@@ -123,10 +124,26 @@ func FetchMessages(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	_, userId := IsLoggedIn(r)
-	query := `SELECT * from messages WHERE sender_id = ? OR receiver_id = ?
-	ORDER BY sent_at DESC
-	LIMIT 10;`
-	rows, err := databases.DB.Query(query, userId, userId)
+	offsetStr := r.URL.Query().Get("offset")
+	limitStr := r.URL.Query().Get("limit")
+	senderID := r.URL.Query().Get("sender")
+
+	offset, err1 := strconv.Atoi(offsetStr)
+	limit, err2 := strconv.Atoi(limitStr)
+	fmt.Println(offset, limit)
+
+	if err1 != nil || err2 != nil || limit <= 0 {
+		http.Error(w, "Invalid parameters", http.StatusBadRequest)
+		return
+	}
+
+	query := fmt.Sprintf(`
+    SELECT * FROM messages 
+    WHERE (sender_id = ? AND receiver_id = ?) OR (receiver_id = ? AND sender_id = ?)
+    ORDER BY sent_at DESC
+    LIMIT %d OFFSET %d;`, limit, offset)
+
+	rows, err := databases.DB.Query(query, userId, senderID, userId, senderID)
 	if err != nil {
 		fmt.Println("error geting messages from db : ", err)
 	}
