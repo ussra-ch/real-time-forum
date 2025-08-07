@@ -3,7 +3,6 @@ package handlers
 import (
 	"database/sql"
 	"encoding/json"
-	"fmt"
 	"log"
 	"net/http"
 	"sync"
@@ -91,7 +90,7 @@ func FetchUsers(w http.ResponseWriter, r *http.Request) {
 			var time time.Time
 
 			if err := row.Scan(&time); err != nil {
-				fmt.Println("error in a message")
+				// fmt.Println("error in a message")
 			}
 			T = time
 		}
@@ -101,12 +100,12 @@ func FetchUsers(w http.ResponseWriter, r *http.Request) {
 		// fmt.Println(ConnectedUsers[userId])
 		mu.Lock()
 		_, exists := ConnectedUsers[userId]
-			mu.Unlock()
+		mu.Unlock()
 		if exists {
 			mu.Lock()
 			UsersStatus[userId] = "online"
 			mu.Unlock()
-		} 
+		}
 		// else {
 		// 	mu.Lock()
 		// 	// fmt.Println(userId)

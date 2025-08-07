@@ -70,6 +70,16 @@ export function Create() {
 
 
 }
+export function Notifications(notifs){
+    const notifications = document.getElementById('notifications')
+    const CreateCard = document.createElement('div')
+    CreateCard.innerHTML = `
+  <div  id="notifications" > ${notifs}
+  </div>
+  `;
+    content.appendChild(notifications);
+    notifications.style.display = 'none';
+}
 export function fetchPosts() {
     fetch('/api/fetch_posts')
         .then(res => res.json())
