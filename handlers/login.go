@@ -94,25 +94,7 @@ func IsAuthenticated(w http.ResponseWriter, r *http.Request) {
 		"id":       userID,
 		"status":   "online",
 	}
-	// fmt.Println("11111")
-	// fmt.Println("connected users are :",ConnectedUsers)
-	// _, exists := ConnectedUsers[userID]
-	// if !exists {
-	// 	// fmt.Println(exists)
 	UsersStatus[userID] = "online"
-	// } else {
-	//     UsersStatus[userID] = "offline"
-	// }
-	// _, exists := ConnectedUsers[userID]
-	// if exists {
-	//     fmt.Printf("Key '%d' is present %d\n", userID)
-	// } else {
-	//     fmt.Printf("Key '%d' is not present\n", userID)
-	// }
-	// fmt.Println(UsersStatus)
-	// UsersStatus[userID] = "online"
-	// fmt.Println(UsersStatus)
-
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(user)
 }

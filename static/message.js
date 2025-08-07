@@ -1,4 +1,5 @@
 import { webSocket } from "./websocket.js"
+import { ws } from "./var.js"
 export function mesaageDiv(user, userId, receiverId) {
     // console.log();
 
@@ -6,9 +7,9 @@ export function mesaageDiv(user, userId, receiverId) {
     if (document.getElementById('message')) {
         document.getElementById('message').remove()
     }
-    const div = document.createElement('div')
-    div.id = 'message'
-    div.innerHTML = `
+    const conversation = document.createElement('div')
+    conversation.id = 'message'
+    conversation.innerHTML = `
         <div class="head">
             <h3>${user}</h3>
         </div>
@@ -25,9 +26,9 @@ export function mesaageDiv(user, userId, receiverId) {
     deleteButton.id = 'closeConversation'
     deleteButton.appendChild(icon);
     deleteButton.appendChild(document.createTextNode(' Delete'));
-    let divHeader = div.getElementsByClassName('head')[0]
+    let divHeader = conversation.getElementsByClassName('head')[0]
     divHeader.append(deleteButton)
-    body.append(div)
+    body.append(conversation)
     //throtlle khas tkoun hna
     const container = document.getElementById('chat-body')
     let offset = 0;
@@ -35,19 +36,21 @@ export function mesaageDiv(user, userId, receiverId) {
     fetchMessages(userId, receiverId, offset, limit)
 
     container.addEventListener("scroll", () => {
-
         if (container.scrollTop === 0) {
             console.log(offset, limit);
             offset += limit;
             fetchMessages(userId, receiverId, offset, limit)
         }
     });
-    div.querySelector('.input-area').addEventListener('submit', (e) => {
+
+
+    conversation.querySelector('.input-area').addEventListener('submit', (e) => {
         e.preventDefault()
-        // if (userStatus) {
-        const input = div.querySelector('.chat-input')
+        webSocket(userId, receiverId, "", true, true)
+        const input = conversation  .querySelector('.chat-input')
         const message = input.value.trim()
         let chatBody = document.getElementById('chat-body')
+        console.log("usssraaaaaaaaaaaa");
         if (message !== "") {
             // console.log(1);
             let newMsg = document.createElement('div')
@@ -55,22 +58,18 @@ export function mesaageDiv(user, userId, receiverId) {
             newMsg.innerHTML = `<h3>${message}</h3>
                         <h7>${formatDate(Date.now())}</h7>`
             chatBody.append(newMsg)
-            
-            webSocket(userId, receiverId, input.value, false)
+            webSocket(userId, receiverId, input.value, false, true)
             input.value = ''
             const container = document.getElementById('chat-body')
             container.scrollTop = container.scrollHeight;
         }
-        // } else {
-        //     const notif = document.getElementById('not')
-        //     const newNotif = document.createElement('div')
-        //     newNotif.id = 'notification'
-        //     // newNotif.innerHTML = `<h5> ${}`
-        // }
     })
 
     deleteButton.addEventListener('click', () => {
-        div.remove()
+        let isConversationOpen = {"senderId" : userId, "receiverId": receiverId,"messageContent": "", "seen": false,  "isOpen" : false}
+        const jsonIsConversationOpen = JSON.stringify(isConversationOpen);
+        ws.send(jsonIsConversationOpen);
+        conversation.remove()
     })
 }
 
@@ -78,31 +77,32 @@ export function mesaageDiv(user, userId, receiverId) {
 function fetchMessages(userId, receiverId, offset, limit) {
     const body = document.getElementById('chat-body');
     var previousScrollHeight = body.scrollHeight;
-    console.log(1);
-
 
     fetch(`/api/fetchMessages?offset=${offset}&limit=${limit}&sender=${receiverId} `, {
         method: 'GET'
     })
         .then(response => response.json())
         .then(messages => {
+            console.log("fetchiw les messages");
             if (!messages) {
                 return
             }
             for (const message of messages) {
-                if (message.userId == userId && message.sender_id == receiverId) {
-                    let newMsg = document.createElement('div')
-                    newMsg.className = 'messageSent'
-                    newMsg.style.background = 'blue'
-                    newMsg.innerHTML = `<h3>${message.content}</h3>
-                                        <h7>${formatDate(message.time)}</h7>`
-                    body.prepend(newMsg)
-                } else if (message.userId == receiverId && message.sender_id == userId) {
-                    let newMsg = document.createElement('div')
-                    newMsg.className = 'messageReceived'
-                    newMsg.innerHTML = `<h3>${message.content}</h3>
-                                        <h7>${formatDate(message.time)}</h7>`
-                    body.prepend(newMsg)
+                if (message.content != ""){
+                    if (message.userId == userId && message.sender_id == receiverId) {
+                        let newMsg = document.createElement('div')
+                        newMsg.className = 'messageSent'
+                        newMsg.style.background = 'blue'
+                        newMsg.innerHTML = `<h3>${message.content}</h3>
+                                            <h7>${formatDate(message.time)}</h7>`
+                        body.prepend(newMsg)
+                    } else if (message.userId == receiverId && message.sender_id == userId) {
+                        let newMsg = document.createElement('div')
+                        newMsg.className = 'messageReceived'
+                        newMsg.innerHTML = `<h3>${message.content}</h3>
+                                            <h7>${formatDate(message.time)}</h7>`
+                        body.prepend(newMsg)
+                    }
                 }
             }
             const newScrollHeight = body.scrollHeight;

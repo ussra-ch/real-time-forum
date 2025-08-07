@@ -29,10 +29,18 @@ type Message struct {
 	ReceiverId     int    `json:"receiverId"`
 	MessageContent string `json:"messageContent"`
 	Seen           bool   `json:"seen"`
+	IsOpen bool `json:"isOpen"`
 	// ClientStatus   bool   `json:"clientStatus"`
 }
 
+type Notification struct {
+    Type       string `json:"type"` // "notification"
+    SenderId   int    `json:"senderId"`
+    UnreadCount int   `json:"unreadCount"`
+}
+
 var ConnectedUsers = make(map[int]*websocket.Conn)
+var OpenedConversations = make(map[int]map[int]bool)
 
 // openedConversations = make(map[int]int)
 
@@ -53,9 +61,7 @@ func WebSocketHandler(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			fmt.Println("error when sending the user's status : ", err)
 		}
-		// fmt.Println("11")
 		for _, value := range ConnectedUsers {
-			// fmt.Println("dkhal l loop bach ysift status dluser")
 			value.WriteMessage(websocket.TextMessage, []byte(toSend))
 		}
 	}
@@ -97,7 +103,15 @@ func WebSocketHandler(w http.ResponseWriter, r *http.Request) {
 		var messageStruct Message
 		decoder := json.NewDecoder(message)
 		_ = decoder.Decode(&messageStruct)
+		mu.Lock()
+		if OpenedConversations[messageStruct.SenderId] == nil {
+			OpenedConversations[messageStruct.SenderId] = make(map[int]bool)
+		}
+		OpenedConversations[messageStruct.SenderId][messageStruct.ReceiverId] = messageStruct.IsOpen
+		// fmt.Println("conver :",OpenedConversations[messageStruct.SenderId][messageStruct.ReceiverId])
+		mu.Unlock()
 
+		if len(messageStruct.MessageContent) > 0{
 		messageobj := make(map[string]interface{})
 		messageobj["type"] = "message"
 		messageobj["SenderId"] = messageStruct.SenderId
@@ -110,12 +124,12 @@ func WebSocketHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		_, err = databases.DB.Exec(`INSERT INTO messages (sender_id,receiver_id,content,seen )
-					VALUES (?, ?, ?);`, messageStruct.SenderId, messageStruct.ReceiverId, messageStruct.MessageContent, false)
+					VALUES (?, ?, ?, ?);`, messageStruct.SenderId, messageStruct.ReceiverId, messageStruct.MessageContent, false)
 		if err != nil {
 			fmt.Println("Error storing the message in DB : ", err)
 		}
 		// fmt.Println("2222")
-		if ConnectedUsers[messageStruct.ReceiverId] != nil {
+		if ConnectedUsers[messageStruct.ReceiverId] != nil  && OpenedConversations[messageStruct.ReceiverId][messageStruct.SenderId]{
 			err = ConnectedUsers[messageStruct.ReceiverId].WriteMessage(websocket.TextMessage, []byte(Messag))
 			if err != nil {
 				fmt.Println("Error storing the message in DB : ", err)
@@ -129,9 +143,34 @@ func WebSocketHandler(w http.ResponseWriter, r *http.Request) {
 			}
 		} else {
 			fmt.Println("dkhaaal l else")
+
+			if ConnectedUsers[messageStruct.ReceiverId] != nil {
+				var unreadCount int
+				err := databases.DB.QueryRow(`
+					SELECT COUNT(*) FROM messages
+					WHERE receiver_id = ? AND seen = false;
+				`, messageStruct.ReceiverId).Scan(&unreadCount)
+				if err != nil {
+					fmt.Println("Error fetching unread count:", err)
+				}
+		
+				notif := Notification{
+					Type:        "notification",
+					SenderId:    messageStruct.SenderId,
+					UnreadCount: unreadCount,
+				}
+		
+				notifBytes, _ := json.Marshal(notif)
+				err = ConnectedUsers[messageStruct.ReceiverId].WriteMessage(websocket.TextMessage, notifBytes)
+				if err != nil {
+					fmt.Println("Error sending notification:", err)
+				}
+			}
 		}
 
 	}
+		}
+		
 }
 
 func FetchMessages(w http.ResponseWriter, r *http.Request) {
@@ -171,7 +210,7 @@ func FetchMessages(w http.ResponseWriter, r *http.Request) {
 		var time time.Time
 
 		if err := rows.Scan(&id, &sender_id, &userId, &content, &time); err != nil {
-			fmt.Println("error in a message")
+			// fmt.Println("error in a message")
 		}
 		message := map[string]interface{}{
 			"id":        id,

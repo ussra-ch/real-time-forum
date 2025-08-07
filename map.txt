@@ -39,3 +39,12 @@ server --> userb :
     - ila la :
         * zid 1 f notifications wkhali seen = false
         * once l user y7l l conversation rj3 seen l true
+
+
+
+///////////////// IF THE USR IS OPENNING THE conversation
+
+mni y7l l conversation radi nkhali wahd l variable fih true wnstore hta sender_id w receiver_id 
+    --> mni ywsl msg jdid radi ntchecke wach struct fiha receiver_id huwa user_id db w sender_id huwa chakhs lakhur + dk l variable true :
+        *** ila ah : message nichan wl seen = true
+        *** ila la anzid ra9m notifications
