@@ -20,6 +20,7 @@ export function mesaageDiv(user, userId, receiverId) {
         </form>
     `
 
+    /////////////////////// Delete conversation Button
     const deleteButton = document.createElement('button')
     const icon = document.createElement('i');
     icon.className = 'fas fa-trash';
@@ -29,6 +30,9 @@ export function mesaageDiv(user, userId, receiverId) {
     let divHeader = conversation.getElementsByClassName('head')[0]
     divHeader.append(deleteButton)
     body.append(conversation)
+    ///////////////////////
+
+
     //throtlle khas tkoun hna
     const container = document.getElementById('chat-body')
     let offset = 0;
@@ -46,11 +50,11 @@ export function mesaageDiv(user, userId, receiverId) {
 
     conversation.querySelector('.input-area').addEventListener('submit', (e) => {
         e.preventDefault()
-        webSocket(userId, receiverId, "", true, true)
-        const input = conversation  .querySelector('.chat-input')
+        // webSocket(userId, receiverId, "", true, true, "conversation")
+        const input = conversation.querySelector('.chat-input')
         const message = input.value.trim()
         let chatBody = document.getElementById('chat-body')
-        console.log("usssraaaaaaaaaaaa");
+        console.log("eventListener dyal .input-area");
         if (message !== "") {
             // console.log(1);
             let newMsg = document.createElement('div')
@@ -58,7 +62,7 @@ export function mesaageDiv(user, userId, receiverId) {
             newMsg.innerHTML = `<h3>${message}</h3>
                         <h7>${formatDate(Date.now())}</h7>`
             chatBody.append(newMsg)
-            webSocket(userId, receiverId, input.value, false, true)
+            webSocket(userId, receiverId, input.value, true, true, "message")
             input.value = ''
             const container = document.getElementById('chat-body')
             container.scrollTop = container.scrollHeight;
@@ -66,7 +70,8 @@ export function mesaageDiv(user, userId, receiverId) {
     })
 
     deleteButton.addEventListener('click', () => {
-        let isConversationOpen = {"senderId" : userId, "receiverId": receiverId,"messageContent": "", "seen": false,  "isOpen" : false}
+        console.log("deleteButton listener");
+        let isConversationOpen = {"senderId" : userId, "receiverId": receiverId,"messageContent": "", "seen": false,  "isOpen" : false, "type": "closeConversation"}
         const jsonIsConversationOpen = JSON.stringify(isConversationOpen);
         ws.send(jsonIsConversationOpen);
         conversation.remove()

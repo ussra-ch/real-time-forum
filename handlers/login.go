@@ -85,14 +85,19 @@ func IsAuthenticated(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		fmt.Println("err", err)
 	}
+	var notifs, _ = databases.DB.Exec(`
+	SELECT COUNT(*) FROM messages
+					WHERE receiver_id = ? AND seen = false;
+	`,  userID)
 	user := map[string]interface{}{
-		"ok":       true,
-		"nickname": nickname,
-		"age":      age,
-		"photo":    photo,
-		"email":    email,
-		"id":       userID,
-		"status":   "online",
+		"ok":            true,
+		"nickname":      nickname,
+		"age":           age,
+		"photo":         photo,
+		"email":         email,
+		"id":            userID,
+		"status":        "online",
+		"notifications": notifs,
 	}
 	UsersStatus[userID] = "online"
 	w.Header().Set("Content-Type", "application/json")

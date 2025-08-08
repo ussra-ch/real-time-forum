@@ -19,3 +19,6 @@ limit websocket size (machi ri l buffer)
 
 edit profile button makhdamach
 check dyal l email fach 3ad kansaybo account jdid ta hia makhdamach, 9dart nsayb accoutn b email mafihch @
+
+
+responsive

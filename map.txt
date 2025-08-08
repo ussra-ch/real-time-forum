@@ -48,3 +48,8 @@ mni y7l l conversation radi nkhali wahd l variable fih true wnstore hta sender_i
     --> mni ywsl msg jdid radi ntchecke wach struct fiha receiver_id huwa user_id db w sender_id huwa chakhs lakhur + dk l variable true :
         *** ila ah : message nichan wl seen = true
         *** ila la anzid ra9m notifications
+
+
+/////////////// FLOW DYAL CHAT :
+
+click on conversationButton (users.js) --> kansift msg khawi + seen=true + isOpen=true l websocket.go --> IN BACKEND: kankhali dk luser online + kansid l conversation dyalo ka open

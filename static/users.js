@@ -29,11 +29,11 @@ export function fetchUser() {
       if (user.photo.Valid) {
         profil = `<img src="${user.photo.String}" class="profil" class="profil" alt="Profile Picture">`
       }
-      const btn = document.createElement('button')
-      btn.id = "sendButton"
-      btn.innerHTML = `
+      const conversationButton = document.createElement('button')
+      conversationButton.id = "conversationButton"
+      conversationButton.innerHTML = `
       <i class="fa-solid fa-message"></i>`
-      btn.style.marginRight = '0'
+      conversationButton.style.marginRight = '0'
       const div = document.createElement('div');
       div.innerHTML = `${profil} ${user.nickname}`;
       // for (const value of connectedUsers.values()){
@@ -52,13 +52,13 @@ export function fetchUser() {
       div.style.margin = '10px'
       div.style.maxWidth = '200px'
       div.style.background = 'rgba(26, 35, 50, 0.95)';
-      div.append(btn)
+      div.append(conversationButton)
       usern.appendChild(div);
 
 
-      btn.addEventListener('click', () => {
+      conversationButton.addEventListener('click', () => {
         if (document.getElementById('message')) document.getElementById('message').remove()
-        let isConversationOpen = {"senderId" : users.UserId, "receiverId": user.userId,"messageContent": "", "seen": false,  "isOpen" : true}
+        let isConversationOpen = {"senderId" : users.UserId, "receiverId": user.userId,"messageContent": "", "seen": true,  "isOpen" : true, "type": "conversation"}
         const jsonIsConversationOpen = JSON.stringify(isConversationOpen);
         ws.send(jsonIsConversationOpen);
         mesaageDiv(user.nickname, users.UserId, user.userId)

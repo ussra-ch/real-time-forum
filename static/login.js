@@ -1,5 +1,5 @@
 import { fetchUser } from "./users.js";
-import { loginDiv, content } from "./var.js";
+import { loginDiv, content, notifications } from "./var.js";
 import { profile } from "./profile.js"
 import {formatDate} from "./message.js"
 import { logout } from "./logout.js"
@@ -145,13 +145,19 @@ export function login() {
                 <header>
                 <button id="profile" style="z-index: 10;">${profil} </button>
                 <button id="Create" style="z-index: 10;">+</button>
+                <div class="notification-circle">
+                    🔔
+                    <div class="notification-badge" , id ="notification-circle">${notifications}</div>
+                </div>
                 </header>
+                <div class="sidebar-left">
+                <div class="sidebar-label categories-label">Categories</div>
+                <div class="sidebar-label posts-label">Posts</div>
+                </div>
                 <div id="catego"></div>
                 <div id="all">
                 <div id="postsContainer"></div>
                 <div id="user">
-                <h3>Notifications</h3>
-                <div id="not"></div>
                 <h3 style="color: rgb(89, 230, 187);"><i class="fa-solid fa-certificate"></i>online</h3>
                 <div id="users"></div>
                 </div>

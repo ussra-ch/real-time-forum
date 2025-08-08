@@ -42,6 +42,40 @@ header::before {
     font-weight: 700;
 }
 
+.notification-circle {
+    position: relative;
+    width: 50px;
+    height: 50px;
+    background-color: #f0f0f0;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    color: #333;
+  }
+
+  .notification-badge {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background-color: red;
+    color: white;
+    font-size: 12px;
+    font-weight: bold;
+    border-radius: 50%;
+    width: 18px;
+    height: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+
+
+
+
+
 /* Buttons */
 button,
 .btn {
@@ -143,13 +177,14 @@ button:hover,
     backdrop-filter: blur(10px);
     border: 1px solid rgba(100, 255, 218, 0.1);
     border-radius: 15px;
-    padding: 1.5rem;
+    padding: 2.5rem;
     height: fit-content;
-    /*position: sticky;*/
+    /* position: sticky; */
     top: 100px;
     width: 98vw;
     display: flex;
     justify-content: space-evenly;
+    margin-top: 18px;
 }
 
 .profile-container {
@@ -229,13 +264,14 @@ button:hover,
 
 /* Posts Container */
 #postsContainer {
-    top: 20vh;
-    width: 60%;
+    top: 67vh;
+    width: 1000px;
     border-radius: 15px;
     padding: 1.5rem;
     max-height: 80vh;
     border: 1px solid rgba(100, 255, 218, 0.2);
     overflow: auto;
+    margin-top: 20px;
 }
 
 /* Posts Styling */
@@ -458,7 +494,7 @@ body::after {
 #user {
     height: 70vh;
     border: 1px solid rgba(100, 255, 218, 0.2);
-    width: 40vw;
+    width: 32vw;
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
@@ -467,8 +503,9 @@ body::after {
     gap: 10px;
     max-height: 70vh;
     background-color: #0f1419;
-    margin-left: 20px;
+    margin-left: 100px;
     border-radius: 20px;
+    margin-top: 17px;
 }
 
 #users {
@@ -788,3 +825,128 @@ form a:hover {
 ::-webkit-scrollbar-thumb:hover {
     background: #00b4d8;
 }
+
+
+/* Left sidebar labels */
+.sidebar-left {
+    position: fixed;
+    left: 0;
+    top: 0;
+    height: 100vh;
+    width: 30px;
+    z-index: 1000;
+    pointer-events: none;
+}
+
+/* Right sidebar labels */
+.sidebar-right {
+    position: fixed;
+    right: 0;
+    top: 0;
+    height: 100vh;
+    width: 30px;
+    z-index: 1000;
+    pointer-events: none;
+}
+
+/* Common sidebar label styles */
+.sidebar-label {
+    position: absolute;
+    color: #ff36ab;
+    font-size: 21px;
+    font-weight: 500;
+    letter-spacing: 1px;
+    cursor: pointer;
+    pointer-events: auto;
+    transition: color 0.3s ease, transform 0.3s ease;
+    user-select: none;
+}
+
+/* Left side labels - rotated counterclockwise */
+.sidebar-left .sidebar-label {
+    writing-mode: vertical-rl;
+    text-orientation: mixed;
+    transform: rotate(180deg);
+    transform-origin: center;
+}
+
+/* Right side labels - rotated clockwise */
+.sidebar-right .sidebar-label {
+    writing-mode: vertical-rl;
+    text-orientation: mixed;
+    transform-origin: center;
+}
+
+/* Specific positioning for each label */
+.categories-label {
+    top: 10.5%;
+    left: 15px;
+}
+
+.posts-label {
+    top: 27%;
+    left: 17px;
+}
+
+.notifications-label {
+    top: 25%;
+    right: 8px;
+}
+
+.friends-label {
+    top: 60%;
+    right: 8px;
+}
+
+/* Hover effects */
+.sidebar-label:hover {
+    color: #d90368;
+    transform: scale(1.1);
+}
+
+.sidebar-left .sidebar-label:hover {
+    transform: rotate(180deg) scale(1.1);
+}
+
+/* Main forum container */
+.forum-container {
+    margin: 0 40px;
+    padding: 20px;
+    min-height: 100vh;
+}
+
+.forum-header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.forum-header h1 {
+    color: #00bcd4;
+    font-size: 2.5em;
+    border: 2px solid #00bcd4;
+    border-radius: 10px;
+    padding: 15px;
+    display: inline-block;
+}
+
+.forum-content {
+    background-color: rgba(255, 255, 255, 0.1);
+    padding: 30px;
+    border-radius: 10px;
+    text-align: center;
+}
+
+/* Alternative approach using CSS transforms instead of writing-mode */
+.sidebar-label-transform {
+    transform-origin: center;
+    white-space: nowrap;
+}
+
+.sidebar-left .sidebar-label-transform {
+    transform: rotate(-90deg);
+}
+
+.sidebar-right .sidebar-label-transform {
+    transform: rotate(90deg);
+}
+

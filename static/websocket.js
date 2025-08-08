@@ -2,8 +2,7 @@ import { ws } from "./var.js";
 import { fetchUser } from "./users.js";
 // import { connectedUsers } from "./var.js";
 
-export function webSocket(senderId, receiverId, messageContent, seen, isOpen) {
-    // console.log('dkhal lhnaaa');
+export function webSocket(senderId, receiverId, messageContent, seen, isOpen, type) {
     if (!senderId || !receiverId || !messageContent) {
         return
     }
@@ -14,10 +13,8 @@ export function webSocket(senderId, receiverId, messageContent, seen, isOpen) {
         messageContent,
         seen,
         isOpen,
-        // userStatus,
+        type,
     };
-    // console.log(payload);
-
 
     ws.send(JSON.stringify(payload));
 
@@ -33,15 +30,19 @@ export function initWebSocket(onMessageCallback) {
         console.log("Received:",);
         const data = JSON.parse(event.data);
         if (data.type === "message") {
-            // console.log(22);
-
-            console.log("type message");
-
+            const notifications = JSON.parse(event.data);
+            console.log("type messages, w notifs huma :", notifications);
+            let notifs = document.getElementById('notification-circle')
+            notifs.textContent = notifications.unreadCount
             onMessageCallback(data.content);
         } else if (data.type == 'notification') {
             const notifications = JSON.parse(event.data);
             console.log("type notifs :", notifications);
+            let notifs = document.getElementById('notification-circle')
+            notifs.textContent = notifications.unreadCount
+            // console.log(notifs);
         } else {
+            console.log("dkhal l else wsaaaaafi");
             console.log(data.userId);
             
             fetchUser(data.userId)
