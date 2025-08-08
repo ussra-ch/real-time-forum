@@ -92,7 +92,6 @@ function fetchMessages(userId, receiverId, offset, limit) {
                     if (message.userId == userId && message.sender_id == receiverId) {
                         let newMsg = document.createElement('div')
                         newMsg.className = 'messageSent'
-                        newMsg.style.background = 'blue'
                         newMsg.innerHTML = `<h3>${message.content}</h3>
                                             <h7>${formatDate(message.time)}</h7>`
                         body.prepend(newMsg)

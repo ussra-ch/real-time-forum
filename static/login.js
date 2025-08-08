@@ -1,7 +1,7 @@
 import { fetchUser } from "./users.js";
 import { loginDiv, content } from "./var.js";
 import { profile } from "./profile.js"
-import {formatDate} from "./message.js"
+import { formatDate } from "./message.js"
 import { logout } from "./logout.js"
 import { Create } from "./post.js"
 import { fetchPosts } from "./post.js";
@@ -112,7 +112,9 @@ function islogin() {
         // console.log(msg);
 
         let chatBody = document.getElementById('chat-body');
-        if (!chatBody) {
+
+
+        if (!chatBody || msg == "") {
             return
         }
         let newMsg = document.createElement('div');
