@@ -52,7 +52,6 @@ func WebSocketHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	_, userId := IsLoggedIn(r)
-	fmt.Println("User connected:", userId)
 	mu.Lock()
 	broadcastUserStatus(conn, userId)
 	sendUnreadNotifications(userId, conn)
@@ -85,15 +84,15 @@ func WebSocketHandler(w http.ResponseWriter, r *http.Request) {
 		_ = decoder.Decode(&toolMap)
 
 		if typeValue, ok := toolMap["type"].(string); ok {
-			fmt.Println("Type value is :", typeValue)
 			if typeValue == "OpenConversation" || typeValue == "CloseConversation" {
-				fmt.Println("\nTool map is :\n\n", toolMap)
 				mu.Lock()
 				conversationOpened(toolMap["senderId"].(float64), toolMap["receiverId"].(float64), toolMap["type"].(string))
-				if (typeValue == "OpenConversation" ){
-					fmt.Println("inside openConversation::::::::::::::::")
-					updateSeenValue(int(toolMap["receiverId"].(float64)),int(toolMap["senderId"].(float64)))
+				if (typeValue == "OpenConversation"){
+					updateSeenValue(int(toolMap["senderId"].(float64)),int(toolMap["receiverId"].(float64)))
 				}
+				// if (typeValue == "CloseConversation"){
+				// 	fmt.Println("\n\n\nInside the CloseConversation section\n\n")
+				// }
 				sendUnreadNotifications(userId, conn)
 				mu.Unlock()
 			}
@@ -108,18 +107,8 @@ func WebSocketHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		if len(messageStruct.MessageContent) > 0 {
-			fmt.Println("isConversationOpened :", isConversationOpened)
 			if isConversationOpened {
-
-				//update seen = true
 				updateSeenValue(int(messageStruct.ReceiverId), int(messageStruct.SenderId))
-
-				//update notification's value
-				// messageStruct.Notifications = unreadMessages(int(messageStruct.ReceiverId))
-
-				// fmt.Println("Notifications in backend is :", messageStruct.Notifications)
-
-				//send message to the receiver
 				Message, err := json.Marshal(messageStruct)
 				if err != nil {
 					fmt.Println("error in the messageHandler")
@@ -131,18 +120,7 @@ func WebSocketHandler(w http.ResponseWriter, r *http.Request) {
 
 				sendUnreadNotifications(int(messageStruct.ReceiverId), ConnectedUsers[messageStruct.ReceiverId])
 			} else {
-				//update notification's value
-				// messageStruct.Notifications = unreadMessages(int(messageStruct.ReceiverId))
-				// fmt.Println("Notifications in backend is :", messageStruct.Notifications)
 				sendUnreadNotifications(int(messageStruct.ReceiverId), ConnectedUsers[messageStruct.ReceiverId])
-				// notifications, err := json.Marshal(notifs)
-				// if err != nil {
-				// 	fmt.Println("error in the messageHandler")
-				// }
-				// err = ConnectedUsers[messageStruct.ReceiverId].WriteMessage(websocket.TextMessage, []byte(notifications))
-				// if err != nil {
-				// 	fmt.Println("Error sending message:", err)
-				// }
 			}
 		}
 	}
@@ -239,21 +217,11 @@ func conversationOpened(senderId, receiverId float64, typeValue string) {
 	if OpenedConversations[senderId] == nil {
 		OpenedConversations[senderId] = make(map[float64]bool)
 	}
-	fmt.Printf("Type for : %f, %f, %s\n", senderId, receiverId, typeValue)
-	if typeValue == "closeConversation" {
+	if typeValue == "CloseConversation" {
 		OpenedConversations[senderId][receiverId] = false
 	} else {
 		OpenedConversations[senderId][receiverId] = true
-		// updateSeenValue(messageStruct)
-		// sendNotification(&messageStruct)
 	}
-
-	// bothOpen := isMutuallyOpen(messageStruct.SenderId, messageStruct.ReceiverId)
-
-	// fmt.Printf("Conversation between %d and %d open status: %v\n",
-	// 	messageStruct.SenderId, messageStruct.ReceiverId, bothOpen)
-
-	// return bothOpen
 
 }
 
@@ -268,7 +236,6 @@ func messageHandler(messageStruct Message) {
 }
 
 func updateSeenValue(receiverId, senderId int) {
-	fmt.Println("updaaaate seeeeeen")
 	query := `UPDATE messages
 	SET seen = 1
 	WHERE messages.sender_id = ? AND messages.receiver_id = ?;`
@@ -276,29 +243,6 @@ func updateSeenValue(receiverId, senderId int) {
 	if err != nil {
 		fmt.Println("eror when changing the seen value in database, in updateSeenValue function")
 	}
-
-	//update l notifications dyal receiver
-	// var totalUnread int
-	// err = databases.DB.QueryRow(`
-	// 				SELECT COUNT(*) FROM messages
-	// 				WHERE receiver_id = ? AND seen = false;
-	// 			`, messageStruct.ReceiverId).Scan(&totalUnread)
-	// if err != nil {
-	// 	fmt.Println("Error fetching total unread count:", err)
-	// }
-
-	// Send updated total notification count
-	// notif := Notification{
-	// 	Type:        "notifications",
-	// 	SenderId:    messageStruct.SenderId,
-	// 	UnreadCount: totalUnread,
-	// }
-	// notifBytes, _ := json.Marshal(notif)
-	// err = ConnectedUsers[messageStruct.ReceiverId].WriteMessage(websocket.TextMessage, notifBytes)
-	// if err != nil {
-	// 	fmt.Println("Error sending total notification count:", err)
-	// }
-
 	fmt.Println("Seen value has been updated")
 }
 
@@ -314,26 +258,9 @@ func unreadMessages(receiverId int) int {
 
 	return unreadCount
 
-	// notif := Notification{
-	// 	Type:        "notification",
-	// 	UnreadCount: unreadCount,
-	// }
-	// fmt.Println("UnreadCount is :", unreadCount)
-	// notifBytes, _ := json.Marshal(notif)
-	// err = ConnectedUsers[messageStruct.ReceiverId].WriteMessage(websocket.TextMessage, notifBytes)
-	// if err != nil {
-	// 	fmt.Println("Error sending notification:", err)
-	// }
-	// fmt.Println("notification count is sent to the receiver ")
 }
 
-// func isMutuallyOpen(user1, user2 int) bool {
-// 	return OpenedConversations[user1][user2] && OpenedConversations[user2][user1]
-// }
-
-
 func sendUnreadNotifications(userId int, conn *websocket.Conn){
-	fmt.Println("USERRRRR ID :", userId)
 	notifs := Notification{
 		Type:        "unreadMessage",
 		UnreadCount: unreadMessages(userId),
@@ -342,7 +269,5 @@ func sendUnreadNotifications(userId int, conn *websocket.Conn){
 	if err != nil {
 		fmt.Println("error in the messageHandler")
 	}
-	// fmt.Println("user id is ;", userId)
-	// fmt.Println("unread messages are : ", notifs.UnreadCount)
 	conn.WriteMessage(websocket.TextMessage, Notifs)
 }
