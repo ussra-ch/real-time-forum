@@ -107,10 +107,10 @@ func IsAuthenticated(w http.ResponseWriter, r *http.Request) {
 func LogoutHandler(w http.ResponseWriter, r *http.Request) {
 	_, userID := IsLoggedIn(r)
 	UsersStatus[userID] = "offline"
-	delete(ConnectedUsers, userID)
+	delete(ConnectedUsers, float64(userID))
 	_, userId := IsLoggedIn(r)
 	mu.Lock()
-	if _, exists := ConnectedUsers[userId]; !exists {
+	if _, exists := ConnectedUsers[float64(userId)]; !exists {
 		oldUser := make(map[string]interface{})
 		oldUser["type"] = "offline"
 		oldUser["userId"] = userId
@@ -213,7 +213,7 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 	_, userId := IsLoggedIn(r)
 	mu.Lock()
 
-	if _, exists := ConnectedUsers[userId]; !exists {
+	if _, exists := ConnectedUsers[float64(userId)]; !exists {
 		newUser := make(map[string]interface{})
 		newUser["type"] = "online"
 		newUser["userId"] = userId

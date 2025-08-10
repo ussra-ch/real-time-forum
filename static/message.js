@@ -1,5 +1,5 @@
-import { webSocket } from "./websocket.js"
-import { ws } from "./var.js"
+// import { webSocket } from "./websocket.js"
+import { ws } from "./websocket.js"
 export function mesaageDiv(user, userId, receiverId) {
     // console.log();
 
@@ -62,7 +62,16 @@ export function mesaageDiv(user, userId, receiverId) {
             newMsg.innerHTML = `<h3>${message}</h3>
                         <h7>${formatDate(Date.now())}</h7>`
             chatBody.append(newMsg)
-            webSocket(userId, receiverId, input.value, true, true, "message")
+            const payload = {
+                "senderId" : userId,
+                "receiverId": receiverId,
+                "messageContent": input.value,
+                "type": "message",
+            };
+            // console.log("type is :", payload.type);
+        
+            ws.send(JSON.stringify(payload));
+            // webSocket(userId, receiverId, input.value, "message")
             input.value = ''
             const container = document.getElementById('chat-body')
             container.scrollTop = container.scrollHeight;
@@ -71,8 +80,9 @@ export function mesaageDiv(user, userId, receiverId) {
 
     deleteButton.addEventListener('click', () => {
         console.log("deleteButton listener");
-        let isConversationOpen = {"senderId" : userId, "receiverId": receiverId,"messageContent": "", "seen": false,  "isOpen" : false, "type": "closeConversation"}
+        let isConversationOpen = {"senderId" : userId, "receiverId": receiverId, "type": "CloseConversation"}
         const jsonIsConversationOpen = JSON.stringify(isConversationOpen);
+        console.log("isConversationOpen : ------------->", isConversationOpen);
         ws.send(jsonIsConversationOpen);
         conversation.remove()
     })
@@ -97,7 +107,6 @@ function fetchMessages(userId, receiverId, offset, limit) {
                     if (message.userId == userId && message.sender_id == receiverId) {
                         let newMsg = document.createElement('div')
                         newMsg.className = 'messageSent'
-                        newMsg.style.background = 'blue'
                         newMsg.innerHTML = `<h3>${message.content}</h3>
                                             <h7>${formatDate(message.time)}</h7>`
                         body.prepend(newMsg)

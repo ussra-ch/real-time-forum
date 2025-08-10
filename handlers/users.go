@@ -99,7 +99,7 @@ func FetchUsers(w http.ResponseWriter, r *http.Request) {
 		}
 		// fmt.Println(ConnectedUsers[userId])
 		mu.Lock()
-		_, exists := ConnectedUsers[userId]
+		_, exists := ConnectedUsers[float64(userId)]
 		mu.Unlock()
 		if exists {
 			mu.Lock()

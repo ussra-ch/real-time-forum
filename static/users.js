@@ -1,5 +1,6 @@
 import { mesaageDiv } from "./message.js";
-import { ws } from "./var.js";
+import { ws } from "./websocket.js"
+
 
 export function fetchUser() {
   const usern = document.getElementById('users');
@@ -58,7 +59,7 @@ export function fetchUser() {
 
       conversationButton.addEventListener('click', () => {
         if (document.getElementById('message')) document.getElementById('message').remove()
-        let isConversationOpen = {"senderId" : users.UserId, "receiverId": user.userId,"messageContent": "", "seen": true,  "isOpen" : true, "type": "conversation"}
+        let isConversationOpen = {"senderId" : users.UserId, "receiverId": user.userId,"isOpen" : true, "type": "OpenConversation"}
         const jsonIsConversationOpen = JSON.stringify(isConversationOpen);
         ws.send(jsonIsConversationOpen);
         mesaageDiv(user.nickname, users.UserId, user.userId)

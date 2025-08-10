@@ -53,3 +53,12 @@ mni y7l l conversation radi nkhali wahd l variable fih true wnstore hta sender_i
 /////////////// FLOW DYAL CHAT :
 
 click on conversationButton (users.js) --> kansift msg khawi + seen=true + isOpen=true l websocket.go --> IN BACKEND: kankhali dk luser online + kansid l conversation dyalo ka open
+
+
+
+
+
+
+
+PROBLEMS :
+- fach kanreloadi l page l users makitfetchawch

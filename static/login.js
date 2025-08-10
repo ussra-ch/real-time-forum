@@ -1,13 +1,14 @@
 import { fetchUser } from "./users.js";
 import { loginDiv, content, notifications } from "./var.js";
 import { profile } from "./profile.js"
-import {formatDate} from "./message.js"
+import { formatDate } from "./message.js"
 import { logout } from "./logout.js"
 import { Create } from "./post.js"
 import { fetchPosts } from "./post.js";
 import { catigories } from "./sort.js";
 import { comment } from "./comment.js";
 import { initWebSocket } from "./websocket.js";
+// import { ws } from "./var.js";
 // import { connectedUsers } from "./var.js";
 
 
@@ -108,11 +109,14 @@ export function logindiv() {
 }
 
 function islogin() {
+    // ws.onopen = () => {
+    //     console.log("onopen jdiddaa");
+    // }
+    console.log("teeeest log");
     initWebSocket((msg) => {
         // console.log(msg);
-
         let chatBody = document.getElementById('chat-body');
-        if (!chatBody) {
+        if (!chatBody || msg == "") {
             return
         }
         let newMsg = document.createElement('div');
@@ -190,7 +194,6 @@ export function login() {
                 editBtn.style.top = '8vh';
                 editBtn.style.height = '5vh';
 
-
                 document.getElementById('profile').addEventListener('click', () => {
                     if (div.style.display === 'none') {
                         div.style.display = 'flex';
@@ -201,9 +204,9 @@ export function login() {
                 document.getElementById('editProfail').addEventListener('click', () => {
                     profile(res.age, res.email, res.nickname, res.photo)
                 })
-                console.log(111111111);
-                fetchUser(res.status);
+                // console.log(ws.readyState);
                 islogin();
+                fetchUser(res.status);
                 return true
             } else {
                 body.innerHTML = `
