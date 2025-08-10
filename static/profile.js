@@ -19,7 +19,7 @@ export function profile(age, email, nickname, photo) {
                 <input type="number" name="age" id="title">
         
                 <div class="profile-actions">
-                  <button type="submit" id="editProfail">Edit Profile</button>
+                  <button type="submit" id="editProfile">Edit Profile</button>
                 </div>
             </form>
         </div>

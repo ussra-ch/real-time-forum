@@ -195,7 +195,7 @@ func broadcastUserStatus(conn *websocket.Conn, userId int) {
 			value.WriteMessage(websocket.TextMessage, []byte(toSend))
 		}
 	}
-	fmt.Println("User status broadcasted")
+	fmt.Printf("\n\nUser status broadcasted for user: %d \n\n", userId)
 	ConnectedUsers[float64(userId)] = conn
 }
 

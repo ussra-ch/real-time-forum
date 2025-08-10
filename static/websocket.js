@@ -42,21 +42,19 @@ export function initWebSocket(onMessageCallback) {
             if (data.type === "unreadMessage") {
                 let notifs = document.getElementById('notification-circle')
                 notifs.textContent = data.unreadCount
-            }
 
-            if (data.type === "message") {
+            }else if (data.type === "message") {
                 console.log("type messages :", data);
                 let notifs = document.getElementById('notification-circle')
                 notifs.textContent = data.Notifications
                 onMessageCallback(data.messageContent);
 
-
             } else if (data.type == 'notification') {
                 console.log("type notifs :", notifications);
                 let notifs = document.getElementById('notification-circle')
                 notifs.textContent = data.unreadCount
-
-
+            }else if (data.type == 'online'){
+                
             }
             //  else {
             //     console.log("dkhal l else wsaaaaafi");

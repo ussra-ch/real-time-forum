@@ -109,10 +109,6 @@ export function logindiv() {
 }
 
 function islogin() {
-    // ws.onopen = () => {
-    //     console.log("onopen jdiddaa");
-    // }
-    console.log("teeeest log");
     initWebSocket((msg) => {
         // console.log(msg);
         let chatBody = document.getElementById('chat-body');
@@ -173,7 +169,7 @@ export function login() {
                 const div = document.createElement('div');
                 div.innerHTML = `
                     <button id="logout">Logout</button>
-                    <button id="editProfail">Edit Profile</button>
+                    <button id="editProfile">Edit Profile</button>
                 `;
                 body.append(div);
 
@@ -187,7 +183,7 @@ export function login() {
                 div.style.zIndex = '1000';
                 div.style.display = 'none';
                 const logoutBtn = document.getElementById('logout');
-                const editBtn = document.getElementById('editProfail');
+                const editBtn = document.getElementById('editProfile');
 
                 logoutBtn.style.margin = '5px';
                 editBtn.style.position = 'relative';
@@ -201,7 +197,7 @@ export function login() {
                         div.style.display = 'none';
                     }
                 });
-                document.getElementById('editProfail').addEventListener('click', () => {
+                document.getElementById('editProfile').addEventListener('click', () => {
                     profile(res.age, res.email, res.nickname, res.photo)
                 })
                 // console.log(ws.readyState);
