@@ -1,4 +1,5 @@
 import { login } from "./login.js";
+import { fetchUser } from "./users.js";
 // import { connectedUsers } from "./var.js";
 
 

@@ -109,12 +109,9 @@ export function logindiv() {
 }
 
 function islogin() {
-    // ws.onopen = () => {
-    //     console.log("onopen jdiddaa");
-    // }
-    console.log("teeeest log");
+
     initWebSocket((msg) => {
-        // console.log(msg);
+         console.log(msg);
         let chatBody = document.getElementById('chat-body');
         if (!chatBody || msg == "") {
             return
@@ -125,7 +122,10 @@ function islogin() {
         newMsg.className = 'messageSent'
         chatBody.append(newMsg);
         chatBody.scrollTop = chatBody.scrollHeight;
+        
+
     });
+
     logout();
     Create();
     fetchPosts();

@@ -265,7 +265,7 @@ button:hover,
 /* Posts Container */
 #postsContainer {
     top: 67vh;
-    width: 1000px;
+    width: 70vw;
     border-radius: 15px;
     padding: 1.5rem;
     max-height: 80vh;

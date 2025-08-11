@@ -38,7 +38,7 @@ export function profile(age, email, nickname, photo) {
             method: 'POST',
             body: formData,
         }).then(r => {
-            console.log(r);
+       
 
         })
     })

@@ -70,7 +70,7 @@ export function Create() {
 
 
 }
-export function Notifications(notifs){
+export function Notifications(notifs) {
     const notifications = document.getElementById('notifications')
     const CreateCard = document.createElement('div')
     CreateCard.innerHTML = `
@@ -80,6 +80,7 @@ export function Notifications(notifs){
     content.appendChild(notifications);
     notifications.style.display = 'none';
 }
+
 export function fetchPosts() {
     fetch('/api/fetch_posts')
         .then(res => res.json())
@@ -94,19 +95,19 @@ export function fetchPosts() {
                 const postCard = document.createElement('div');
                 postCard.className = 'post-card1';
                 postCard.innerHTML = `
-                <h3>${post.title}</h3>
-        <p>${post.content}</p>
-        <p>Topics: ${topics.join(', ')}</p>
-        ${post.photo ? `<img src="${post.photo}" alt="Post image" style="max-width:100%;">` : ''}
-        <p>Posted by: User #${post.nickname || "Unknown"} on ${new Date(post.created_at).toLocaleDateString()}</p>
-         <form class="commentForm">
-         <input type="hidden" name="post_id" value="${post.id}">
-          <input type="text" name="content" class="commentInput" placeholder="Write a comment..." required>
-          <button type="submit" class="commentButton">Comment</button>
-          <button type="button" class="show">Show Comments</button>
-        </form>
-      `;
-if (post.myId == post.user_id) {
+                    <h3>${post.title}</h3>
+                    <p>${post.content}</p>
+                    <p>Topics: ${topics.join(', ')}</p>
+                    ${post.photo ? `<img src="${post.photo}" alt="Post image" style="max-width:100%;">` : ''}
+                    <p>Posted by: User #${post.nickname || "Unknown"} on ${new Date(post.created_at).toLocaleDateString()}</p>
+                     <form class="commentForm">
+                     <input type="hidden" name="post_id" value="${post.id}">
+                      <input type="text" name="content" class="commentInput" placeholder="Write a comment..." required>
+                      <button type="submit" class="commentButton">Comment</button>
+                      <button type="button" class="show">Show Comments</button>
+                    </form>
+                `;
+                if (post.myId == post.user_id) {
                     const button = document.createElement('button')
                     button.textContent = 'Delete'
                     postCard.prepend(button)

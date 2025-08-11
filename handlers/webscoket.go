@@ -39,8 +39,10 @@ type Notification struct {
 	UnreadCount int `json:"unreadCount"`
 }
 
-var ConnectedUsers = make(map[float64]*websocket.Conn)
-var OpenedConversations = make(map[float64]map[float64]bool)
+var (
+	ConnectedUsers      = make(map[float64]*websocket.Conn)
+	OpenedConversations = make(map[float64]map[float64]bool)
+)
 
 // openedConversations = make(map[int]int)
 
@@ -59,6 +61,18 @@ func WebSocketHandler(w http.ResponseWriter, r *http.Request) {
 
 	defer func() {
 		mu.Lock()
+
+		newUser := make(map[string]interface{})
+		newUser["type"] = "ofling"
+		newUser["userId"] = userId
+		toSend, err := json.Marshal(newUser)
+		if err != nil {
+			fmt.Println("error when sending the user's status : ", err)
+		}
+		for _, value := range ConnectedUsers {
+			value.WriteMessage(websocket.TextMessage, []byte(toSend))
+		}
+
 		delete(ConnectedUsers, float64(userId))
 		conn.Close()
 		mu.Unlock()
@@ -87,8 +101,8 @@ func WebSocketHandler(w http.ResponseWriter, r *http.Request) {
 			if typeValue == "OpenConversation" || typeValue == "CloseConversation" {
 				mu.Lock()
 				conversationOpened(toolMap["senderId"].(float64), toolMap["receiverId"].(float64), toolMap["type"].(string))
-				if (typeValue == "OpenConversation"){
-					updateSeenValue(int(toolMap["senderId"].(float64)),int(toolMap["receiverId"].(float64)))
+				if typeValue == "OpenConversation" {
+					updateSeenValue(int(toolMap["senderId"].(float64)), int(toolMap["receiverId"].(float64)))
 				}
 				// if (typeValue == "CloseConversation"){
 				// 	fmt.Println("\n\n\nInside the CloseConversation section\n\n")
@@ -222,7 +236,6 @@ func conversationOpened(senderId, receiverId float64, typeValue string) {
 	} else {
 		OpenedConversations[senderId][receiverId] = true
 	}
-
 }
 
 func messageHandler(messageStruct Message) {
@@ -257,10 +270,9 @@ func unreadMessages(receiverId int) int {
 	}
 
 	return unreadCount
-
 }
 
-func sendUnreadNotifications(userId int, conn *websocket.Conn){
+func sendUnreadNotifications(userId int, conn *websocket.Conn) {
 	notifs := Notification{
 		Type:        "unreadMessage",
 		UnreadCount: unreadMessages(userId),

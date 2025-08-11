@@ -1,5 +1,6 @@
 // import { webSocket } from "./websocket.js"
 import { ws } from "./websocket.js"
+import { fetchUser } from "./users.js"
 export function mesaageDiv(user, userId, receiverId) {
     // console.log();
 
@@ -41,7 +42,7 @@ export function mesaageDiv(user, userId, receiverId) {
 
     container.addEventListener("scroll", () => {
         if (container.scrollTop === 0) {
-            console.log(offset, limit);
+
             offset += limit;
             fetchMessages(userId, receiverId, offset, limit)
         }
@@ -54,7 +55,7 @@ export function mesaageDiv(user, userId, receiverId) {
         const input = conversation.querySelector('.chat-input')
         const message = input.value.trim()
         let chatBody = document.getElementById('chat-body')
-        console.log("eventListener dyal .input-area");
+
         if (message !== "") {
             // console.log(1);
             let newMsg = document.createElement('div')
@@ -63,14 +64,15 @@ export function mesaageDiv(user, userId, receiverId) {
                         <h7>${formatDate(Date.now())}</h7>`
             chatBody.append(newMsg)
             const payload = {
-                "senderId" : userId,
+                "senderId": userId,
                 "receiverId": receiverId,
                 "messageContent": input.value,
                 "type": "message",
             };
             // console.log("type is :", payload.type);
-        
+
             ws.send(JSON.stringify(payload));
+            fetchUser()
             // webSocket(userId, receiverId, input.value, "message")
             input.value = ''
             const container = document.getElementById('chat-body')
@@ -79,10 +81,10 @@ export function mesaageDiv(user, userId, receiverId) {
     })
 
     deleteButton.addEventListener('click', () => {
-        console.log("deleteButton listener");
-        let isConversationOpen = {"senderId" : userId, "receiverId": receiverId, "type": "CloseConversation"}
+
+        let isConversationOpen = { "senderId": userId, "receiverId": receiverId, "type": "CloseConversation" }
         const jsonIsConversationOpen = JSON.stringify(isConversationOpen);
-        console.log("isConversationOpen : ------------->", isConversationOpen);
+
         ws.send(jsonIsConversationOpen);
         conversation.remove()
     })
@@ -98,12 +100,12 @@ function fetchMessages(userId, receiverId, offset, limit) {
     })
         .then(response => response.json())
         .then(messages => {
-            console.log("fetchiw les messages");
+
             if (!messages) {
                 return
             }
             for (const message of messages) {
-                if (message.content != ""){
+                if (message.content != "") {
                     if (message.userId == userId && message.sender_id == receiverId) {
                         let newMsg = document.createElement('div')
                         newMsg.className = 'messageSent'

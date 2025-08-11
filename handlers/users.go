@@ -80,41 +80,40 @@ func FetchUsers(w http.ResponseWriter, r *http.Request) {
 		var photo sql.NullString
 		var nickname string
 		var userId int
-		q := `SELECT sent_at  FROM messages 
-    	WHERE (sender_id = ? AND receiver_id = ?) OR (receiver_id = ? AND sender_id = ?)
-    	ORDER BY sent_at DESC
-    	LIMIT 1`
-		row, _ := databases.DB.Query(q, userId, userID, userId, userID)
-		var T time.Time
-		for row.Next() {
-			var time time.Time
 
-			if err := row.Scan(&time); err != nil {
-				// fmt.Println("error in a message")
-			}
-			T = time
-		}
 		if err := rows.Scan(&nickname, &userId, &photo); err != nil {
 			log.Fatal("error", err)
 		}
-		// fmt.Println(ConnectedUsers[userId])
-		mu.Lock()
-		_, exists := ConnectedUsers[float64(userId)]
-		mu.Unlock()
-		if exists {
-			mu.Lock()
-			UsersStatus[userId] = "online"
-			mu.Unlock()
-		}
-		// else {
-		// 	mu.Lock()
-		// 	// fmt.Println(userId)
-		// 	UsersStatus[userId] = "offline"
-		// 	mu.Unlock()
 
-		// }
+		var T time.Time
+		q := `SELECT sent_at FROM messages 
+          WHERE (sender_id = ? AND receiver_id = ?) OR (receiver_id = ? AND sender_id = ?)
+          ORDER BY sent_at DESC
+          LIMIT 1`
+		row, err := databases.DB.Query(q, userId, userID, userId, userID)
+		if err == nil {
+			for row.Next() {
+				var sentAt time.Time
+				if err := row.Scan(&sentAt); err == nil {
+					T = sentAt
+				}
+			}
+			row.Close()
+		}
+
 		mu.Lock()
-		onlineUsers = append(onlineUsers, User{Nickname: nickname, UserId: userId, Photo: photo, Status: UsersStatus[userId], Time: T})
+		if _, exists := ConnectedUsers[float64(userId)]; exists {
+			UsersStatus[userId] = "online"
+		} else {
+			UsersStatus[userId] = "offline"
+		}
+		onlineUsers = append(onlineUsers, User{
+			Nickname: nickname,
+			UserId:   userId,
+			Photo:    photo,
+			Status:   UsersStatus[userId],
+			Time:     T,
+		})
 		mu.Unlock()
 	}
 
