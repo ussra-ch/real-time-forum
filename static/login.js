@@ -143,10 +143,6 @@ export function login() {
                 <header>
                 <button id="profile" style="z-index: 10;"></button>
                 <button id="Create" style="z-index: 10;">+</button>
-                <div class="notification-circle">
-                    🔔
-                    <div class="notification-badge" , id ="notification-circle">${notifications}</div>
-                </div>
                 </header>
                 <div class="sidebar-left">
                 <div class="sidebar-label categories-label">Categories</div>

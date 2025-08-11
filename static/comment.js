@@ -21,6 +21,7 @@ export function comment() {
                 .then(res => res.json())
                 .then(data => {
                     commentInput.value = "";
+                    loadComments(post_id,forms)
                 })
                 .catch(err => {
                     console.error("Error:", err);

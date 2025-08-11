@@ -53,6 +53,7 @@ export function initWebSocket(onMessageCallback) {
             } else if (data.type == 'notification' || data.type === "unreadMessage") {
                 let notifs = document.getElementById('notification-circle')
                 notifs.textContent = data.unreadCount
+                fetchUser()
             } else if (data.type == 'typing') {
                 typingInProgress(data.sender)
             }
