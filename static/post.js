@@ -1,6 +1,6 @@
 import { comment } from "./comment.js";
 import { loadComments } from "./comment.js";
-import { deletepost, editpost } from "./delete.js";
+import { deletepost, editpost } from "./postMenu.js";
 window.deletepost = deletepost;
 
 
@@ -70,6 +70,7 @@ export function Create() {
 
 
 }
+
 export function Notifications(notifs){
     const notifications = document.getElementById('notifications')
     const CreateCard = document.createElement('div')
@@ -80,6 +81,7 @@ export function Notifications(notifs){
     content.appendChild(notifications);
     notifications.style.display = 'none';
 }
+
 export function fetchPosts() {
     fetch('/api/fetch_posts')
         .then(res => res.json())

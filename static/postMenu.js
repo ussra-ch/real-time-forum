@@ -23,6 +23,7 @@ export function deletepost(postId) {
             console.error("Error deleting post:", err);
         });
 }
+
 export function editpost(postId, postTitle, postContent) {
     const newTitle = prompt("Title:", postTitle);
     const newContent = prompt("content:", postContent);

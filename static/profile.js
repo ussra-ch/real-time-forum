@@ -1,4 +1,5 @@
 import { login } from "./login.js"
+
 export function profile(age, email, nickname, photo) {
     const body = document.querySelector('body')
     body.innerHTML = `
@@ -17,9 +18,8 @@ export function profile(age, email, nickname, photo) {
                 <input type="email" name="email" id="title">
                 <p>Age: ${age} </p>
                 <input type="number" name="age" id="title">
-        
                 <div class="profile-actions">
-                  <button type="submit" id="editProfile">Edit Profile</button>
+                    <button type="submit" id="editProfile">Edit Profile</button>
                 </div>
             </form>
         </div>
@@ -29,12 +29,10 @@ export function profile(age, email, nickname, photo) {
     document.getElementById('edit').addEventListener('submit', (e) => {
         e.preventDefault();
 
-
-
         const form = e.target;
         const formData = new FormData(form);
 
-        fetch('/editProfil', {
+        fetch('/editProfile', {
             method: 'POST',
             body: formData,
         }).then(r => {

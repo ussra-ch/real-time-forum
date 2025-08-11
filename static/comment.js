@@ -1,4 +1,3 @@
-import { fetchPosts } from "./post.js";
 export function comment() {
     const forms = document.querySelectorAll('.commentForm');
 
@@ -29,7 +28,6 @@ export function comment() {
         });
     });
 }
-
 
 //fetch comments (l kola post)
 export function loadComments(postId, container) {

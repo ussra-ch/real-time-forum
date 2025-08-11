@@ -20,24 +20,6 @@ type User struct {
 	Status   string         `json:"status"`
 }
 
-func IsLoggedIn(r *http.Request) (bool, int) {
-	cookie, err := r.Cookie("session")
-	if err != nil {
-		return false, 0
-	}
-
-	var userID int
-	err = databases.DB.QueryRow(`
-		SELECT user_id FROM sessions 
-		WHERE id = ? AND expires_at > DATETIME('now')
-	`, cookie.Value).Scan(&userID)
-	if err != nil {
-		return false, 0
-	}
-
-	return true, userID
-}
-
 func FetchUsers(w http.ResponseWriter, r *http.Request) {
 	loggedIn, userID := IsLoggedIn(r)
 	if !loggedIn {

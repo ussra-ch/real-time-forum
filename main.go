@@ -34,7 +34,7 @@ func main() {
 	http.HandleFunc("/api/fetchMessages", handlers.FetchMessages)
 	http.HandleFunc("/delete", handlers.DeletePost)
 	http.HandleFunc("/edit", handlers.EditPost)
-	http.HandleFunc("/editProfil",handlers.EditProfil)
+	http.HandleFunc("/editProfile", handlers.EditProfile)
 	fmt.Println("Server started at http://localhost:8080")
 	err := http.ListenAndServe(":8080", nil)
 	if err != nil {

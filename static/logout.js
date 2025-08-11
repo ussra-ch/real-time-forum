@@ -1,6 +1,4 @@
 import { login } from "./login.js";
-// import { connectedUsers } from "./var.js";
-
 
 
 //katloggouti (katfetshi data mn backend bach katms7 session)

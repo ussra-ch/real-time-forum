@@ -19,6 +19,21 @@ import (
 
 var UsersStatus = make(map[int]string)
 
+type a struct {
+	Nickname string `json:Nickname`
+	Password string `json:password`
+}
+
+type data struct {
+	Nickname  string `json:Nickname`
+	Email     string `json:email`
+	Gender    string `json:gender`
+	Age       string `json:age`
+	Firstname string `json:first_name`
+	Lastname  string `json:last_name`
+	Password  string `json:password`
+}
+
 func generateSessionID() string {
 	bytes := make([]byte, 16)
 	_, err := rand.Read(bytes)
@@ -26,11 +41,6 @@ func generateSessionID() string {
 		panic(err)
 	}
 	return hex.EncodeToString(bytes)
-}
-
-type a struct {
-	Nickname string `json:Nickname`
-	Password string `json:password`
 }
 
 func LoginHandler(w http.ResponseWriter, r *http.Request) {
@@ -148,16 +158,6 @@ func LogoutHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 }
 
-type data struct {
-	Nickname  string `json:Nickname`
-	Email     string `json:email`
-	Gender    string `json:gender`
-	Age       string `json:age`
-	Firstname string `json:first_name`
-	Lastname  string `json:last_name`
-	Password  string `json:password`
-}
-
 func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 	var aa data
 	err := json.NewDecoder(r.Body).Decode(&aa)
@@ -250,4 +250,22 @@ func GetUserIDFromSession(r *http.Request) (int64, error) {
 	}
 
 	return userID, nil
+}
+
+func IsLoggedIn(r *http.Request) (bool, int) {
+	cookie, err := r.Cookie("session")
+	if err != nil {
+		return false, 0
+	}
+
+	var userID int
+	err = databases.DB.QueryRow(`
+		SELECT user_id FROM sessions 
+		WHERE id = ? AND expires_at > DATETIME('now')
+	`, cookie.Value).Scan(&userID)
+	if err != nil {
+		return false, 0
+	}
+
+	return true, userID
 }

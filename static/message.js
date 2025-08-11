@@ -1,8 +1,6 @@
-// import { webSocket } from "./websocket.js"
 import { ws } from "./websocket.js"
-export function mesaageDiv(user, userId, receiverId) {
-    // console.log();
 
+export function mesaageDiv(user, userId, receiverId) {
     const body = document.querySelector('body')
     if (document.getElementById('message')) {
         document.getElementById('message').remove()
@@ -88,7 +86,6 @@ export function mesaageDiv(user, userId, receiverId) {
     })
 }
 
-
 function fetchMessages(userId, receiverId, offset, limit) {
     const body = document.getElementById('chat-body');
     var previousScrollHeight = body.scrollHeight;
@@ -123,6 +120,7 @@ function fetchMessages(userId, receiverId, offset, limit) {
             body.scrollTop += (newScrollHeight - previousScrollHeight);
         })
 }
+
 export function formatDate(timestampInSeconds) {
     const isoString = timestampInSeconds;
     const date = new Date(isoString);
