@@ -48,6 +48,11 @@ export function profile(age, email, nickname, photo) {
                     Your information has been updated
                     </div>`
             document.getElementById('content').append(popupDiv)
+
+            const editProfileForm = document.getElementById('edit'); // Replace with your form's ID
+            if (editProfileForm) {
+                editProfileForm.reset();
+            }
         })
     })
     document.getElementById('Back').addEventListener('click', () => {
