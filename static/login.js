@@ -107,7 +107,7 @@ export function logindiv() {
 
 function islogin() {
     initWebSocket((msg) => {
-        // console.log(msg);
+        console.log(msg);
         let chatBody = document.getElementById('chat-body');
         if (!chatBody || msg == "") {
             return
@@ -118,7 +118,10 @@ function islogin() {
         newMsg.className = 'messageSent'
         chatBody.append(newMsg);
         chatBody.scrollTop = chatBody.scrollHeight;
+
+
     });
+
     logout();
     Create();
     fetchPosts();
@@ -133,14 +136,12 @@ export function login() {
         .then(r => r.json())
         .then(res => {
             let profil = `<i class="fa-solid fa-user"></i>`
-            if (res.photo) {
-                profil = `<img src="${res.photo}" alt="Profile Picture">`
-            }
+
             if (res.ok) {
                 body.innerHTML = `
                 <div id="content">
                 <header>
-                <button id="profile" style="z-index: 10;">${profil} </button>
+                <button id="profile" style="z-index: 10;"></button>
                 <button id="Create" style="z-index: 10;">+</button>
                 <div class="notification-circle">
                     🔔
@@ -163,6 +164,10 @@ export function login() {
             
             <script type="module" src="static/main.js"></script>
             `
+                if (res.photo && res.photo.trim() !== "") {
+                    document.getElementById('profile').style.backgroundImage = `url(${res.photo})`;
+                }
+
                 const div = document.createElement('div');
                 div.innerHTML = `
                     <button id="logout">Logout</button>

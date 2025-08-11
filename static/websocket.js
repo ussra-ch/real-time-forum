@@ -1,3 +1,4 @@
+import { fetchUser } from "./users.js";
 export var ws = null
 
 export function initWebSocket(onMessageCallback) {
@@ -8,24 +9,16 @@ export function initWebSocket(onMessageCallback) {
     };
 
     ws.onmessage = (event) => {
-        console.log("Received:",);
         if (event.data) {
             const data = JSON.parse(event.data);
-            console.log("data is :", data);
-            const notifications = JSON.parse(event.data);
-
-            if (data.type === "unreadMessage") {
-                let notifs = document.getElementById('notification-circle')
-                notifs.textContent = data.unreadCount
-
+            if (data.type === 'online' || data.type === 'offline') {
+                fetchUser()
             }else if (data.type === "message") {
-                console.log("type messages :", data);
                 let notifs = document.getElementById('notification-circle')
                 notifs.textContent = data.Notifications
                 onMessageCallback(data.messageContent);
-
-            } else if (data.type == 'notification') {
-                console.log("type notifs :", notifications);
+                fetchUser()
+            } else if (data.type == 'notification' || data.type === "unreadMessage") {
                 let notifs = document.getElementById('notification-circle')
                 notifs.textContent = data.unreadCount
             }
@@ -40,6 +33,5 @@ export function initWebSocket(onMessageCallback) {
         console.log("WebSocket closed");
         console.log('Reason:', event.reason);
         ws.send('logout')
-
     };
 }

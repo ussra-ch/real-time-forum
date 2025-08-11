@@ -3,17 +3,22 @@ import { ws } from "./websocket.js"
 
 
 export function fetchUser() {
+  console.log(1);
+  
   const usern = document.getElementById('users');
 
   usern.innerHTML = ``
   fetch('/user').then(r => r.json()).then(users => {
-    console.log(users);
+   
     let on = new Set()
     if (users.onlineUsers) {
       users.onlineUsers.sort((a, b) => {
         return a.nickname.localeCompare(b.nickname);
       });
+      
       users.onlineUsers.sort((a, b) => {
+        console.log(a);
+        
         return new Date(b.time) - new Date(a.time); 
       });
 
@@ -21,7 +26,7 @@ export function fetchUser() {
     }
 
     for (const user of on) {
-      console.log(user.time);
+      
 
       if (users.UserId == user.userId) {
         continue
