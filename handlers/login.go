@@ -20,18 +20,18 @@ import (
 var UsersStatus = make(map[int]string)
 
 type a struct {
-	Nickname string `json:Nickname`
-	Password string `json:password`
+	Nickname string `json:"Nickname"`
+	Password string `json:"password"`
 }
 
 type data struct {
-	Nickname  string `json:Nickname`
-	Email     string `json:email`
-	Gender    string `json:gender`
-	Age       string `json:age`
-	Firstname string `json:first_name`
-	Lastname  string `json:last_name`
-	Password  string `json:password`
+    Nickname  string `json:"Nickname"`
+    Email     string `json:"email"`
+    Gender    string `json:"gender"`
+    Age       string `json:"age"`
+    Firstname string `json:"first_name"`
+    Lastname  string `json:"last_name"`
+    Password  string `json:"password"`
 }
 
 func generateSessionID() string {
@@ -161,6 +161,7 @@ func LogoutHandler(w http.ResponseWriter, r *http.Request) {
 func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 	var aa data
 	err := json.NewDecoder(r.Body).Decode(&aa)
+	fmt.Println("aa content is :", aa)
 	var exists int
 	err = databases.DB.QueryRow("SELECT COUNT(*) FROM users WHERE email = ?", aa.Email).Scan(&exists)
 	if err != nil {

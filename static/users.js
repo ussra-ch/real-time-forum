@@ -3,7 +3,7 @@ import { ws } from "./websocket.js"
 
 
 export function fetchUser() {
-  console.log(1);
+  // console.log(1);
   
   const usern = document.getElementById('users');
 

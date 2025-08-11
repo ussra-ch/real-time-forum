@@ -26,13 +26,12 @@ func EditProfile(w http.ResponseWriter, r *http.Request) {
 	nickname := r.FormValue("nickname")
 	email := r.FormValue("email")
 	age := r.FormValue("age")
-	// fmt.Println(age)
+
 	var photoPath string
 	file, handler, err := r.FormFile("photo")
 	if err == nil {
 		defer file.Close()
 		photoPath = fmt.Sprintf("static/uploads/%d_%s", time.Now().UnixNano(), handler.Filename)
-		// fmt.Println(photoPath)
 		dst, err := os.Create(photoPath)
 		if err != nil {
 			http.Error(w, "Failed to save photo", http.StatusInternalServerError)
@@ -46,8 +45,17 @@ func EditProfile(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	query := "UPDATE users SET nickname = ?, email = ?, age = ?"
+	if nickname == "" {
+		_ = databases.DB.QueryRow("SELECT nickname FROM users WHERE id = ?", userID).Scan(&nickname)
+	}
+	if email == ""{
+		_ = databases.DB.QueryRow("SELECT email FROM users WHERE id = ?", userID).Scan(&email)
+	}
+	if age == ""{
+		_ = databases.DB.QueryRow("SELECT age FROM users WHERE id = ?", userID).Scan(&age)
+	}
 	args := []interface{}{nickname, email, age}
+	query := "UPDATE users SET nickname = ?, email = ?, age = ?"
 
 	if photoPath != "" {
 		query += ", photo = ?"

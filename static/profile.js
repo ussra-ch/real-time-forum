@@ -36,8 +36,18 @@ export function profile(age, email, nickname, photo) {
             method: 'POST',
             body: formData,
         }).then(r => {
-       
+            const existingPopup = document.querySelector(".content");
+            if (existingPopup) {
+                existingPopup.remove();
+            }
 
+            const popupDiv = document.createElement('div');
+            popupDiv.className = 'popup-container';
+            popupDiv.innerHTML = `
+                    <div class="content">
+                    Your information has been updated
+                    </div>`
+            document.getElementById('content').append(popupDiv)
         })
     })
     document.getElementById('Back').addEventListener('click', () => {

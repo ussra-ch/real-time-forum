@@ -223,7 +223,6 @@ func userOffline(userId int, conn *websocket.Conn) {
 		value.WriteMessage(websocket.TextMessage, []byte(toSend))
 	}
 	conn.Close()
-	fmt.Println("status changed to offline of user :", userId)
 }
 
 func conversationOpened(senderId, receiverId float64, typeValue string) {

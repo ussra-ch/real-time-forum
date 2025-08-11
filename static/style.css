@@ -209,7 +209,7 @@ button:hover,
     border: none;
     padding: 0;
     cursor: pointer;
-    background-size: cover;      
+    background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
     border-radius: 50%;
@@ -957,4 +957,22 @@ form a:hover {
 
 .sidebar-right .sidebar-label-transform {
     transform: rotate(90deg);
+}
+
+.content {
+    background-color: #00b4d8;
+    color: white;
+    padding: 11px 20px;
+    font-size: 24px;
+    border-radius: 6px;
+    display: inline-block;
+}
+
+.popup-container {
+    position: fixed;
+    top: 13%;
+    left: 21%;
+    transform: translate(-50%, -50%);
+    z-index: 1000;
+    background-color: transparent;
 }

@@ -185,12 +185,12 @@ export function login() {
                 div.style.zIndex = '1000';
                 div.style.display = 'none';
                 const logoutBtn = document.getElementById('logout');
-                const editBtn = document.getElementById('editProfile');
+                const editProfileButton = document.getElementById('editProfile');
 
                 logoutBtn.style.margin = '5px';
-                editBtn.style.position = 'relative';
-                editBtn.style.top = '8vh';
-                editBtn.style.height = '5vh';
+                editProfileButton.style.position = 'relative';
+                editProfileButton.style.top = '8vh';
+                editProfileButton.style.height = '5vh';
 
                 document.getElementById('profile').addEventListener('click', () => {
                     if (div.style.display === 'none') {
@@ -199,10 +199,10 @@ export function login() {
                         div.style.display = 'none';
                     }
                 });
-                document.getElementById('editProfile').addEventListener('click', () => {
+                editProfileButton.addEventListener('click', () => {
                     profile(res.age, res.email, res.nickname, res.photo)
                 })
-                // console.log(ws.readyState);
+
                 islogin();
                 fetchUser(res.status);
                 return true
