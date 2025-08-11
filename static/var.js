@@ -4,4 +4,5 @@ export let clientStatus = false
 // export var ws = null
 export let connectedUsers = new Map();
 export let notifications = 0
+
 // export let isConversationOpen = new {}

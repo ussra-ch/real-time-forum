@@ -117,6 +117,21 @@ func WebSocketHandler(w http.ResponseWriter, r *http.Request) {
 				messageStruct.MessageContent = toolMap["messageContent"].(string)
 				messageHandler(messageStruct)
 				isConversationOpened = OpenedConversations[toolMap["receiverId"].(float64)][toolMap["senderId"].(float64)]
+			} else if typeValue == "typing" {
+				typing := map[string]interface{}{
+					"type":   "typing",
+					"sender": toolMap["senderId"].(float64),
+				}
+				typingJson, _ := json.Marshal((typing))
+				if err != nil {
+					fmt.Println("error in the messageHandler")
+				}
+				if ConnectedUsers[toolMap["receiverId"].(float64)] != nil {
+					err = ConnectedUsers[toolMap["receiverId"].(float64)].WriteMessage(websocket.TextMessage, []byte(typingJson))
+					if err != nil {
+						fmt.Println("Error sending message:", err)
+					}
+				}
 			}
 		}
 
@@ -254,7 +269,7 @@ func updateSeenValue(receiverId, senderId int) {
 	if err != nil {
 		fmt.Println("eror when changing the seen value in database, in updateSeenValue function")
 	}
-	fmt.Println("Seen value has been updated")
+	// fmt.Println("Seen value has been updated")
 }
 
 func unreadMessages(receiverId int) int {

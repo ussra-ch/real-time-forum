@@ -54,7 +54,7 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Invalid Nickname or password", http.StatusUnauthorized)
 		return
 	} else if err != nil {
-		log.Println(err)
+		// log.Println(err)
 		http.Error(w, "Database error", http.StatusInternalServerError)
 		return
 	}
@@ -65,7 +65,7 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 		VALUES (?, ?, DATETIME('now', '+1 hour'))
 	`, sessionID, userID)
 	if err != nil {
-		log.Println(err)
+		// log.Println(err)
 		http.Error(w, "Failed to create session", http.StatusInternalServerError)
 		return
 	}
