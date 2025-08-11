@@ -1,5 +1,35 @@
-import { fetchUser } from "./users.js";
+import { fetchUser } from "./users.js"
 export var ws = null
+let lastCall = 0;
+let typingTimeout;
+
+function typingInProgress(Id) {
+    const chat = document.getElementById('chat-body');
+    if (!chat) return;
+
+    let typingEl = document.getElementById('typing');
+    if (!typingEl) {
+        const div = document.createElement('div');
+        div.id = 'typing';
+        div.innerHTML = `
+            <div id="typing-indicator">
+              <span></span>
+              <span></span>
+             <span></span>
+            </div>`;
+        chat.append(div);
+        typingEl = div;
+    }
+
+    chat.scrollTop = chat.scrollHeight;
+
+    if (typingTimeout) clearTimeout(typingTimeout);
+
+    typingTimeout = setTimeout(() => {
+        const el = document.getElementById('typing');
+        if (el) el.remove();
+    }, 500);
+}
 
 export function initWebSocket(onMessageCallback) {
     ws = new WebSocket("ws://localhost:8080/chat")
@@ -11,9 +41,11 @@ export function initWebSocket(onMessageCallback) {
     ws.onmessage = (event) => {
         if (event.data) {
             const data = JSON.parse(event.data);
+            console.log("data", data);
+
             if (data.type === 'online' || data.type === 'offline') {
                 fetchUser()
-            }else if (data.type === "message") {
+            } else if (data.type === "message") {
                 let notifs = document.getElementById('notification-circle')
                 notifs.textContent = data.Notifications
                 onMessageCallback(data.messageContent);
@@ -21,6 +53,8 @@ export function initWebSocket(onMessageCallback) {
             } else if (data.type == 'notification' || data.type === "unreadMessage") {
                 let notifs = document.getElementById('notification-circle')
                 notifs.textContent = data.unreadCount
+            } else if (data.type == 'typing') {
+                typingInProgress(data.sender)
             }
         }
     };
@@ -30,8 +64,6 @@ export function initWebSocket(onMessageCallback) {
     };
 
     ws.onclose = (event) => {
-        console.log("WebSocket closed");
-        console.log('Reason:', event.reason);
-        ws.send('logout')
+
     };
 }

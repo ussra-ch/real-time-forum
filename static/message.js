@@ -36,14 +36,22 @@ export function mesaageDiv(user, userId, receiverId) {
     let offset = 0;
     const limit = 10;
     fetchMessages(userId, receiverId, offset, limit)
+    let lastCall = 0;
+    const delay = 500;
 
     container.addEventListener("scroll", () => {
         if (container.scrollTop === 0) {
+            const now = Date.now();
+            const canCall = now - lastCall >= delay;
 
-            offset += limit;
-            fetchMessages(userId, receiverId, offset, limit)
+            if (canCall) {
+                lastCall = now;
+                offset += limit;
+                fetchMessages(userId, receiverId, offset, limit);
+            }
         }
     });
+
 
 
     conversation.querySelector('.input-area').addEventListener('submit', (e) => {
@@ -75,6 +83,16 @@ export function mesaageDiv(user, userId, receiverId) {
             const container = document.getElementById('chat-body')
             container.scrollTop = container.scrollHeight;
         }
+    })
+    conversation.querySelector('.input-area').addEventListener('input', (e) => {
+        const payload = {
+            "senderId": userId,
+            "receiverId": receiverId,
+            "type": "typing",
+        };
+        
+        ws.send(JSON.stringify(payload));
+
     })
 
     deleteButton.addEventListener('click', () => {

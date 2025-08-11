@@ -110,6 +110,7 @@ func WebSocketHandler(w http.ResponseWriter, r *http.Request) {
 				sendUnreadNotifications(userId, conn)
 				mu.Unlock()
 			}
+			fmt.Println(typeValue)
 			if typeValue == "message" {
 				messageStruct.SenderId = toolMap["senderId"].(float64)
 				messageStruct.ReceiverId = toolMap["receiverId"].(float64)
@@ -117,6 +118,23 @@ func WebSocketHandler(w http.ResponseWriter, r *http.Request) {
 				messageStruct.MessageContent = toolMap["messageContent"].(string)
 				messageHandler(messageStruct)
 				isConversationOpened = OpenedConversations[toolMap["receiverId"].(float64)][toolMap["senderId"].(float64)]
+			} else if typeValue == "typing" {
+				typing := map[string]interface{}{
+					"type":   "typing",
+					"sender": toolMap["senderId"].(float64),
+				}
+				typingJson, _ := json.Marshal((typing))
+				fmt.Println(typingJson)
+				if err != nil {
+					fmt.Println("error in the messageHandler")
+				}
+				fmt.Println(toolMap["receiverId"].(float64))
+				if ConnectedUsers[toolMap["receiverId"].(float64)] != nil {
+					err = ConnectedUsers[toolMap["receiverId"].(float64)].WriteMessage(websocket.TextMessage, []byte(typingJson))
+					if err != nil {
+						fmt.Println("Error sending message:", err)
+					}
+				}
 			}
 		}
 
