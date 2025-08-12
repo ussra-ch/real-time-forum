@@ -15,8 +15,9 @@ export function logindiv() {
     loginDiv.innerHTML = ` 
   <!-- Sign Up Form -->
   <div class="form-container sign-up-container">
-  <form id="reForm" action="/register" method="POST">
+  <form id="registerForm" action="/register" method="POST">
   <h1>Create Account</h1>
+  <div id ="register-error"></div>
   <input type="text" placeholder="Nickname" name="Nickname" required />
   <input type="number" placeholder="age" name="Age" min="13" required />
   <select required name="gender">
@@ -35,8 +36,9 @@ export function logindiv() {
   <form id="logForm" action="/login" method="POST">
   <h1>Sign in</h1>
   
-  <input type="Nickname" name="Nickname" placeholder="Nickname" />
-  <input type="password" name="password" placeholder="Password" />
+  <input type="Nickname" name="Nickname" placeholder="Nickname" required />
+  <input type="password" name="password" placeholder="Password" required />
+  <div id = "error-message"></div>
   <button id="login">Sign In</button>
   </form>
   </div>
@@ -83,27 +85,21 @@ export function logindiv() {
             login();
         })
             .catch(err => {
-                console.error('Login error:', err)
-                const existingPopup = document.querySelector(".content");
-                if (existingPopup) {
-                    existingPopup.remove();
-                }
-                const ErrorDiv = document.createElement('div');
-                ErrorDiv.className = 'error-container';
-                ErrorDiv.innerHTML = `<div class="content">${err.message}</div>`;
-                document.querySelector('body').append(ErrorDiv);
+                console.error('Login errorrrrrrrrrr:', err)
+                const ErrorDiv = document.getElementById("error-message");
+                ErrorDiv.style.display = 'block'
+                ErrorDiv.innerHTML = `${err.message}`;
+                // document.querySelector('body').append(ErrorDiv);
                 setTimeout(()=>{
-                    ErrorDiv.remove()
-                }, 1000)
-
-
+                    ErrorDiv.style.display = 'none'
+                }, 2000)
             });
     })
 
-    const reForm = document.getElementById('reForm')
+    const registerForm = document.getElementById('registerForm')
     document.getElementById('register').addEventListener('click', (e) => {
         e.preventDefault()
-        const formData = new FormData(reForm)
+        const formData = new FormData(registerForm)
         const data = Object.fromEntries(formData.entries())
         fetch('/register', {
             method: 'POST',
@@ -112,9 +108,23 @@ export function logindiv() {
             },
             body: JSON.stringify(data)
         }).then(res => {
+            if (!res.ok) {
+        return res.json().then(errorData => {
+            throw new Error(errorData.Text || `HTTP error! Status: ${res.status}`);
+        });
+    }
             login();
         })
-            .catch(err => console.error('Login error:', err));
+            .catch(err => {
+                console.error('Login error:', err)
+                const ErrorDiv = document.getElementById("register-error");
+                ErrorDiv.style.display = 'block'
+                ErrorDiv.innerHTML = `${err.message}`;
+                // document.querySelector('body').append(ErrorDiv);
+                setTimeout(()=>{
+                    ErrorDiv.style.display = 'none'
+                }, 2000)
+            });
     })
     signUpButton.addEventListener('click', () => {
         container.classList.add("right-panel-active");

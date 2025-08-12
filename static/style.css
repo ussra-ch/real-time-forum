@@ -694,7 +694,6 @@ form {
 
 form h1 {
     color: #64ffda;
-    margin-bottom: 1rem;
 }
 
 form input,
@@ -1096,4 +1095,8 @@ form a:hover {
     transform: translate(-50%, -50%);
     z-index: 1000;
     background-color: transparent;
+}
+
+#error-message{
+
 }
