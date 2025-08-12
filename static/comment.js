@@ -2,7 +2,6 @@ export function comment() {
     const forms = document.querySelectorAll('.commentForm');
 
     forms.forEach((form) => {
-        // console.log(1);
         form.addEventListener("submit", (e) => {
             e.preventDefault()
 
@@ -18,12 +17,36 @@ export function comment() {
                 },
                 body: JSON.stringify({ comment, post_id }),
             })
-                .then(res => res.json())
+                .then(res => {
+                     if (!res.ok) {
+                        return res.json().then(errorData => {
+                        throw new Error(errorData.Text || `HTTP error! Status: ${res.status}`);
+                        });
+                        }
+                    return res.json()})
                 .then(data => {
+                    const ErrorDiv = document.createElement('div');
+                        ErrorDiv.className = 'error-container';
+                        ErrorDiv.innerHTML = `
+                                <div class="errorDiv">
+                                ${data.Text}
+                                </div>`
+                        document.querySelector('body').append(ErrorDiv)  
                     commentInput.value = "";
                 })
                 .catch(err => {
-                    console.error("Error:", err);
+                    // console.error("Error:", err);
+                    const existingPopup = document.querySelector(".content");
+                if (existingPopup) {
+                    existingPopup.remove();
+                }
+                const ErrorDiv = document.createElement('div');
+                ErrorDiv.className = 'error-container';
+                ErrorDiv.innerHTML = `<div class="content">${err.message}</div>`;
+                document.querySelector('body').append(ErrorDiv);
+                setTimeout(()=>{
+                    ErrorDiv.remove()
+                }, 1000)
                 });
         });
     });

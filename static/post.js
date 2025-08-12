@@ -94,7 +94,7 @@ export function Create() {
                     fetchPosts();
                 })
             .catch(err => {
-                console.error('Error', err.message);
+                // console.error('Error', err.message);
                 // const PostCard = document.getElementById('createPostCard')
                 // if (PostCard) {
                 //     PostCard.style.display = 'none';
@@ -109,8 +109,7 @@ export function Create() {
                 document.querySelector('body').append(ErrorDiv);
                 setTimeout(()=>{
                     ErrorDiv.remove()
-                }, 1000)
-                
+                }, 1000) 
             });
     });
 
@@ -169,16 +168,14 @@ export function fetchPosts() {
                         e.preventDefault()
                         deletepost(post.id)
                     })
-                    const ed = document.createElement('button')
-                    ed.textContent = 'Edit'
-                    postCard.prepend(ed)
-                    ed.addEventListener('click', (e) => {
+                    const editPost = document.createElement('button')
+                    editPost.textContent = 'Edit'
+                    postCard.prepend(editPost)
+                    editPost.addEventListener('click', (e) => {
                         e.preventDefault()
                         editpost(post.id, post.title, post.content)
                     })
                 }
-
-
 
                 const div = document.createElement('div');
                 div.className = 'comments-container';
