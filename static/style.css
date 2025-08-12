@@ -1020,3 +1020,13 @@ form a:hover {
     z-index: 1000;
     background-color: transparent;
 }
+
+
+.error-container {
+    position: fixed;
+    top: 13%;
+    left: 21%;
+    transform: translate(-50%, -50%);
+    z-index: 10000;
+    background-color: transparent;
+}

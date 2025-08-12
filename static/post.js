@@ -58,13 +58,46 @@ export function Create() {
             method: 'POST',
             body: formData
         })
-            .then(r => r.json())
+            .then(r => { 
+                if (!r.ok) {
+                return r.json().then(errorData => {
+                throw new Error(errorData.Text || `HTTP error! Status: ${r.status}`);
+        });
+    }
+                return r.json();})
             .then(data => {
-                CreateCard.style.display = 'none';
-                fetchPosts();
-            })
+                console.log("data content is :", data);
+                if (data.Type === 'error'){
+                        // const existingError = document.querySelector(".errorDiv");
+                        // if (existingError) {
+                        //     existingError.remove();
+                        // }
+                        const ErrorDiv = document.createElement('div');
+                        ErrorDiv.className = 'error-container';
+                        ErrorDiv.innerHTML = `
+                                <div class="errorDiv">
+                                ${data.Text}
+                                </div>`
+                        document.querySelector('body').append(ErrorDiv)                        
+                    }
+                    CreateCard.style.display = 'none';
+                    fetchPosts();
+                })
             .catch(err => {
-                console.error('Error:', err.message);
+                console.error('Error', err.message);
+                //createPostCard
+                const PostCard = document.getElementById('createPostCard')
+                if (PostCard) {
+                    PostCard.remove();
+                }
+                const existingPopup = document.querySelector(".content");
+                if (existingPopup) {
+                    existingPopup.remove();
+                }
+                const ErrorDiv = document.createElement('div');
+                ErrorDiv.className = 'error-container';
+                ErrorDiv.innerHTML = `<div class="content">${err.message}</div>`;
+                document.querySelector('body').append(ErrorDiv);
             });
     });
 
