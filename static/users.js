@@ -1,15 +1,17 @@
 import { mesaageDiv } from "./message.js";
 import { ws } from "./websocket.js"
-import { notifications } from "./var.js";
 
 
 export function fetchUser() {
-  // console.log(1);
+
 
   const usern = document.getElementById('users');
+ 
 
-  usern.innerHTML = ``
+  
+  
   fetch('/user').then(r => r.json()).then(users => {
+    usern.textContent = '';
 
     let on = new Set()
     if (users.onlineUsers) {
@@ -18,8 +20,6 @@ export function fetchUser() {
       });
 
       users.onlineUsers.sort((a, b) => {
-        console.log(a);
-
         return new Date(b.time) - new Date(a.time);
       });
 
@@ -36,20 +36,11 @@ export function fetchUser() {
       if (user.photo.Valid) {
         profil = `<img src="${user.photo.String}" class="profil" class="profil" alt="Profile Picture">`
       }
-      const notif = document.createElement('div')
-      notif.innerHTML = `
-                    <div class="notification-circle">
-                    🔔
-                    <div class="notification-badge" , id ="notification-circle">${notifications}</div>
-                </div>
-      `
       const conversationButton = document.createElement('button')
       conversationButton.id = "conversationButton"
-      if (notifications == 0) {
-        conversationButton.innerHTML = `
-        <i class="fa-solid fa-message"></i>`
-        notif.style.display = "none"
-      }
+      conversationButton.innerHTML = `
+      <i class="fa-solid fa-message"></i>`
+
       conversationButton.style.marginRight = '0'
       const div = document.createElement('div');
       div.innerHTML = `${profil} ${user.nickname}`;
@@ -70,7 +61,7 @@ export function fetchUser() {
       div.style.maxWidth = '200px'
       div.style.background = 'rgba(26, 35, 50, 0.95)';
       div.append(conversationButton)
-      conversationButton.append(notif)
+
       usern.appendChild(div);
 
 

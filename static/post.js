@@ -71,7 +71,7 @@ export function Create() {
 
 }
 
-export function Notifications(notifs){
+export function Notifications(notifs) {
     const notifications = document.getElementById('notifications')
     const CreateCard = document.createElement('div')
     CreateCard.innerHTML = `
@@ -103,10 +103,12 @@ export function fetchPosts() {
                     ${post.photo ? `<img src="${post.photo}" alt="Post image" style="max-width:100%;">` : ''}
                     <p>Posted by: User #${post.nickname || "Unknown"} on ${new Date(post.created_at).toLocaleDateString()}</p>
                      <form class="commentForm">
+                       <div class="inputWrapper">
                      <input type="hidden" name="post_id" value="${post.id}">
                       <input type="text" name="content" class="commentInput" placeholder="Write a comment..." required>
-                      <button type="submit" class="commentButton">Comment</button>
+                      <button type="submit" class="commentButton"><i class="fa-solid fa-comment"></i></button>
                       <button type="button" class="show">Show Comments</button>
+                      </div>
                     </form>
                 `;
                 if (post.myId == post.user_id) {
@@ -139,8 +141,8 @@ export function fetchPosts() {
 
                     loadComments(post.id, div);
                 });
+                comment(div)
             });
-            comment()
         })
         .catch(err => console.error('Error fetching posts:', err));
 
