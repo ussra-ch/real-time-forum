@@ -20,7 +20,7 @@ func main() {
 	http.Handle("/static/", http.StripPrefix("/static/", fs))
 	http.HandleFunc("/", HomeHandler)
 	http.HandleFunc("/register", handlers.RegisterHandler)
-	http.HandleFunc("/login", handlers.LoginHandler)
+	http.HandleFunc("/login", handlers.RateLimitLoginMiddleware(handlers.LoginHandler))
 	http.HandleFunc("/logout", handlers.LogoutHandler)
 	http.HandleFunc("/api/logout", handlers.LogoutHandler)
 	http.HandleFunc("/api/anthenticated", handlers.IsAuthenticated)

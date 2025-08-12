@@ -3,43 +3,51 @@ package handlers
 import (
 	"encoding/json"
 	"net/http"
+	"strings"
 	"time"
 )
 
-var CommentRateLimits = make(map[int]*RateLimit)
+type LoginRateLimit struct {
+	count        int
+	FirstTime    time.Time
+	BlockedUntil time.Time
+	UserIP       string
+}
 
-func CheckRateLimitComment(ratelimit *RateLimit, window time.Duration) bool {
+var LoginRateLimits = make(map[string]*LoginRateLimit)
+
+func CheckRateLimitLogin(ratelimit *LoginRateLimit, window time.Duration) bool {
 	if time.Now().Before(ratelimit.BlockedUntil) {
 		return false
 	}
-	if time.Now().After(ratelimit.BlockedUntil) && ratelimit.count > 50 {
+	if time.Now().After(ratelimit.BlockedUntil) && ratelimit.count > 10 {
 		ratelimit.FirstTime = time.Now()
 		ratelimit.BlockedUntil = time.Time{}
 		ratelimit.count = 0
 	}
 	ratelimit.count++
-	if ratelimit.count > 50 {
+	if ratelimit.count > 10 {
 		ratelimit.BlockedUntil = time.Now().Add(window)
 		return false
 	}
 	return true
 }
 
-func UserInfosComments(r *http.Request) (*RateLimit, bool) {
-	rateLimit := &RateLimit{
+func UserInfosLogin(r *http.Request) (*LoginRateLimit, bool) {
+	rateLimit := &LoginRateLimit{
 		count:        0,
 		FirstTime:    time.Now(),
 		BlockedUntil: time.Time{},
-		UserId:       -1,
+		UserIP:       "",
 	}
-	_, userID = IsLoggedIn(r)
-	rateLimit.UserId = userID
+	userIP := GetUserIP(r)
+	rateLimit.UserIP = userIP
 	return rateLimit, true
 }
 
-func CommentsRatelimitMiddleware(next http.HandlerFunc) http.HandlerFunc {
+func RateLimitLoginMiddleware(next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		userRateLimit, ok := UserInfosComments(r)
+		userRateLimit, ok := UserInfosLogin(r)
 		if !ok {
 			errorr := ErrorStruct{
 				Type: "error",
@@ -52,13 +60,13 @@ func CommentsRatelimitMiddleware(next http.HandlerFunc) http.HandlerFunc {
 			return
 		}
 
-		ratelimit, exists := CommentRateLimits[userRateLimit.UserId]
+		ratelimit, exists := LoginRateLimits[userRateLimit.UserIP]
 		if !exists {
-			AddUserToTheMap_comment(userRateLimit)
+			AddUserToTheMap_Login(userRateLimit)
 			ratelimit = userRateLimit
 		}
 
-		if !CheckRateLimitComment(ratelimit, 1*time.Minute) {
+		if !CheckRateLimitLogin(ratelimit, 1*time.Minute) {
 			errorr := ErrorStruct{
 				Type: "error",
 				Text: "Too many requests",
@@ -73,6 +81,12 @@ func CommentsRatelimitMiddleware(next http.HandlerFunc) http.HandlerFunc {
 	}
 }
 
-func AddUserToTheMap_comment(ratelimit *RateLimit) {
-	CommentRateLimits[ratelimit.UserId] = ratelimit
+func GetUserIP(r *http.Request) string {
+	temp := r.RemoteAddr
+	userIP := strings.Split(temp, ":")[0]
+	return userIP
+}
+
+func AddUserToTheMap_Login(ratelimit *LoginRateLimit) {
+	LoginRateLimits[ratelimit.UserIP] = ratelimit
 }

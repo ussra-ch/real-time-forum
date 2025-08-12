@@ -32,7 +32,7 @@ func CheckRateLimitPost(ratelimit *RateLimit, window time.Duration) bool {
 		ratelimit.count = 0
 	}
 	ratelimit.count++
-	if ratelimit.count > 2 {
+	if ratelimit.count > 10 {
 		ratelimit.BlockedUntil = time.Now().Add(window)
 		return false
 	}

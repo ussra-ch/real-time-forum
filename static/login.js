@@ -76,10 +76,31 @@ export function logindiv() {
             },
             body: JSON.stringify(data)
         }).then(res => {
+            if (!res.ok) {
+        return res.json().then(errorData => {
+            throw new Error(errorData.Text || `HTTP error! Status: ${res.status}`);
+        });
+    }
             login();
         })
-            .catch(err => console.error('Login error:', err));
+            .catch(err => {
+                console.error('Login error:', err)
+                const existingPopup = document.querySelector(".content");
+                if (existingPopup) {
+                    existingPopup.remove();
+                }
+                const ErrorDiv = document.createElement('div');
+                ErrorDiv.className = 'error-container';
+                ErrorDiv.innerHTML = `<div class="content">${err.message}</div>`;
+                document.querySelector('body').append(ErrorDiv);
+                setTimeout(()=>{
+                    ErrorDiv.remove()
+                }, 1000)
+
+
+            });
     })
+
     const reForm = document.getElementById('reForm')
     document.getElementById('register').addEventListener('click', (e) => {
         e.preventDefault()
