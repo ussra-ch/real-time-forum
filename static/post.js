@@ -40,6 +40,16 @@ export function Create() {
     content.appendChild(CreateCard);
     CreateCard.style.display = 'none';
 
+    const deleteButton = document.createElement('button')
+    const icon = document.createElement('i');
+    icon.className = 'fas fa-trash';
+    deleteButton.id = 'closeConversation'
+    deleteButton.appendChild(icon);
+    deleteButton.appendChild(document.createTextNode('Delete'));
+    let createPostDiv = document.getElementById('createPostCard')
+    createPostDiv.append(deleteButton)
+    // body.append(conversation)
+
     Create.addEventListener('click', (e) => {
         CreateCard.style.display = CreateCard.style.display === 'none' ? 'block' : 'none';
     });
@@ -85,11 +95,10 @@ export function Create() {
                 })
             .catch(err => {
                 console.error('Error', err.message);
-                //createPostCard
-                const PostCard = document.getElementById('createPostCard')
-                if (PostCard) {
-                    PostCard.remove();
-                }
+                // const PostCard = document.getElementById('createPostCard')
+                // if (PostCard) {
+                //     PostCard.style.display = 'none';
+                // }
                 const existingPopup = document.querySelector(".content");
                 if (existingPopup) {
                     existingPopup.remove();
@@ -98,8 +107,18 @@ export function Create() {
                 ErrorDiv.className = 'error-container';
                 ErrorDiv.innerHTML = `<div class="content">${err.message}</div>`;
                 document.querySelector('body').append(ErrorDiv);
+                setTimeout(()=>{
+                    ErrorDiv.remove()
+                }, 1000)
+                
             });
     });
+
+
+    deleteButton.addEventListener('click', () => {
+            createPostDiv.remove()
+        })
+
 
 
 }

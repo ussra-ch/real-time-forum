@@ -1027,6 +1027,6 @@ form a:hover {
     top: 13%;
     left: 21%;
     transform: translate(-50%, -50%);
-    z-index: 10000;
+    z-index: 1000;
     background-color: transparent;
 }
