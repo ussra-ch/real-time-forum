@@ -37,7 +37,6 @@ export function logindiv() {
   
   <input type="Nickname" name="Nickname" placeholder="Nickname" />
   <input type="password" name="password" placeholder="Password" />
-  <a href="#">Forgot your password?</a>
   <button id="login">Sign In</button>
   </form>
   </div>
@@ -148,6 +147,7 @@ function islogin() {
     fetchPosts();
     catigories();
     comment();
+    fetchUser()
 }
 
 export function login() {
@@ -162,16 +162,16 @@ export function login() {
                 body.innerHTML = `
                 <div id="content">
                 <header>
-                <button id="profile" style="z-index: 10;"></button>
-                <button id="Create" style="z-index: 10;">+</button>
-                <div class="notification-circle">
+                 <div class="notification-circle">
                     🔔
                     <div class="notification-badge" , id ="notification-circle">${notifications}</div>
                 </div>
+                <button id="profile" style="z-index: 10;"></button>
+                <button id="Create" style="z-index: 10;">+</button>
                 </header>
                 <div class="sidebar-left">
-                <div class="sidebar-label categories-label">Categories</div>
-                <div class="sidebar-label posts-label">Posts</div>
+                <div class="sidebar-label categories-label" style="top: 15vh;">Categories</div>
+                <div class="sidebar-label posts-label" style="top: 40vh;">Posts</div>
                 </div>
                 <div id="catego"></div>
                 <div id="all">
@@ -225,7 +225,6 @@ export function login() {
                 })
 
                 islogin();
-                fetchUser(res.status);
                 return true
             } else {
                 body.innerHTML = `

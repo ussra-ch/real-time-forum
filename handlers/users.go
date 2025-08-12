@@ -100,7 +100,6 @@ func FetchUsers(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	// fmt.Println(offlineUsers)
 	mu.Lock()
 	json.NewEncoder(w).Encode(map[string]interface{}{
 		"loggedIn":    true,

@@ -1,4 +1,4 @@
-export function comment() {
+export function comment(div) {
     const forms = document.querySelectorAll('.commentForm');
 
     forms.forEach((form) => {
@@ -7,7 +7,6 @@ export function comment() {
 
             const commentInput = form.querySelector(".commentInput");
             const comment = commentInput.value;
-
             const post_id = form.querySelector("[name='post_id']").value;
             if (!comment) return;
             fetch("/comment", {
@@ -33,6 +32,8 @@ export function comment() {
                                 </div>`
                         document.querySelector('body').append(ErrorDiv)  
                     commentInput.value = "";
+                    loadComments(post_id, div)
+
                 })
                 .catch(err => {
                     // console.error("Error:", err);
@@ -54,7 +55,7 @@ export function comment() {
 
 //fetch comments (l kola post)
 export function loadComments(postId, container) {
-   container.innerHTML = ``
+    container.innerHTML = ``
     fetch('/api/fetch_comments')
         .then(res => res.json())
         .then(comments => {
@@ -66,9 +67,9 @@ export function loadComments(postId, container) {
 
                 const p = document.createElement("div");
                 p.innerHTML = `
-        <p><strong>${comment.Name}:</strong> ${comment.Content}</p>
-        <p class="comment-date">${new Date(comment.CreatedAt).toLocaleDateString()}</p>
-      `;
+                            <p><strong>${comment.Name}:</strong> ${comment.Content}</p>
+                            <p class="comment-date">${new Date(comment.CreatedAt).toLocaleDateString()}</p>
+                `;
                 container.appendChild(p);
             });
         });

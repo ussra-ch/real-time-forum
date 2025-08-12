@@ -16,16 +16,14 @@ ratelimit for comments/posts
 responsive
 
 
-star 53 f login.go, 3la kanpassiw nickname juj dlamrat blast nickname wl email
 
 error ila l informations li dakhal l user ghaltin f signIn/signUp
-removing forget password
-add notifications count for every user
+
+
 
 cleaning code
 
-l user's name mzl madrnahch wast chat :
-Does the message respect the format, by using the users name and the date that the message was sent?
+
 
 
 chnage the Throttle function's name to Throttle

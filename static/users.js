@@ -3,30 +3,31 @@ import { ws } from "./websocket.js"
 
 
 export function fetchUser() {
-  // console.log(1);
-  
-  const usern = document.getElementById('users');
 
-  usern.innerHTML = ``
+
+  const usern = document.getElementById('users');
+ 
+
+  
+  
   fetch('/user').then(r => r.json()).then(users => {
-   
+    usern.textContent = '';
+
     let on = new Set()
     if (users.onlineUsers) {
       users.onlineUsers.sort((a, b) => {
         return a.nickname.localeCompare(b.nickname);
       });
-      
+
       users.onlineUsers.sort((a, b) => {
-        console.log(a);
-        
-        return new Date(b.time) - new Date(a.time); 
+        return new Date(b.time) - new Date(a.time);
       });
 
       on = [...new Set(users.onlineUsers)];
     }
 
     for (const user of on) {
-      
+
 
       if (users.UserId == user.userId) {
         continue
@@ -39,6 +40,7 @@ export function fetchUser() {
       conversationButton.id = "conversationButton"
       conversationButton.innerHTML = `
       <i class="fa-solid fa-message"></i>`
+
       conversationButton.style.marginRight = '0'
       const div = document.createElement('div');
       div.innerHTML = `${profil} ${user.nickname}`;
@@ -59,12 +61,13 @@ export function fetchUser() {
       div.style.maxWidth = '200px'
       div.style.background = 'rgba(26, 35, 50, 0.95)';
       div.append(conversationButton)
+
       usern.appendChild(div);
 
 
       conversationButton.addEventListener('click', () => {
         if (document.getElementById('message')) document.getElementById('message').remove()
-        let isConversationOpen = {"senderId" : users.UserId, "receiverId": user.userId,"isOpen" : true, "type": "OpenConversation"}
+        let isConversationOpen = { "senderId": users.UserId, "receiverId": user.userId, "isOpen": true, "type": "OpenConversation" }
         const jsonIsConversationOpen = JSON.stringify(isConversationOpen);
         ws.send(jsonIsConversationOpen);
         mesaageDiv(user.nickname, users.UserId, user.userId)

@@ -161,7 +161,7 @@ func LogoutHandler(w http.ResponseWriter, r *http.Request) {
 func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 	var aa data
 	err := json.NewDecoder(r.Body).Decode(&aa)
-	fmt.Println("aa content is :", aa)
+	// fmt.Println("aa content is :", aa)
 	var exists int
 	err = databases.DB.QueryRow("SELECT COUNT(*) FROM users WHERE email = ?", aa.Email).Scan(&exists)
 	if err != nil {

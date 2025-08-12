@@ -35,7 +35,7 @@ export function mesaageDiv(user, userId, receiverId) {
     const container = document.getElementById('chat-body')
     let offset = 0;
     const limit = 10;
-    fetchMessages(userId, receiverId, offset, limit)
+    fetchMessages(userId, receiverId, offset, limit, user)
     let lastCall = 0;
     const delay = 500;
 
@@ -47,7 +47,7 @@ export function mesaageDiv(user, userId, receiverId) {
             if (canCall) {
                 lastCall = now;
                 offset += limit;
-                fetchMessages(userId, receiverId, offset, limit);
+                fetchMessages(userId, receiverId, offset, limit, user);
             }
         }
     });
@@ -90,7 +90,7 @@ export function mesaageDiv(user, userId, receiverId) {
             "receiverId": receiverId,
             "type": "typing",
         };
-        
+
         ws.send(JSON.stringify(payload));
 
     })
@@ -105,7 +105,7 @@ export function mesaageDiv(user, userId, receiverId) {
     })
 }
 
-function fetchMessages(userId, receiverId, offset, limit) {
+function fetchMessages(userId, receiverId, offset, limit, name) {
     const body = document.getElementById('chat-body');
     var previousScrollHeight = body.scrollHeight;
 
@@ -118,18 +118,35 @@ function fetchMessages(userId, receiverId, offset, limit) {
             if (!messages) {
                 return
             }
+
+
             for (const message of messages) {
                 if (message.content != "") {
                     if (message.userId == userId && message.sender_id == receiverId) {
                         let newMsg = document.createElement('div')
                         newMsg.className = 'messageSent'
-                        newMsg.innerHTML = `<h3>${message.content}</h3>
+
+                        newMsg.innerHTML = `
+                                            <div class="messagProfil">
+                                                <div class="profile">
+                                                </div>
+                                                   <h7>${name}</h7>
+                                            </div>
+                                            <h3>${message.content}</h3>
                                             <h7>${formatDate(message.time)}</h7>`
                         body.prepend(newMsg)
+                        if (message.photo) {
+                             document.querySelector('.profile').style.backgroundImage = `url(${message.photo})`;
+                        }else{
+                            document.querySelector('.profile').innerHTML=`
+                                <i class="fa-solid fa-user"></i>
+                            `
+                        }
                     } else if (message.userId == receiverId && message.sender_id == userId) {
                         let newMsg = document.createElement('div')
                         newMsg.className = 'messageReceived'
-                        newMsg.innerHTML = `<h3>${message.content}</h3>
+                        newMsg.innerHTML = `
+                                            <h3>${message.content}</h3>
                                             <h7>${formatDate(message.time)}</h7>`
                         body.prepend(newMsg)
                     }

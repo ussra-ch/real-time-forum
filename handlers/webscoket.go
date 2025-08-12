@@ -188,19 +188,27 @@ func FetchMessages(w http.ResponseWriter, r *http.Request) {
 	var messages []map[string]interface{}
 	for rows.Next() {
 		var id, userId, sender_id int
-		var content string
+		var content, photo string
 		var time time.Time
 		var seen bool
 
 		if err := rows.Scan(&id, &sender_id, &userId, &content, &time, &seen); err != nil {
 			fmt.Println("error in a message", err)
 		}
+		q := `SELECT photo FROM users WHERE id = ?`
+		err := databases.DB.QueryRow(q, sender_id).Scan(&photo)
+		if err != nil {
+			
+		}
+
+		fmt.Println(photo)
 		message := map[string]interface{}{
 			"id":        id,
 			"sender_id": sender_id,
 			"userId":    userId,
 			"content":   content,
 			"time":      time,
+			"photo":     photo,
 		}
 
 		messages = append(messages, message)
