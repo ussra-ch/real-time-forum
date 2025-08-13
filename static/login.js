@@ -5,7 +5,7 @@ import { formatDate } from "./message.js"
 import { logout } from "./logout.js"
 import { Create } from "./post.js"
 import { fetchPosts } from "./post.js";
-import { catigories } from "./sort.js";
+import { categories } from "./sort.js";
 import { comment } from "./comment.js";
 import { initWebSocket } from "./websocket.js";
 
@@ -155,7 +155,7 @@ function islogin() {
     logout();
     Create();
     fetchPosts();
-    catigories();
+    categories();
     comment();
     fetchUser()
 }

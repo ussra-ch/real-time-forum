@@ -250,7 +250,7 @@ button:hover,
     text-align: center;
 }
 
-.catigories {
+.categories {
     width: 10vw;
     background: #00b4d8;
     border: 1px solid rgba(100, 255, 218, 0.2);
@@ -262,8 +262,8 @@ button:hover,
     transition: all 0.3s ease;
 }
 
-.catigories:hover,
-.catigories.active {
+.categories:hover,
+.categories.active {
     background: #00b4d8;
     color: #0f1419;
     transform: translateX(-5px);

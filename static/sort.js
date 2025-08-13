@@ -1,12 +1,12 @@
 import { comment } from "./comment.js";
 import { loadComments } from "./comment.js";
-export function catigories() {
-  let categories = ['All', 'Music', 'Sport', 'Gaming', 'Health', 'General'];
+export function categories() {
+  let categories = ['All', 'Music', 'Sport', 'Tecknology', 'Science', 'Culture'];
   const categoDiv = document.getElementById('catego');
-  categories.forEach(element => {
 
+  categories.forEach(element => {
     const boutton = document.createElement('button');
-    boutton.className = 'catigories';
+    boutton.className = 'categories';
     boutton.innerText = element;
     boutton.addEventListener('click', (e) => {
       e.preventDefault()

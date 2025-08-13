@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
+	"html"
 	"io"
 	"log"
 	"net/http"
@@ -22,21 +23,70 @@ type PostData struct {
 
 func PostHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
-		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
+		errorr := ErrorStruct{
+			Type: "error",
+			Text: "Method not allowed",
+		}
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusMethodNotAllowed)
+		json.NewEncoder(w).Encode(errorr)
 		return
 	}
 
 	err := r.ParseMultipartForm(10 << 20)
 	if err != nil {
-		http.Error(w, "Error parsing form", http.StatusBadRequest)
+		errorr := ErrorStruct{
+			Type: "error",
+			Text: "Bad request",
+		}
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(errorr)
 		return
 	}
 
 	title := r.FormValue("title")
 	description := r.FormValue("description")
 	topics := r.Form["topics"]
-	if title == "" || description == "" {
-		http.Error(w, "Error parsing form", http.StatusBadRequest)
+	if title == "" || description == "" || len(topics) == 0 {
+		errorr := ErrorStruct{
+			Type: "error",
+			Text: "Bad request",
+		}
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(errorr)
+		return
+	}
+
+	categoriesRows, err := databases.DB.Query("SELECT name FROM categories")
+	defer categoriesRows.Close()
+
+	var allCategories []string
+	for categoriesRows.Next() {
+		var name string
+		if err := categoriesRows.Scan(&name); err != nil {
+			log.Fatal(err)
+		}
+		allCategories = append(allCategories, name)
+	}
+
+	found := true
+	for _, topic := range topics {
+		if !contains(allCategories, topic) {
+			found = false
+			break
+		}
+	}
+
+	if !found {
+		errorr := ErrorStruct{
+			Type: "error",
+			Text: "Bad request",
+		}
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(errorr)
 		return
 	}
 
@@ -60,14 +110,26 @@ func PostHandler(w http.ResponseWriter, r *http.Request) {
 		filename = fmt.Sprintf("static/uploads/%d_%s", time.Now().UnixNano(), handler.Filename)
 		dst, err := os.Create(filename)
 		if err != nil {
-			fmt.Println(err)
-			http.Error(w, "Cannot save photo", http.StatusInternalServerError)
+			// fmt.Println(err)
+			errorr := ErrorStruct{
+				Type: "error",
+				Text: "Internal server error",
+			}
+			w.Header().Set("Content-Type", "application/json")
+			w.WriteHeader(http.StatusInternalServerError)
+			json.NewEncoder(w).Encode(errorr)
 			return
 		}
 		defer dst.Close()
 		_, err = io.Copy(dst, file)
 		if err != nil {
-			http.Error(w, "Failed to save photo", http.StatusInternalServerError)
+			errorr := ErrorStruct{
+				Type: "error",
+				Text: "Internal server error",
+			}
+			w.Header().Set("Content-Type", "application/json")
+			w.WriteHeader(http.StatusInternalServerError)
+			json.NewEncoder(w).Encode(errorr)
 			return
 		}
 	} else {
@@ -78,17 +140,29 @@ func PostHandler(w http.ResponseWriter, r *http.Request) {
 		INSERT INTO posts (title, content, interest, user_id, photo)
 		VALUES (?, ?, ?, ?, ?)
 	`
-	res, err := databases.DB.Exec(query, title, description, strings.Join(topics, ","), userID, filename)
+	res, err := databases.DB.Exec(query, html.EscapeString(title), html.EscapeString(description), strings.Join(topics, ","), userID, filename)
 	if err != nil {
-		log.Println("Insert post error:", err)
-		http.Error(w, "Database error", http.StatusInternalServerError)
+		// log.Println("Insert post error:", err)
+		errorr := ErrorStruct{
+			Type: "error",
+			Text: "Internal server error",
+		}
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(errorr)
 		return
 	}
 
 	postID, err := res.LastInsertId()
 	if err != nil {
-		log.Println("Error getting inserted post ID:", err)
-		http.Error(w, "Database error", http.StatusInternalServerError)
+		// log.Println("Error getting inserted post ID:", err)
+		errorr := ErrorStruct{
+			Type: "error",
+			Text: "Internal server error",
+		}
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(errorr)
 		return
 	}
 
@@ -105,7 +179,13 @@ func PostHandler(w http.ResponseWriter, r *http.Request) {
 
 func FetchPostsHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
-		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
+		errorr := ErrorStruct{
+			Type: "error",
+			Text: "Method Not Allowed",
+		}
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusMethodNotAllowed)
+		json.NewEncoder(w).Encode(errorr)
 		return
 	}
 	_, UserID := IsLoggedIn(r)
@@ -113,8 +193,14 @@ func FetchPostsHandler(w http.ResponseWriter, r *http.Request) {
 	query := `SELECT id, user_id, content, title, interest, photo, created_at FROM posts`
 	rows, err := databases.DB.Query(query)
 	if err != nil {
-		log.Println("Error fetching posts:", err)
-		http.Error(w, "Database error", http.StatusInternalServerError)
+		// log.Println("Error fetching posts:", err)
+		errorr := ErrorStruct{
+			Type: "error",
+			Text: "Internal server error",
+		}
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(errorr)
 		return
 	}
 	defer rows.Close()
@@ -158,4 +244,13 @@ func FetchPostsHandler(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(posts)
+}
+
+func contains(slice []string, item string) bool {
+	for _, v := range slice {
+		if v == item {
+			return true
+		}
+	}
+	return false
 }

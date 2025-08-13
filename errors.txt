@@ -1,20 +1,9 @@
-categories table (databse)
-category-post table (databse)
-
-
-comment 3la comment
-
-
 refresh dyal lpage ratelimit
 
 front
 
 
 limit websocket size (machi ri l buffer)
-ratelimit for comments/posts
-
-responsive
-
 
 
 error ila l informations li dakhal l user ghaltin f signIn/signUp
@@ -22,8 +11,27 @@ error ila l informations li dakhal l user ghaltin f signIn/signUp
 
 
 cleaning code
-
-
-
-
 chnage the Throttle function's name to Throttle
+
+
+nraj3o conn dyal kola user ka array, bach ila 7al ktar mn tab n9dr nsift l message l ga3 tabs.
+
+n checke wach ila hawl yposti wla ycommenti wtloggouta wla 9t3 connexion wach radi y savea fdb
+
+check dyal ga3 l errors dyal routes (404, 400, 500 ....) (redirect + khwi l page + 7ot l error) 
+
+protect l input finma kan bach maydkhulch lia ka code js wla html tags
+
+check l path dyal code dyali (style.css ....)
+
+clear add post inputs after posting or failing to post it.
+
+makhasch ydr comment 3la post makaynch
+
+makhasch ytzad lia post bla hta category
+
+makhasch ytzad lia post b category makaynch
+
+khali function whda dyal ratelimit w passi limit ka param
+
+haydo l global variablee

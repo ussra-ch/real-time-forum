@@ -27,9 +27,9 @@ export function Create() {
   <div class="topic-options">
   <label><input type="checkbox" id="music" name="topic" value="Music"> Music</label>
   <label><input type="checkbox" id="sport" name="topic" value="Sport"> Sport</label>
-  <label><input type="checkbox" id="gaming" name="topic" value="Gaming"> Gaming</label>
-  <label><input type="checkbox" id="health" name="topic" value="Health"> Health</label>
-  <label><input type="checkbox" id="general" name="topic" value="General"> General</label>
+  <label><input type="checkbox" id="tecknology" name="topic" value="Tecknology"> Tecknology</label>
+  <label><input type="checkbox" id="culture" name="topic" value="Culture"> Culture</label>
+  <label><input type="checkbox" id="gcience" name="topic" value="Science"> Science</label>
   </div>
   <div id="errorMsg" style="display:none; color:red; margin: 10px 10px;"></div>
   <button type="submit">Post</button>
@@ -68,33 +68,30 @@ export function Create() {
             method: 'POST',
             body: formData
         })
-            .then(r => { 
+            .then(r => {
                 if (!r.ok) {
-                return r.json().then(errorData => {
-                throw new Error(errorData.Text || `HTTP error! Status: ${r.status}`);
-        });
-    }
-                return r.json();})
+                    return r.json().then(errorData => {
+                        throw new Error(errorData.Text || `HTTP error! Status: ${r.status}`);
+                    });
+                }
+                return r.json();
+            })
             .then(data => {
                 console.log("data content is :", data);
-                if (data.Type === 'error'){
-                        // const existingError = document.querySelector(".errorDiv");
-                        // if (existingError) {
-                        //     existingError.remove();
-                        // }
-                        const ErrorDiv = document.createElement('div');
-                        ErrorDiv.className = 'error-container';
-                        ErrorDiv.innerHTML = `
+                if (data.Type === 'error') {
+                    const ErrorDiv = document.createElement('div');
+                    ErrorDiv.className = 'error-container';
+                    ErrorDiv.innerHTML = `
                                 <div class="errorDiv">
                                 ${data.Text}
                                 </div>`
-                        document.querySelector('body').append(ErrorDiv)                        
-                    }
-                    CreateCard.style.display = 'none';
-                    fetchPosts();
-                })
+                    document.querySelector('body').append(ErrorDiv)
+                }
+                CreateCard.style.display = 'none';
+                fetchPosts();
+            })
             .catch(err => {
-                // console.error('Error', err.message);
+                console.error('Error', err.message);
                 // const PostCard = document.getElementById('createPostCard')
                 // if (PostCard) {
                 //     PostCard.style.display = 'none';
@@ -107,16 +104,16 @@ export function Create() {
                 ErrorDiv.className = 'error-container';
                 ErrorDiv.innerHTML = `<div class="content">${err.message}</div>`;
                 document.querySelector('body').append(ErrorDiv);
-                setTimeout(()=>{
+                setTimeout(() => {
                     ErrorDiv.remove()
-                }, 1000) 
+                }, 1000)
             });
     });
 
 
     deleteButton.addEventListener('click', () => {
-            createPostDiv.remove()
-        })
+        createPostDiv.remove()
+    })
 
 
 
