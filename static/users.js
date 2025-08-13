@@ -59,6 +59,7 @@ export function fetchUser() {
       div.style.width = '60%';
       div.style.margin = '10px'
       div.style.maxWidth = '200px'
+      div.style.minWidth= '120px'
       div.style.background = 'rgba(26, 35, 50, 0.95)';
       div.append(conversationButton)
 
