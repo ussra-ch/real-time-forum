@@ -68,31 +68,32 @@ export function Create() {
             method: 'POST',
             body: formData
         })
-            .then(r => { 
+            .then(r => {
                 if (!r.ok) {
-                return r.json().then(errorData => {
-                throw new Error(errorData.Text || `HTTP error! Status: ${r.status}`);
-        });
-    }
-                return r.json();})
+                    return r.json().then(errorData => {
+                        throw new Error(errorData.Text || `HTTP error! Status: ${r.status}`);
+                    });
+                }
+                return r.json();
+            })
             .then(data => {
                 console.log("data content is :", data);
-                if (data.Type === 'error'){
-                        // const existingError = document.querySelector(".errorDiv");
-                        // if (existingError) {
-                        //     existingError.remove();
-                        // }
-                        const ErrorDiv = document.createElement('div');
-                        ErrorDiv.className = 'error-container';
-                        ErrorDiv.innerHTML = `
+                if (data.Type === 'error') {
+                    // const existingError = document.querySelector(".errorDiv");
+                    // if (existingError) {
+                    //     existingError.remove();
+                    // }
+                    const ErrorDiv = document.createElement('div');
+                    ErrorDiv.className = 'error-container';
+                    ErrorDiv.innerHTML = `
                                 <div class="errorDiv">
                                 ${data.Text}
                                 </div>`
-                        document.querySelector('body').append(ErrorDiv)                        
-                    }
-                    CreateCard.style.display = 'none';
-                    fetchPosts();
-                })
+                    document.querySelector('body').append(ErrorDiv)
+                }
+                CreateCard.style.display = 'none';
+                fetchPosts();
+            })
             .catch(err => {
                 // console.error('Error', err.message);
                 // const PostCard = document.getElementById('createPostCard')
@@ -107,16 +108,16 @@ export function Create() {
                 ErrorDiv.className = 'error-container';
                 ErrorDiv.innerHTML = `<div class="content">${err.message}</div>`;
                 document.querySelector('body').append(ErrorDiv);
-                setTimeout(()=>{
+                setTimeout(() => {
                     ErrorDiv.remove()
-                }, 1000) 
+                }, 1000)
             });
     });
 
 
     deleteButton.addEventListener('click', () => {
-            createPostDiv.remove()
-        })
+        createPostDiv.remove()
+    })
 
 
 
@@ -162,17 +163,29 @@ export function fetchPosts() {
                       </div>
                     </form>
                 `;
+                const menu = document.createElement('div')
+                menu.style.display = 'none'
+                menu.className='menu'
+                postCard.prepend(menu)
                 if (post.myId == post.user_id) {
+                    const select = document.createElement('button')
+                    select.innerHTML = '<i class="fa-solid fa-ellipsis-vertical"></i>'
+                    select.className = 'select'
+                    postCard.prepend(select)
+                    select.addEventListener('click', (e) => {
+                        e.preventDefault()
+                        menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+                    })
                     const button = document.createElement('button')
                     button.textContent = 'Delete'
-                    postCard.prepend(button)
+                    menu.prepend(button)
                     button.addEventListener('click', (e) => {
                         e.preventDefault()
                         deletepost(post.id)
                     })
                     const editPost = document.createElement('button')
                     editPost.textContent = 'Edit'
-                    postCard.prepend(editPost)
+                    menu.prepend(editPost)
                     editPost.addEventListener('click', (e) => {
                         e.preventDefault()
                         editpost(post.id, post.title, post.content)

@@ -28,6 +28,7 @@ func FetchUsers(w http.ResponseWriter, r *http.Request) {
 			"loggedIn":    false,
 			"nickname":    nil,
 			"onlineUsers": []string{},
+			
 		})
 		return
 	}

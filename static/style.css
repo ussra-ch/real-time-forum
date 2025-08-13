@@ -550,7 +550,7 @@ body::after {
 
 #sidebar {
     top: 40vh;
-    left: 33vw;
+    left: 90vw;
 }
 
 button {
@@ -1092,6 +1092,15 @@ form a:hover {
     background-color: transparent;
 }
 
+.select {
+    right: 2%;
+}
+
+.menu {
+    width: 10vw;
+    height: 20vh;
+    background-color: #1e2835;
+}
 
 @media (max-width: 1370px) {
     #all {
@@ -1123,12 +1132,14 @@ form a:hover {
 
     #sidebar {
         top: 65vh;
-        left: 7vw;
+        left: 95vw;
     }
 
     .notification-circle {
-        left: 0;
+        left: 33vw;
     }
+
+
 
 
 }
@@ -1163,12 +1174,14 @@ form a:hover {
 
     #sidebar {
         top: 65vh;
-       left: 7vw;
+
     }
 
     .notification-circle {
-        left: 0;
+        left: 30vw;
     }
+
+
 }
 
 
@@ -1202,7 +1215,11 @@ form a:hover {
 
     #sidebar {
         top: 70vh;
-        left: 7vw;
+
+    }
+
+    .notification-circle {
+        left: 20vw;
     }
 
 }

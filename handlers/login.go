@@ -59,6 +59,7 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusUnauthorized)
 		json.NewEncoder(w).Encode(errorr)
+		http.Redirect(w,r,"/",301)
 		return
 	} else if err != nil {
 		// log.Println(err)
@@ -96,6 +97,7 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 		HttpOnly: true,
 		MaxAge:   3600,
 	})
+	http.Redirect(w,r,"/",301)
 }
 
 func IsAuthenticated(w http.ResponseWriter, r *http.Request) {

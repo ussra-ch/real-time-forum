@@ -79,6 +79,7 @@ func WebSocketHandler(w http.ResponseWriter, r *http.Request) {
 	}()
 
 	for {
+		 
 		_, message, err := conn.NextReader()
 		if message == nil {
 			mu.Lock()
