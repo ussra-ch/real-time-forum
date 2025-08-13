@@ -559,43 +559,7 @@ button {
     text-overflow: ellipsis;
 }
 
-@media (max-width: 1000px) {
-    #all {
-        flex-direction: column;
-        gap: 20px;
-        margin-top: 20vh;
-    }
 
-    #user {
-        top: -28vh;
-        left: 3%;
-        width: 90%;
-        flex: 0 0 auto;
-        min-width: 0;
-        max-height: 250px;
-        align-self: center;
-    }
-
-    #postsContainer {
-        position: absolute;
-        top: 5vh;
-        left: 3%;
-        width: 100%;
-        min-width: 0;
-    }
-
-    #sidebar {
-        top: 70vh;
-        left: 5vw;
-    }
-    
-}
-
-@media (max-width: 630px) {
-    .notification-circle{
-        left:  0;
-    }
-}
 
 #users {
     padding: 10px;
@@ -912,42 +876,7 @@ form a:hover {
 }
 
 /* Responsive Design */
-@media (max-width: 1024px) {
-    #content {
-        grid-template-columns: 1fr;
-        gap: 1rem;
-    }
 
-    #catego {
-        position: static;
-        order: -1;
-    }
-
-    body::after {
-        display: none;
-    }
-    .notification-circle{
-        left:  0;
-    }
-}
-
-@media (max-width: 560px) {
-    #content {
-        grid-template-columns: 1fr;
-        gap: 1rem;
-    }
-
-    #catego {
-        position: static;
-        order: -1;
-    }
-
-    body::after {
-        display: none;
-    }
-
-    
-}
 
 /* Scrollbar Styling */
 ::-webkit-scrollbar {
@@ -1163,4 +1092,142 @@ form a:hover {
     background-color: transparent;
 }
 
-#error-message {}
+
+@media (max-width: 1370px) {
+    #all {
+        position: absolute;
+        left: 0;
+        flex-direction: column;
+        gap: 20px;
+        margin-top: 20vh;
+        width: 100vw;
+    }
+
+    #user {
+        top: -2vh;
+        left: 3%;
+        width: 90%;
+        flex: 0 0 auto;
+        min-width: 0;
+        max-height: 250px;
+        align-self: center;
+    }
+
+    #postsContainer {
+        position: absolute;
+        top: 30vh;
+        left: 3%;
+        width: 100%;
+        min-width: 0;
+    }
+
+    #sidebar {
+        top: 65vh;
+        left: 7vw;
+    }
+
+    .notification-circle {
+        left: 0;
+    }
+
+
+}
+
+@media (max-width: 1024px) {
+    #all {
+        position: absolute;
+        left: 0;
+        flex-direction: column;
+        gap: 20px;
+        margin-top: 20vh;
+        width: 100vw;
+    }
+
+    #user {
+        top: -2vh;
+        left: 3%;
+        width: 90%;
+        flex: 0 0 auto;
+        min-width: 0;
+        max-height: 250px;
+        align-self: center;
+    }
+
+    #postsContainer {
+        position: absolute;
+        top: 30vh;
+        left: 3%;
+        width: 100%;
+        min-width: 0;
+    }
+
+    #sidebar {
+        top: 65vh;
+       left: 7vw;
+    }
+
+    .notification-circle {
+        left: 0;
+    }
+}
+
+
+@media (max-width: 1000px) {
+    #all {
+        position: absolute;
+        left: 0;
+        flex-direction: column;
+        gap: 20px;
+        margin-top: 20vh;
+        width: 100vw;
+    }
+
+    #user {
+        top: -3vh;
+        left: 3%;
+        width: 90%;
+        flex: 0 0 auto;
+        min-width: 0;
+        max-height: 250px;
+        align-self: center;
+    }
+
+    #postsContainer {
+        position: absolute;
+        top: 28vh;
+        left: 3%;
+        width: 95%;
+        min-width: 0;
+    }
+
+    #sidebar {
+        top: 70vh;
+        left: 7vw;
+    }
+
+}
+
+@media (max-width: 630px) {
+    .notification-circle {
+        left: 0;
+    }
+}
+
+
+@media (max-width: 560px) {
+    #content {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+
+    #catego {
+        position: static;
+        order: -1;
+    }
+
+    body::after {
+        display: none;
+    }
+
+
+}
