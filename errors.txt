@@ -35,3 +35,5 @@ makhasch ytzad lia post b category makaynch
 khali function whda dyal ratelimit w passi limit ka param
 
 haydo l global variablee
+
+mzl n inserti l postId f table dyal categories
