@@ -78,10 +78,10 @@ export function logindiv() {
             body: JSON.stringify(data)
         }).then(res => {
             if (!res.ok) {
-        return res.json().then(errorData => {
-            throw new Error(errorData.Text || `HTTP error! Status: ${res.status}`);
-        });
-    }
+                return res.json().then(errorData => {
+                    throw new Error(errorData.Text || `HTTP error! Status: ${res.status}`);
+                });
+            }
             login();
         })
             .catch(err => {
@@ -90,7 +90,7 @@ export function logindiv() {
                 ErrorDiv.style.display = 'block'
                 ErrorDiv.innerHTML = `${err.message}`;
                 // document.querySelector('body').append(ErrorDiv);
-                setTimeout(()=>{
+                setTimeout(() => {
                     ErrorDiv.style.display = 'none'
                 }, 2000)
             });
@@ -109,10 +109,10 @@ export function logindiv() {
             body: JSON.stringify(data)
         }).then(res => {
             if (!res.ok) {
-        return res.json().then(errorData => {
-            throw new Error(errorData.Text || `HTTP error! Status: ${res.status}`);
-        });
-    }
+                return res.json().then(errorData => {
+                    throw new Error(errorData.Text || `HTTP error! Status: ${res.status}`);
+                });
+            }
             login();
         })
             .catch(err => {
@@ -121,7 +121,7 @@ export function logindiv() {
                 ErrorDiv.style.display = 'block'
                 ErrorDiv.innerHTML = `${err.message}`;
                 // document.querySelector('body').append(ErrorDiv);
-                setTimeout(()=>{
+                setTimeout(() => {
                     ErrorDiv.style.display = 'none'
                 }, 2000)
             });
@@ -181,15 +181,15 @@ export function login() {
                 </header>
                 <div class="sidebar-left">
                 <div class="sidebar-label categories-label" style="top: 15vh;">Categories</div>
-                <div class="sidebar-label posts-label" style="top: 40vh;">Posts</div>
+                <div class="sidebar-label posts-label" id="sidebar" >Posts</div>
                 </div>
                 <div id="catego"></div>
                 <div id="all">
-                <div id="postsContainer"></div>
                 <div id="user">
                 <h3 style="color: rgb(89, 230, 187);"><i class="fa-solid fa-certificate"></i>online</h3>
                 <div id="users"></div>
                 </div>
+                <div id="postsContainer"></div>
                 </div>
                 </div>
             

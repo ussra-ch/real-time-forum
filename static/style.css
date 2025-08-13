@@ -272,8 +272,10 @@ button:hover,
 
 /* Posts Container */
 #postsContainer {
-    top: 67vh;
+    z-index: 10;
+    background-color: #0f1419;
     width: 70vw;
+    height: 70vh;
     border-radius: 15px;
     padding: 1.5rem;
     max-height: 80vh;
@@ -501,32 +503,85 @@ body::after {
     width: auto;
 }
 
+
 #all {
-    width: 100vw;
-    position: absolute;
-    top: 30vh;
+    width: 100%;
+    margin: 30vh auto 0;
     display: flex;
+    align-items: flex-start;
     justify-content: space-between;
+    gap: 20px;
+    padding: 0 2vw;
+    box-sizing: border-box;
+    position: relative;
+}
+
+#postsContainer {
+    position: absolute;
+    top: -10vh;
+    left: 20%;
+    width: 65vw;
+    flex: 1 1 60%;
+    min-width: 280px;
+    height: 70vh;
+    max-height: 80vh;
+    border-radius: 15px;
+    padding: 1.5rem;
+    overflow: auto;
+    margin-top: 20px;
+
 }
 
 #user {
-    position: absolute;
+    position: relative;
+    left: -25%;
+    top: -10vh;
+    flex: 0 0 300px;
+    width: 35vw;
+    min-width: 220px;
     height: 65vh;
-    right: 6vw;
-    border: 1px solid rgba(100, 255, 218, 0.2);
-    width: 20vw;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-    align-items: flex-start;
-    padding: 1rem;
-    gap: 10px;
     max-height: 70vh;
-    background-color: #0f1419;
-    margin-left: 100px;
-    border-radius: 20px;
+    padding: 1rem;
     margin-top: 17px;
+    border-radius: 20px;
+    background-color: #0f1419;
+    border: 1px solid rgba(100, 255, 218, 0.2);
 }
+
+#sidebar {
+    top: 40vh;
+    left: 35vw;
+}
+
+@media (max-width: 1370px) {
+    #all {
+        flex-direction: column;
+        gap: 20px;
+        margin-top: 20vh;
+    }
+
+    #user {
+        top: -30vh;
+        width: 100%;
+        flex: 0 0 auto;
+        min-width: 0;
+        max-height: 250px;
+        align-self: center;
+    }
+
+    #postsContainer {
+        position: absolute;
+        top: 0vh;
+        width: 100%;
+        min-width: 0;
+    }
+
+    #sidebar {
+        top: 65vh;
+        left: 5vw;
+    }
+}
+
 
 #users {
     padding: 10px;
@@ -635,7 +690,7 @@ body::after {
 
 .messagProfil h7 {
     color: rgba(15, 20, 25, 0.95);
-    
+
 }
 
 
@@ -1097,6 +1152,4 @@ form a:hover {
     background-color: transparent;
 }
 
-#error-message{
-
-}
+#error-message {}
