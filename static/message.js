@@ -1,10 +1,22 @@
 import { ws } from "./websocket.js"
 import { fetchUser } from "./users.js"
+
+function throttle(func, delay) {
+    let lastCall = 0;
+    return function (...args) {
+        const now = Date.now();
+        if (now - lastCall >= delay) {
+            lastCall = now;
+            func.apply(this, args);
+        }
+    };
+}
 export function mesaageDiv(user, userId, receiverId) {
     const body = document.querySelector('body')
     if (document.getElementById('message')) {
         document.getElementById('message').remove()
     }
+    var done = true
     const conversation = document.createElement('div')
     conversation.id = 'message'
     conversation.innerHTML = `
@@ -19,14 +31,14 @@ export function mesaageDiv(user, userId, receiverId) {
     `
 
     /////////////////////// Delete conversation Button
-    const deleteButton = document.createElement('button')
-    const icon = document.createElement('i');
-    icon.className = 'fas fa-trash';
-    deleteButton.id = 'closeConversation'
-    deleteButton.appendChild(icon);
-    deleteButton.appendChild(document.createTextNode(' Delete'));
-    let divHeader = conversation.getElementsByClassName('head')[0]
-    divHeader.append(deleteButton)
+    // const deleteButton = document.createElement('button')
+    // const icon = document.createElement('i');
+    // icon.className = 'fas fa-trash';
+    // deleteButton.id = 'closeConversation'
+    // deleteButton.appendChild(icon);
+    // deleteButton.appendChild(document.createTextNode(' Delete'));
+    // let divHeader = conversation.getElementsByClassName('head')[0]
+    // divHeader.append(deleteButton)
     body.append(conversation)
     ///////////////////////
 
@@ -47,7 +59,8 @@ export function mesaageDiv(user, userId, receiverId) {
             if (canCall) {
                 lastCall = now;
                 offset += limit;
-                fetchMessages(userId, receiverId, offset, limit, user);
+                throttle(fetchMessages, 500)(userId, receiverId, offset, limit, user);
+                //fetchMessages(userId, receiverId, offset, limit, user);
             }
         }
     });
@@ -95,14 +108,21 @@ export function mesaageDiv(user, userId, receiverId) {
 
     })
 
-    deleteButton.addEventListener('click', () => {
+    window.addEventListener('click', (e) => {
 
-        let isConversationOpen = { "senderId": userId, "receiverId": receiverId, "type": "CloseConversation" }
-        const jsonIsConversationOpen = JSON.stringify(isConversationOpen);
+        if (conversation && !conversation.contains(e.target) && !done) {
+            console.log(1);
+            let isConversationOpen = {
+                senderId: userId,
+                receiverId: receiverId,
+                type: "CloseConversation"
+            }
+            ws.send(JSON.stringify(isConversationOpen));
+            conversation.remove();
+        }
+        done=false
+    });
 
-        ws.send(jsonIsConversationOpen);
-        conversation.remove()
-    })
 }
 
 function fetchMessages(userId, receiverId, offset, limit, name) {
@@ -135,12 +155,15 @@ function fetchMessages(userId, receiverId, offset, limit, name) {
                                             <h3>${message.content}</h3>
                                             <h7>${formatDate(message.time)}</h7>`
                         body.prepend(newMsg)
-                        if (message.photo) {
-                             document.querySelector('.profile').style.backgroundImage = `url(${message.photo})`;
-                        }else{
-                            document.querySelector('.profile').innerHTML=`
-                                <i class="fa-solid fa-user"></i>
-                            `
+                        if (document.querySelector('.profile')) {
+
+                            if (message.photo) {
+                                document.querySelector('.profile').style.backgroundImage = `url(${message.photo})`;
+                            } else {
+                                document.querySelector('.profile').innerHTML = `
+                                    <i class="fa-solid fa-user"></i>
+                                `
+                            }
                         }
                     } else if (message.userId == receiverId && message.sender_id == userId) {
                         let newMsg = document.createElement('div')
