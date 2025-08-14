@@ -165,7 +165,7 @@ export function fetchPosts() {
                 `;
                 const menu = document.createElement('div')
                 menu.style.display = 'none'
-                menu.className='menu'
+                menu.className = 'menu'
                 postCard.prepend(menu)
                 if (post.myId == post.user_id) {
                     const select = document.createElement('button')
@@ -177,14 +177,14 @@ export function fetchPosts() {
                         menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
                     })
                     const button = document.createElement('button')
-                    button.textContent = 'Delete'
+                    button.innerHTML = `<i class="fa-solid fa-trash"></i> Delete`
                     menu.prepend(button)
                     button.addEventListener('click', (e) => {
                         e.preventDefault()
                         deletepost(post.id)
                     })
                     const editPost = document.createElement('button')
-                    editPost.textContent = 'Edit'
+                    editPost.innerHTML = `<i class="fa-solid fa-file-pen"></i>  Edit `
                     menu.prepend(editPost)
                     editPost.addEventListener('click', (e) => {
                         e.preventDefault()
