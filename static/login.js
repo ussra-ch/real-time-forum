@@ -188,9 +188,9 @@ export function login() {
                 <div class="sidebar-label posts-label" id="sidebar" >Posts</div>
                 </div>
                 <div id="catego"></div>
+                <button id="userShow"><i class="fa-solid fa-users"></i></button>
                 <div id="all">
                 <div id="user">
-                <h3 style="color: rgb(89, 230, 187);"><i class="fa-solid fa-certificate"></i>online</h3>
                 <div id="users"></div>
                 </div>
                 <div id="postsContainer"></div>
@@ -238,6 +238,11 @@ export function login() {
                 });
                 editProfileButton.addEventListener('click', () => {
                     profile(res.age, res.email, res.nickname, res.photo)
+                })
+                const Shwo = document.getElementById('userShow')
+                const user = document.getElementById('user')
+                Shwo.addEventListener('click', () => {
+                    user.style.display = user.style.display == 'none' ? 'block' : 'none'
                 })
 
                 islogin();

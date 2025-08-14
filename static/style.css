@@ -542,6 +542,7 @@ body::after {
 }
 
 #user {
+      z-index: 100;
     position: relative;
     left: -25%;
     top: -10vh;
@@ -571,6 +572,7 @@ button {
 
 
 #users {
+  
     padding: 10px;
     border-radius: 20px;
     width: 100%;
@@ -1127,12 +1129,26 @@ form a:hover {
     left: 0;
     display: inline-block
 }
-#closeConversation{
+
+#closeConversation {
     position: fixed;
     right: 2%;
     top: 1%;
 
 }
+
+#userShow {
+    z-index: 1001;
+    background: transparent;
+    color: #00b4d8;
+    border: 2px solid #00b4d8;
+    text-align: center;
+    position: absolute;
+    top: 29vh;
+    width: 15vw;
+    height: 4vh;
+}
+
 @media (max-width: 1370px) {
     #all {
         position: absolute;
@@ -1144,6 +1160,7 @@ form a:hover {
     }
 
     #user {
+        display: none;
         top: -2vh;
         left: 3%;
         width: 90%;
@@ -1155,7 +1172,7 @@ form a:hover {
 
     #postsContainer {
         position: absolute;
-        top: 30vh;
+        top: 1%;
         left: 3%;
         width: 100%;
         min-width: 0;
@@ -1197,7 +1214,7 @@ form a:hover {
 
     #postsContainer {
         position: absolute;
-        top: 30vh;
+        top: 1%;
         left: 3%;
         width: 100%;
         min-width: 0;
@@ -1238,7 +1255,7 @@ form a:hover {
 
     #postsContainer {
         position: absolute;
-        top: 28vh;
+         top: 1%;
         left: 3%;
         width: 95%;
         min-width: 0;
