@@ -8,6 +8,7 @@ import { fetchPosts } from "./post.js";
 import { catigories } from "./sort.js";
 import { comment } from "./comment.js";
 import { initWebSocket } from "./websocket.js";
+import { Error } from "./errorPage.js";
 
 export function logindiv() {
     loginDiv.className = 'container';

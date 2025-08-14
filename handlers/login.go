@@ -44,6 +44,7 @@ func generateSessionID() string {
 }
 
 func LoginHandler(w http.ResponseWriter, r *http.Request) {
+	
 	var aa a
 	err := json.NewDecoder(r.Body).Decode(&aa)
 	// fmt.Println(aa.Nickname)
@@ -56,10 +57,10 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 			Text: "Invalid Nickname or password",
 		}
 
+		http.Redirect(w, r, "/", 301)
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusUnauthorized)
 		json.NewEncoder(w).Encode(errorr)
-		http.Redirect(w,r,"/",301)
 		return
 	} else if err != nil {
 		// log.Println(err)
@@ -97,7 +98,7 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 		HttpOnly: true,
 		MaxAge:   3600,
 	})
-	http.Redirect(w,r,"/",301)
+	http.Redirect(w, r, "/", 301)
 }
 
 func IsAuthenticated(w http.ResponseWriter, r *http.Request) {
@@ -199,13 +200,13 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 
 	if exists > 0 {
 		errorr := ErrorStruct{
-				Type: "error",
-				Text: "Email already in use",
-			}
-			w.Header().Set("Content-Type", "application/json")
-			w.WriteHeader(http.StatusConflict)
-			json.NewEncoder(w).Encode(errorr)
-			return
+			Type: "error",
+			Text: "Email already in use",
+		}
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusConflict)
+		json.NewEncoder(w).Encode(errorr)
+		return
 	}
 
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(aa.Password), bcrypt.DefaultCost)
@@ -220,7 +221,7 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if aa.Nickname == ""|| aa.Age == ""|| aa.Gender == ""|| aa.Firstname == ""|| aa.Lastname == ""|| aa.Email == "" || aa.Password == "" {
+	if aa.Nickname == "" || aa.Age == "" || aa.Gender == "" || aa.Firstname == "" || aa.Lastname == "" || aa.Email == "" || aa.Password == "" {
 		errorr := ErrorStruct{
 			Type: "error",
 			Text: "Please make sure to fill out all the fields",
