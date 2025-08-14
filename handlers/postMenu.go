@@ -11,8 +11,11 @@ type Post struct {
 }
 
 func DeletePost(w http.ResponseWriter, r *http.Request) {
+	loggedIn, _ := IsLoggedIn(r)
+	if !loggedIn{
+		http.Redirect(w, r, "/", http.StatusUnauthorized)
+	}
 	var post Post
-
 	err := json.NewDecoder(r.Body).Decode(&post)
 	if err != nil {
 		http.Error(w, "Invalid request body", http.StatusBadRequest)
@@ -26,6 +29,10 @@ func DeletePost(w http.ResponseWriter, r *http.Request) {
 }
 
 func EditPost(w http.ResponseWriter, r *http.Request) {
+	loggedIn, _ := IsLoggedIn(r)
+	if !loggedIn{
+		http.Redirect(w, r, "/", http.StatusUnauthorized)
+	}
 	if r.Method != http.MethodPost {
 		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
 		return

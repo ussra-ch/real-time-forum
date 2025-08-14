@@ -175,7 +175,7 @@ button:hover,
 }
 
 /* Categories Sidebar */
-#catego {
+#category {
     background: rgba(26, 35, 50, 0.8);
     backdrop-filter: blur(10px);
     border: 1px solid rgba(100, 255, 218, 0.1);
@@ -245,7 +245,7 @@ button:hover,
     border-radius: 50%;
 }
 
-#catego h1 {
+#category h1 {
     content: 'Categories';
     display: block;
     color: #00b4d8;
@@ -1264,7 +1264,7 @@ form a:hover {
         gap: 1rem;
     }
 
-    #catego {
+    #category {
         position: static;
         order: -1;
     }

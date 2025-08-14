@@ -1,15 +1,16 @@
 import { mesaageDiv } from "./message.js";
 import { ws } from "./websocket.js"
-
+import { main } from "./main.js";
+import { isAuthenticated } from "./login.js";
 
 export function fetchUser() {
 
 
   const usern = document.getElementById('users');
- 
 
-  
-  
+
+
+
   fetch('/user').then(r => r.json()).then(users => {
     usern.textContent = '';
 
@@ -59,7 +60,7 @@ export function fetchUser() {
       div.style.width = '60%';
       div.style.margin = '10px'
       div.style.maxWidth = '200px'
-      div.style.minWidth= '120px'
+      div.style.minWidth = '120px'
       div.style.background = 'rgba(26, 35, 50, 0.95)';
       div.append(conversationButton)
 
@@ -67,11 +68,18 @@ export function fetchUser() {
 
 
       conversationButton.addEventListener('click', () => {
-        if (document.getElementById('message')) document.getElementById('message').remove()
-        let isConversationOpen = { "senderId": users.UserId, "receiverId": user.userId, "isOpen": true, "type": "OpenConversation" }
-        const jsonIsConversationOpen = JSON.stringify(isConversationOpen);
-        ws.send(jsonIsConversationOpen);
-        mesaageDiv(user.nickname, users.UserId, user.userId)
+        isAuthenticated().then(auth => {
+          if (!auth) {
+            main()
+          } else {
+            if (document.getElementById('message')) document.getElementById('message').remove()
+            let isConversationOpen = { "senderId": users.UserId, "receiverId": user.userId, "isOpen": true, "type": "OpenConversation" }
+            const jsonIsConversationOpen = JSON.stringify(isConversationOpen);
+            ws.send(jsonIsConversationOpen);
+            mesaageDiv(user.nickname, users.UserId, user.userId)
+          }
+        })
+
       })
     }
   });

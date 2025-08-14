@@ -1,6 +1,8 @@
 import { comment } from "./comment.js";
 import { loadComments } from "./comment.js";
 import { deletepost, editpost } from "./postMenu.js";
+import { main } from "./main.js";
+import { isAuthenticated } from "./login.js";
 window.deletepost = deletepost;
 
 
@@ -50,8 +52,14 @@ export function Create() {
     // body.append(conversation)
 
     Create.addEventListener('click', (e) => {
-        form.style.display = "block"
-        CreateCard.style.display = 'block' 
+        isAuthenticated().then(auth => {
+            if (!auth) {
+                main()
+            } else {
+                form.style.display = "block"
+                CreateCard.style.display = 'block'
+            }
+        })
     });
     document.getElementById('createPostForm').addEventListener('submit', async function (e) {
         e.preventDefault();
@@ -63,7 +71,7 @@ export function Create() {
         if (this.photo.files[0]) {
             formData.append('photo', this.photo.files[0]);
         }
-        
+
 
         fetch('/api/post', {
             method: 'POST',
@@ -106,7 +114,7 @@ export function Create() {
                 setTimeout(() => {
                     ErrorDiv.remove()
                 }, 1000)
-  
+
             });
     });
 
@@ -168,7 +176,16 @@ export function fetchPosts() {
                     postCard.prepend(select)
                     select.addEventListener('click', (e) => {
                         e.preventDefault()
-                        menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+
+                        isAuthenticated().then(auth => {
+                            if (!auth) {
+                                main()
+                            } else {
+                                menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+                            }
+                        })
+
+
                     })
                     const button = document.createElement('button')
                     button.innerHTML = `<i class="fa-solid fa-trash"></i> Delete`

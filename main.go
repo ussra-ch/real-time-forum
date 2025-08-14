@@ -23,7 +23,7 @@ func main() {
 	http.HandleFunc("/login", handlers.RateLimitLoginMiddleware(handlers.LoginHandler))
 	http.HandleFunc("/logout", handlers.LogoutHandler)
 	http.HandleFunc("/api/logout", handlers.LogoutHandler)
-	http.HandleFunc("/api/anthenticated", handlers.IsAuthenticated)
+	http.HandleFunc("/api/authenticated", handlers.IsAuthenticated)
 	http.HandleFunc("/api/post", handlers.RateLimitPostsMiddleware(handlers.PostHandler))
 	http.HandleFunc("/api/fetch_posts", handlers.FetchPostsHandler)
 	http.HandleFunc("/comment", handlers.CommentsRatelimitMiddleware(handlers.CommentHandler))

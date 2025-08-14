@@ -26,8 +26,6 @@ func CommentHandler(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode(errorr)
 		return
-		fmt.Println("Error decoding comment data:", err)
-		return
 	}
 	if cd.Content == "" {
 		errorr := ErrorStruct{
@@ -37,7 +35,6 @@ func CommentHandler(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode(errorr)
-		return
 		return
 	}
 	var exists bool

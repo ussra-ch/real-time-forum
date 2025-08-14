@@ -8,6 +8,7 @@ import { fetchPosts } from "./post.js";
 import { categories } from "./sort.js";
 import { comment } from "./comment.js";
 import { initWebSocket } from "./websocket.js";
+import { main } from "./main.js";
 // import { Errorr } from "./errorPage.js";
 
 export function logindiv() {
@@ -86,7 +87,6 @@ export function logindiv() {
             login();
         })
             .catch(err => {
-                console.error('Login errorrrrrrrrrr:', err)
                 const ErrorDiv = document.getElementById("error-message");
                 ErrorDiv.style.display = 'block'
                 ErrorDiv.innerHTML = `${err.message}`;
@@ -164,7 +164,7 @@ function islogin() {
 export function login() {
     // console.log('dkhal l log function');
     const body = document.querySelector('body')
-    fetch('/api/anthenticated')
+    fetch('/api/authenticated')
         .then(r => r.json())
         .then(res => {
             let profil = `<i class="fa-solid fa-user"></i>`
@@ -187,7 +187,7 @@ export function login() {
                 <div class="sidebar-label categories-label" style="top: 15vh;">Categories</div>
                 <div class="sidebar-label posts-label" id="sidebar" >Posts</div>
                 </div>
-                <div id="catego"></div>
+                <div id="category"></div>
                 <div id="all">
                 <div id="user">
                 <h3 style="color: rgb(89, 230, 187);"><i class="fa-solid fa-certificate"></i>online</h3>
@@ -230,12 +230,18 @@ export function login() {
                 editProfileButton.style.height = '5vh';
 
                 document.getElementById('profile').addEventListener('click', () => {
-                    if (div.style.display === 'none') {
-                        div.style.display = 'flex';
-                    } else {
-                        div.style.display = 'none';
-                    }
-                });
+                    isAuthenticated().then(auth => {
+                        if (!auth) {
+                            main()
+                        } else {
+                            if (div.style.display === 'none') {
+                                div.style.display = 'flex';
+                            } else {
+                                div.style.display = 'none';
+                            }
+                        }
+                    })
+            });
                 editProfileButton.addEventListener('click', () => {
                     profile(res.age, res.email, res.nickname, res.photo)
                 })
@@ -250,18 +256,39 @@ export function login() {
                 return false
             }
         }).catch(err => {
-                const existingPopup = document.querySelector(".content");
-                if (existingPopup) {
-                    existingPopup.remove();
-                }
-                const ErrorDiv = document.createElement('div');
-                ErrorDiv.className = 'error-container';
-                ErrorDiv.innerHTML = `<div class="content">${err.message}</div>`;
-                document.querySelector('body').append(ErrorDiv);
-                setTimeout(() => {
-                    ErrorDiv.remove()
-                }, 1000)
-  
-            });
+            const existingPopup = document.querySelector(".content");
+            if (existingPopup) {
+                existingPopup.remove();
+            }
+            const ErrorDiv = document.createElement('div');
+            ErrorDiv.className = 'error-container';
+            ErrorDiv.innerHTML = `<div class="content">${err.message}</div>`;
+            document.querySelector('body').append(ErrorDiv);
+            setTimeout(() => {
+                ErrorDiv.remove()
+            }, 1000)
+
+        });
 }
 
+
+export function isAuthenticated() {
+    return fetch('/api/authenticated')
+        .then(r => r.json())
+        .then(res => {
+            return res.ok
+        }).catch(err => {
+            const existingPopup = document.querySelector(".content");
+            if (existingPopup) {
+                existingPopup.remove();
+            }
+            const ErrorDiv = document.createElement('div');
+            ErrorDiv.className = 'error-container';
+            ErrorDiv.innerHTML = `<div class="content">${err.message}</div>`;
+            document.querySelector('body').append(ErrorDiv);
+            setTimeout(() => {
+                ErrorDiv.remove()
+            }, 1000)
+            return false
+        });
+}

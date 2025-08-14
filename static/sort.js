@@ -1,8 +1,10 @@
 import { comment } from "./comment.js";
 import { loadComments } from "./comment.js";
+import { main } from "./main.js";
+import { isAuthenticated } from "./login.js";
 export function categories() {
   let categories = ['All', 'Music', 'Sport', 'Tecknology', 'Science', 'Culture'];
-  const categoDiv = document.getElementById('catego');
+  const categoDiv = document.getElementById('category');
 
   categories.forEach(element => {
     const boutton = document.createElement('button');
@@ -13,19 +15,23 @@ export function categories() {
       fetch(`/api/fetch_posts`)
         .then(res => res.json())
         .then(posts => {
-          const postsContainer = document.getElementById('postsContainer');
-          if (!posts) {
-            return
-          }
-          postsContainer.innerHTML = '';
-          posts.forEach(post => {
-            const topics = post.interest ? post.interest.split(',') : [];
-            if (post.interest.split(',').includes(element) || element === 'All') {
-              const postCard = document.createElement('div');
-              postCard.className = 'post-card1';
+          isAuthenticated().then(auth => {
+            if (!auth) {
+              main()
+            } else {
+              const postsContainer = document.getElementById('postsContainer');
+              if (!posts) {
+                return
+              }
+              postsContainer.innerHTML = '';
+              posts.forEach(post => {
+                const topics = post.interest ? post.interest.split(',') : [];
+                if (post.interest.split(',').includes(element) || element === 'All') {
+                  const postCard = document.createElement('div');
+                  postCard.className = 'post-card1';
 
 
-              postCard.innerHTML = `
+                  postCard.innerHTML = `
         <h3>${post.title}</h3>
         <p>${post.content}</p>
         <p>Topics: ${topics.join(', ')}</p>
@@ -39,19 +45,22 @@ export function categories() {
         </form>
       `;
 
-              const div = document.createElement('div');
-              div.className = 'comments-container';
-              postCard.appendChild(div);
-              postsContainer.prepend(postCard);
-              document.querySelector('.show').addEventListener('click', (e) => {
-                div.style.display = div.style.display === 'none' ? 'block' : 'none';
-                loadComments(post.id, div);
-              });
-              
-            }
-          });
+                  const div = document.createElement('div');
+                  div.className = 'comments-container';
+                  postCard.appendChild(div);
+                  postsContainer.prepend(postCard);
+                  document.querySelector('.show').addEventListener('click', (e) => {
+                    div.style.display = div.style.display === 'none' ? 'block' : 'none';
+                    loadComments(post.id, div);
+                  });
 
-          comment()
+                }
+              });
+
+              comment()
+            }
+          })
+
         })
         .catch(err => console.error('Error fetching posts:', err));
 

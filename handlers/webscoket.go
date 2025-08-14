@@ -228,7 +228,6 @@ func FetchMessages(w http.ResponseWriter, r *http.Request) {
 }
 
 func broadcastUserStatus(conn *websocket.Conn, userId int) {
-	fmt.Println("Connected users map :", ConnectedUsers)
 	if _, exists := ConnectedUsers[float64(userId)]; !exists {
 		newUser := make(map[string]interface{})
 		newUser["type"] = "online"

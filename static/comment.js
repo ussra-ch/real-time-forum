@@ -1,3 +1,6 @@
+import { isAuthenticated } from "./login.js";
+import { main } from "./main.js";
+
 export function comment(div) {
     const forms = document.querySelectorAll('.commentForm');
 
@@ -17,37 +20,36 @@ export function comment(div) {
                 body: JSON.stringify({ comment, post_id }),
             })
                 .then(res => {
-                     if (!res.ok) {
+                    if (!res.ok) {
                         return res.json().then(errorData => {
-                        throw new Error(errorData.Text || `HTTP error! Status: ${res.status}`);
+                            throw new Error(errorData.Text || `HTTP error! Status: ${res.status}`);
                         });
-                        }
-                    return res.json()})
+                    }
+                    return res.json()
+                })
                 .then(data => {
-                    // const ErrorDiv = document.createElement('div');
-                    //     ErrorDiv.className = 'error-container';
-                    //     ErrorDiv.innerHTML = `
-                    //             <div class="errorDiv">
-                    //             ${data.Text}
-                    //             </div>`
-                    //     document.querySelector('body').append(ErrorDiv)  
                     commentInput.value = "";
                     loadComments(post_id, div)
-
                 })
                 .catch(err => {
-                    // console.error("Error:", err);
-                    const existingPopup = document.querySelector(".content");
-                if (existingPopup) {
-                    existingPopup.remove();
-                }
-                const ErrorDiv = document.createElement('div');
-                ErrorDiv.className = 'error-container';
-                ErrorDiv.innerHTML = `<div class="content">${err.message}</div>`;
-                document.querySelector('body').append(ErrorDiv);
-                setTimeout(()=>{
-                    ErrorDiv.remove()
-                }, 1000)
+                    isAuthenticated().then(auth => {
+                        if (!auth) {                            
+                            main()
+                        } else {
+                            const existingPopup = document.querySelector(".content");
+                            if (existingPopup) {
+                                existingPopup.remove();
+                            }
+                            const ErrorDiv = document.createElement('div');
+                            ErrorDiv.className = 'error-container';
+                            ErrorDiv.innerHTML = `<div class="content">${err.message}</div>`;
+                            document.querySelector('body').append(ErrorDiv);
+                            setTimeout(() => {
+                                ErrorDiv.remove()
+                            }, 1000)
+                        }
+                    })
+
                 });
         });
     });
