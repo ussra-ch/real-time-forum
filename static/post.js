@@ -27,7 +27,7 @@ export function Create() {
   <div class="topic-options">
   <label><input type="checkbox" id="music" name="topic" value="Music"> Music</label>
   <label><input type="checkbox" id="sport" name="topic" value="Sport"> Sport</label>
-  <label><input type="checkbox" id="tecknology" name="topic" value="Tecknology"> Tecknology</label>
+  <label><input type="checkbox" id="technology" name="topic" value="Technology"> Technology</label>
   <label><input type="checkbox" id="culture" name="topic" value="Culture"> Culture</label>
   <label><input type="checkbox" id="gcience" name="topic" value="Science"> Science</label>
   </div>

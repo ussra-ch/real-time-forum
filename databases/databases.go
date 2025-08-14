@@ -29,10 +29,8 @@ func InitDB(filepath string) {
 	}
 
 
-	DB.Exec(`INSERT INTO categories (name, icon) VALUES('Sport', '<i class="fa-solid fa-medal"></i>'),
-	('Music', '<i class="fa-solid fa-music"></i>'),
-	('Science', '<i class="fa-solid fa-flask"></i>'),
-	('Tecknology', '<i class="fa-solid fa-microchip"></i>'),('Culture', '<i class="fa-solid fa-person-walking"></i>');`)
+	DB.Exec(`INSERT INTO categories (name) VALUES ('Sport'), ('Music'), ('Science'), ('Technology'), ('Culture');`)
+
 	
 	fmt.Println("Queries executed successfully!")
 }

@@ -52,12 +52,11 @@ CREATE TABLE
         seen BOOLEAN
     );
 
-CREATE TABLE
-    IF NOT EXISTS categories (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        name VARCHAR(50) UNIQUE,
-        icon TEXT UNIQUE
-    );
+CREATE TABLE IF NOT EXISTS categories (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name VARCHAR(50) UNIQUE
+);
+
 
 CREATE TABLE
     IF NOT EXISTS categories_post (
