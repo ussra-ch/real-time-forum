@@ -10,7 +10,6 @@ export function Create() {
     CreateCard.innerHTML = `
   <div class="post-card" id="createPostCard" >
   <form id="createPostForm" method="get">
-  <div class="container">
   <h3>Create Post</h3>
   <div class="div-title">
   <label for="title">Title :</label>
@@ -25,15 +24,14 @@ export function Create() {
   </div>
   </div>
   <div class="topic-options">
-  <label><input type="checkbox" id="music" name="topic" value="Music"> Music</label>
+  <label><input type="checkbox" id="music" name="topic" value="Music" style="margin-right: 39px;"> Music</label>
   <label><input type="checkbox" id="sport" name="topic" value="Sport"> Sport</label>
-  <label><input type="checkbox" id="gaming" name="topic" value="Gaming"> Gaming</label>
-  <label><input type="checkbox" id="health" name="topic" value="Health"> Health</label>
-  <label><input type="checkbox" id="general" name="topic" value="General"> General</label>
+  <label><input type="checkbox" id="technology" name="topic" value="Technology"> Technology</label>
+  <label><input type="checkbox" id="culture" name="topic" value="Culture" style="margin-left: 10px;"> Culture</label>
+  <label><input type="checkbox" id="gcience" name="topic" value="Science" style="margin-right: 27px;"> Science</label>
   </div>
   <div id="errorMsg" style="display:none; color:red; margin: 10px 10px;"></div>
   <button type="submit">Post</button>
-  </div>
   </form>
   </div>
   `;
@@ -41,17 +39,17 @@ export function Create() {
     CreateCard.style.display = 'none';
 
     const deleteButton = document.createElement('button')
-    const icon = document.createElement('i');
-    icon.className = 'fas fa-trash';
+    deleteButton.innerHTML = `<i class="fa-solid fa-xmark"></i>`
     deleteButton.id = 'closeConversation'
-    deleteButton.appendChild(icon);
-    deleteButton.appendChild(document.createTextNode('Delete'));
+
+    const form = document.getElementById('createPostForm')
     let createPostDiv = document.getElementById('createPostCard')
-    createPostDiv.append(deleteButton)
+    createPostDiv.prepend(deleteButton)
     // body.append(conversation)
 
     Create.addEventListener('click', (e) => {
-        CreateCard.style.display = CreateCard.style.display === 'none' ? 'block' : 'none';
+        form.style.display = "block"
+        CreateCard.style.display = 'block'
     });
     document.getElementById('createPostForm').addEventListener('submit', async function (e) {
         e.preventDefault();
@@ -63,6 +61,7 @@ export function Create() {
         if (this.photo.files[0]) {
             formData.append('photo', this.photo.files[0]);
         }
+
 
         fetch('/api/post', {
             method: 'POST',
@@ -77,29 +76,23 @@ export function Create() {
                 return r.json();
             })
             .then(data => {
-                console.log("data content is :", data);
-                if (data.Type === 'error') {
-                    // const existingError = document.querySelector(".errorDiv");
-                    // if (existingError) {
-                    //     existingError.remove();
-                    // }
-                    const ErrorDiv = document.createElement('div');
-                    ErrorDiv.className = 'error-container';
-                    ErrorDiv.innerHTML = `
-                                <div class="errorDiv">
-                                ${data.Text}
-                                </div>`
-                    document.querySelector('body').append(ErrorDiv)
-                }
-                CreateCard.style.display = 'none';
+                // console.log("data content is :", data);
+                // if (data.Type === 'error') {
+                //     const ErrorDiv = document.createElement('div');
+                //     ErrorDiv.className = 'error-container';
+                //     ErrorDiv.innerHTML = `
+                //                 <div class="errorDiv">
+                //                 ${data.Text}
+                //                 </div>`
+                //     document.querySelector('body').append(ErrorDiv)
+                // }
+                // CreateCard.style.display = 'none';
+                resetForm(form)
+                form.style.display = "none"
                 fetchPosts();
             })
             .catch(err => {
-                // console.error('Error', err.message);
-                // const PostCard = document.getElementById('createPostCard')
-                // if (PostCard) {
-                //     PostCard.style.display = 'none';
-                // }
+                resetForm(form)
                 const existingPopup = document.querySelector(".content");
                 if (existingPopup) {
                     existingPopup.remove();
@@ -111,15 +104,15 @@ export function Create() {
                 setTimeout(() => {
                     ErrorDiv.remove()
                 }, 1000)
+
             });
     });
 
 
     deleteButton.addEventListener('click', () => {
-        createPostDiv.remove()
+        CreateCard.style.display = "none"
+        form.style.display = "none"
     })
-
-
 
 }
 
@@ -133,7 +126,6 @@ export function Notifications(notifs) {
     content.appendChild(notifications);
     notifications.style.display = 'none';
 }
-
 
 export function fetchPosts() {
     fetch('/api/fetch_posts')
@@ -208,4 +200,15 @@ export function fetchPosts() {
         })
         .catch(err => console.error('Error fetching posts:', err));
 
+}
+
+function resetForm(form) {
+    form.title.value = '';
+    form.description.value = '';
+
+    document.querySelectorAll('input[name="topic"]:checked').forEach(el => el.checked = false);
+
+    if (form.photo) {
+        form.photo.value = '';
+    }
 }

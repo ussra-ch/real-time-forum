@@ -1,7 +1,8 @@
 import { main } from "./main.js";
 
-export function Error(err) {
+export function Errorr(err) {
     const style = document.createElement("style");
+    style.id = 'style'
     style.textContent = `
     @import url("https://fonts.googleapis.com/css?family=Montserrat:400,400i,700");
 

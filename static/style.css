@@ -30,7 +30,7 @@ header {
     right: 0;
     z-index: 1000;
     display: flex;
-    justify-content: space-between;
+    /* justify-content: space-between; */
     align-items: center;
     height: 6vh;
 }
@@ -43,21 +43,22 @@ header::before {
 }
 
 .notification-circle {
-    position: relative;
-    left: 35vw;
+    position: fixed;
+    color: white;
+    right: 8vw;
     width: 5vw;
     height: 5vh;
     max-width: 50px;
     border-radius: 50%;
 
     font-size: 24px;
-    color: #333;
+
 }
 
 .notification-badge {
     position: absolute;
-    top: 0;
-    right: -5px;
+    bottom: 1%;
+    right: 40%;
     background-color: red;
     color: white;
     font-size: 12px;
@@ -206,6 +207,8 @@ button:hover,
 }
 
 #profile {
+    position: fixed;
+    right: 1vw;
     width: 10vw;
     height: 4vh;
     max-width: 50px;
@@ -255,7 +258,7 @@ button:hover,
     text-align: center;
 }
 
-.catigories {
+.categories {
     width: 10vw;
     background: #00b4d8;
     border: 1px solid rgba(100, 255, 218, 0.2);
@@ -267,8 +270,8 @@ button:hover,
     transition: all 0.3s ease;
 }
 
-.catigories:hover,
-.catigories.active {
+.categories:hover,
+.categories.active {
     background: #00b4d8;
     color: #0f1419;
     transform: translateX(-5px);
@@ -1124,7 +1127,12 @@ form a:hover {
     left: 0;
     display: inline-block
 }
+#closeConversation{
+    position: fixed;
+    right: 2%;
+    top: 1%;
 
+}
 @media (max-width: 1370px) {
     #all {
         position: absolute;
@@ -1159,7 +1167,7 @@ form a:hover {
     }
 
     .notification-circle {
-        left: 33vw;
+        right: 11vw;
     }
 
 
@@ -1201,7 +1209,7 @@ form a:hover {
     }
 
     .notification-circle {
-        left: 30vw;
+        right: 11vw;
     }
 
 
@@ -1241,15 +1249,16 @@ form a:hover {
 
     }
 
+
     .notification-circle {
-        left: 20vw;
+        right: 20vw;
     }
 
 }
 
 @media (max-width: 630px) {
     .notification-circle {
-        left: 0;
+        right: 11vw;
     }
 
     .menu {
@@ -1273,69 +1282,7 @@ form a:hover {
         display: none;
     }
 
-
-}
-/*
-@import url("https://fonts.googleapis.com/css?family=Montserrat:400,400i,700");
-
-*,
-*:after,
-*:before {
-    box-sizing: border-box;
-}
-
-body {
-    background-color: #313942;
-    font-family: 'Montserrat', sans-serif;
-}
-
-main {
-    align-items: center;
-    display: flex;
-    flex-direction: column;
-    height: 100vh;
-    justify-content: center;
-    text-align: center;
-}
-
-h1 {
-    color: #e7ebf2;
-    font-size: 12.5rem;
-    letter-spacing: .10em;
-    margin: .025em 0;
-    text-shadow: .05em .05em 0 rgba(0, 0, 0, .25);
-    white-space: nowrap;
-}
-
-h1>span {
-    animation: spooky 2s alternate infinite linear;
-    color: #528cce;
-    display: inline-block;
-}
-
-@media (max-width: 30rem) {
-    h1 {
-        font-size: 8.5rem;
+    .notification-circle {
+        right: 16vw;
     }
 }
-
-h2 {
-    color: #e7ebf2;
-    margin-bottom: .40em;
-}
-
-p {
-    color: #ccc;
-    margin-top: 0;
-}
-
-@keyframes spooky {
-    from {
-        transform: translatey(.15em) scaley(.95);
-    }
-
-    to {
-        transform: translatey(-.15em);
-    }
-}
-*/

@@ -5,10 +5,10 @@ import { formatDate } from "./message.js"
 import { logout } from "./logout.js"
 import { Create } from "./post.js"
 import { fetchPosts } from "./post.js";
-import { catigories } from "./sort.js";
+import { categories } from "./sort.js";
 import { comment } from "./comment.js";
 import { initWebSocket } from "./websocket.js";
-import { Error } from "./errorPage.js";
+// import { Errorr } from "./errorPage.js";
 
 export function logindiv() {
     loginDiv.className = 'container';
@@ -156,7 +156,7 @@ function islogin() {
     logout();
     Create();
     fetchPosts();
-    catigories();
+    categories();
     comment();
     fetchUser()
 }
@@ -173,14 +173,14 @@ export function login() {
                 body.innerHTML = `
                 <div id="content">
                 <header>
-              
+                
                 <div class="notification-circle">
                 <i class="fa-regular fa-bell"></i>
                    <div class="notification-badge" , id ="notification-circle">${notifications}</div>
                </div>
                 <button id="profile" style="z-index: 10;">
                 </button>
-                <button id="Create" style="z-index: 10;">+</button>
+                <button id="Create" style="z-index: 10;"><i class="fa-solid fa-plus"></i></button>
               
                 </header>
                 <div class="sidebar-left">

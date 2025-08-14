@@ -24,13 +24,13 @@ export function comment(div) {
                         }
                     return res.json()})
                 .then(data => {
-                    const ErrorDiv = document.createElement('div');
-                        ErrorDiv.className = 'error-container';
-                        ErrorDiv.innerHTML = `
-                                <div class="errorDiv">
-                                ${data.Text}
-                                </div>`
-                        document.querySelector('body').append(ErrorDiv)  
+                    // const ErrorDiv = document.createElement('div');
+                    //     ErrorDiv.className = 'error-container';
+                    //     ErrorDiv.innerHTML = `
+                    //             <div class="errorDiv">
+                    //             ${data.Text}
+                    //             </div>`
+                    //     document.querySelector('body').append(ErrorDiv)  
                     commentInput.value = "";
                     loadComments(post_id, div)
 
