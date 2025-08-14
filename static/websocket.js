@@ -39,6 +39,8 @@ export function initWebSocket(onMessageCallback) {
     };
 
     ws.onmessage = (event) => {
+        console.log(event.data);
+        
         if (event.data) {
             const data = JSON.parse(event.data);
             if (data.type === 'online' || data.type === 'offline') {

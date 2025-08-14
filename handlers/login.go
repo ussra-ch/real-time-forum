@@ -64,6 +64,7 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	} else if err != nil {
 		// log.Println(err)
+		fmt.Println("111111")
 		errorr := ErrorStruct{
 			Type: "error",
 			Text: "Internal server error",
@@ -81,6 +82,7 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 	`, sessionID, userID)
 	if err != nil {
 		// log.Println(err)
+		fmt.Println("222222")
 		errorr := ErrorStruct{
 			Type: "error",
 			Text: "Internal server error",
@@ -150,9 +152,11 @@ func LogoutHandler(w http.ResponseWriter, r *http.Request) {
 			fmt.Println("error when sending the user's status : ", err)
 		}
 		// fmt.Println("11")
-		for _, value := range ConnectedUsers {
+		for _, connections := range ConnectedUsers {
 			// fmt.Println("dkhal l loop bach ysift status dluser")
-			value.WriteMessage(websocket.TextMessage, []byte(toSend))
+			for _, con := range connections{
+				con.WriteMessage(websocket.TextMessage, []byte(toSend))
+			}
 		}
 	}
 	mu.Unlock()
@@ -184,9 +188,10 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 	err := json.NewDecoder(r.Body).Decode(&aa)
 	// fmt.Println("aa content is :", aa)
 	var exists int
-	err = databases.DB.QueryRow("SELECT COUNT(*) FROM users WHERE email = ?", aa.Email).Scan(&exists)
+	err = databases.DB.QueryRow("SELECT COUNT(*) FROM users WHERE email = ? OR nickname = ?", aa.Email, aa.Nickname).Scan(&exists)
 	if err != nil {
 		// log.Println("Error checking email:", err)
+		fmt.Println("333333")
 		errorr := ErrorStruct{
 			Type: "error",
 			Text: "Internal server error",
@@ -200,7 +205,7 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 	if exists > 0 {
 		errorr := ErrorStruct{
 			Type: "error",
-			Text: "Email already in use",
+			Text: "Email or nickname is already in use",
 		}
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusConflict)
@@ -210,6 +215,7 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(aa.Password), bcrypt.DefaultCost)
 	if err != nil {
+		fmt.Println("44444")
 		errorr := ErrorStruct{
 			Type: "error",
 			Text: "Internal server error",
@@ -235,6 +241,8 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 		VALUES (?, ?, ?, ?, ?, ?, ?)`,
 		aa.Nickname, aa.Age, aa.Gender, aa.Firstname, aa.Lastname, aa.Email, hashedPassword)
 	if err != nil {
+		fmt.Println("the errrorrr is :", err)
+		fmt.Println("555555")
 		errorr := ErrorStruct{
 			Type: "error",
 			Text: "Internal server error",
@@ -247,6 +255,7 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 
 	userID, err := res.LastInsertId()
 	if err != nil {
+		fmt.Println("66666666")
 		errorr := ErrorStruct{
 			Type: "error",
 			Text: "Internal server error",
@@ -267,6 +276,7 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 		sessionID, userID, expiresAt)
 	if err != nil {
 		// log.Println("Error inserting session:", err)
+		fmt.Println("77777")
 		errorr := ErrorStruct{
 			Type: "error",
 			Text: "Internal server error",
@@ -287,8 +297,10 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			fmt.Println("error when sending the user's status : ", err)
 		}
-		for _, value := range ConnectedUsers {
-			value.WriteMessage(websocket.TextMessage, []byte(toSend))
+		for _, connections := range ConnectedUsers {
+			for _, con := range connections{
+				con.WriteMessage(websocket.TextMessage, []byte(toSend))
+			}
 		}
 	}
 	mu.Unlock()

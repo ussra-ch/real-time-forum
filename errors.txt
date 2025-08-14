@@ -16,11 +16,7 @@ chnage the Throttle function's name to Throttle
 
 nraj3o conn dyal kola user ka array, bach ila 7al ktar mn tab n9dr nsift l message l ga3 tabs.
 
-n checke wach ila hawl yposti wla ycommenti wtloggouta wla 9t3 connexion wach radi y savea fdb
-
 check dyal ga3 l errors dyal routes (404, 400, 500 ....) (redirect + khwi l page + 7ot l error) 
-
-protect l input finma kan bach maydkhulch lia ka code js wla html tags
 
 check l path dyal code dyali (style.css ....)
 
