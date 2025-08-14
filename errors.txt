@@ -7,14 +7,11 @@ limit websocket size (machi ri l buffer)
 
 
 cleaning code
-chnage the Throttle function's name to Throttle
-
 
 nraj3o conn dyal kola user ka array, bach ila 7al ktar mn tab n9dr nsift l message l ga3 tabs.
 
 check dyal ga3 l errors dyal routes (404, 400, 500 ....) (redirect + khwi l page + 7ot l error) 
 
-check l path dyal code dyali (style.css ....)
 
 khali function whda dyal ratelimit w passi limit ka param
 

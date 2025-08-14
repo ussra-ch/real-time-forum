@@ -17,12 +17,13 @@ export function comment(div) {
                 body: JSON.stringify({ comment, post_id }),
             })
                 .then(res => {
-                     if (!res.ok) {
+                    if (!res.ok) {
                         return res.json().then(errorData => {
-                        throw new Error(errorData.Text || `HTTP error! Status: ${res.status}`);
+                            throw new Error(errorData.Text || `HTTP error! Status: ${res.status}`);
                         });
-                        }
-                    return res.json()})
+                    }
+                    return res.json()
+                })
                 .then(data => {
                     // const ErrorDiv = document.createElement('div');
                     //     ErrorDiv.className = 'error-container';
@@ -38,16 +39,16 @@ export function comment(div) {
                 .catch(err => {
                     // console.error("Error:", err);
                     const existingPopup = document.querySelector(".content");
-                if (existingPopup) {
-                    existingPopup.remove();
-                }
-                const ErrorDiv = document.createElement('div');
-                ErrorDiv.className = 'error-container';
-                ErrorDiv.innerHTML = `<div class="content">${err.message}</div>`;
-                document.querySelector('body').append(ErrorDiv);
-                setTimeout(()=>{
-                    ErrorDiv.remove()
-                }, 1000)
+                    if (existingPopup) {
+                        existingPopup.remove();
+                    }
+                    const ErrorDiv = document.createElement('div');
+                    ErrorDiv.className = 'error-container';
+                    ErrorDiv.innerHTML = `<div class="content">${err.message}</div>`;
+                    document.querySelector('body').append(ErrorDiv);
+                    setTimeout(() => {
+                        ErrorDiv.remove()
+                    }, 1000)
                 });
         });
     });

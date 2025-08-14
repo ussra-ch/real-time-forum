@@ -13,12 +13,22 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 	http.ServeFile(w, r, "index.html")
 }
 
+func Test(w http.ResponseWriter, r *http.Request) {
+	fs := http.FileServer(http.Dir("static"))
+	if r.URL.Path == "/static/" {
+		http.Error(w, "forbidden", http.StatusForbidden)
+		return
+	}
+
+	http.StripPrefix("/static/", fs).ServeHTTP(w, r)
+}
+
 func main() {
 	databases.InitDB("forum.db")
 	defer databases.DB.Close()
-	fs := http.FileServer(http.Dir("static"))
-	http.Handle("/static/", http.StripPrefix("/static/", fs))
+
 	http.HandleFunc("/", HomeHandler)
+	http.HandleFunc("/static/", Test)
 	http.HandleFunc("/register", handlers.RegisterHandler)
 	http.HandleFunc("/login", handlers.RateLimitLoginMiddleware(handlers.LoginHandler))
 	http.HandleFunc("/logout", handlers.LogoutHandler)

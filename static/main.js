@@ -9,7 +9,8 @@ export function main() {
   }
   const currentUrl = window.location.href;
   const urlArr = currentUrl.split('/')
-
+  console.log(urlArr);
+  
   if (urlArr[urlArr.length - 1] != "" || urlArr.length != 4) {
     Errorr('404')
 
