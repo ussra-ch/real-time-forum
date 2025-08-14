@@ -20,3 +20,5 @@ haydo l global variablee
 mansawch l error li kitl3 fach kansifto msg l chi wahd mamlogich
 
 delete l post mn category-post ila l post deleta
+
+ila session t overrytat khas l websocket t closa
