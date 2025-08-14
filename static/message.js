@@ -65,9 +65,14 @@ export function mesaageDiv(user, userId, receiverId) {
             // console.log(1);
             let newMsg = document.createElement('div')
             newMsg.className = 'messageReceived'
-            newMsg.innerHTML = `<h3>${message}</h3>
-                        <h7>${formatDate(Date.now())}</h7>`
+            let msgContent = document.createElement('h3')
+            msgContent.textContent = message
+            let timestamp = document.createElement('h7')
+            timestamp.textContent = formatDate(Date.now())
+            newMsg.appendChild(msgContent)
+            newMsg.appendChild(timestamp)
             chatBody.append(newMsg)
+
             const payload = {
                 "senderId": userId,
                 "receiverId": receiverId,
@@ -136,9 +141,9 @@ function fetchMessages(userId, receiverId, offset, limit, name) {
                                             <h7>${formatDate(message.time)}</h7>`
                         body.prepend(newMsg)
                         if (message.photo) {
-                             document.querySelector('.profile').style.backgroundImage = `url(${message.photo})`;
-                        }else{
-                            document.querySelector('.profile').innerHTML=`
+                            document.querySelector('.profile').style.backgroundImage = `url(${message.photo})`;
+                        } else {
+                            document.querySelector('.profile').innerHTML = `
                                 <i class="fa-solid fa-user"></i>
                             `
                         }

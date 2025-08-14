@@ -249,6 +249,19 @@ export function login() {
                 logindiv()
                 return false
             }
-        }).catch(err => console.error('Error:', err));
+        }).catch(err => {
+                const existingPopup = document.querySelector(".content");
+                if (existingPopup) {
+                    existingPopup.remove();
+                }
+                const ErrorDiv = document.createElement('div');
+                ErrorDiv.className = 'error-container';
+                ErrorDiv.innerHTML = `<div class="content">${err.message}</div>`;
+                document.querySelector('body').append(ErrorDiv);
+                setTimeout(() => {
+                    ErrorDiv.remove()
+                }, 1000)
+  
+            });
 }
 

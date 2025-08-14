@@ -3,6 +3,7 @@ package handlers
 import (
 	"encoding/json"
 	"fmt"
+	"html"
 	"net/http"
 	"strconv"
 	"time"
@@ -79,7 +80,7 @@ func WebSocketHandler(w http.ResponseWriter, r *http.Request) {
 	}()
 
 	for {
-		 
+
 		_, message, err := conn.NextReader()
 		if message == nil {
 			mu.Lock()
@@ -199,7 +200,6 @@ func FetchMessages(w http.ResponseWriter, r *http.Request) {
 		q := `SELECT photo FROM users WHERE id = ?`
 		err := databases.DB.QueryRow(q, sender_id).Scan(&photo)
 		if err != nil {
-			
 		}
 
 		fmt.Println(photo)
@@ -262,7 +262,7 @@ func conversationOpened(senderId, receiverId float64, typeValue string) {
 
 func messageHandler(messageStruct Message) {
 	_, err := databases.DB.Exec(`INSERT INTO messages (sender_id,receiver_id,content,seen )
-					VALUES (?, ?, ?, ?);`, messageStruct.SenderId, messageStruct.ReceiverId, messageStruct.MessageContent, false)
+					VALUES (?, ?, ?, ?);`, messageStruct.SenderId, messageStruct.ReceiverId, html.EscapeString(messageStruct.MessageContent), false)
 	if err != nil {
 		fmt.Println("Error storing the message in DB : ", err)
 	}
