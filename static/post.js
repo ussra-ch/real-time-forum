@@ -50,6 +50,7 @@ export function Create() {
     // body.append(conversation)
 
     Create.addEventListener('click', (e) => {
+        form.style.display = "block"
         CreateCard.style.display = 'block' 
     });
     document.getElementById('createPostForm').addEventListener('submit', async function (e) {
@@ -105,12 +106,14 @@ export function Create() {
                 setTimeout(() => {
                     ErrorDiv.remove()
                 }, 1000)
+  
             });
     });
 
 
     deleteButton.addEventListener('click', () => {
         CreateCard.style.display = "none"
+        form.style.display = "none"
     })
 
 }
@@ -154,17 +157,29 @@ export function fetchPosts() {
                       </div>
                     </form>
                 `;
+                const menu = document.createElement('div')
+                menu.style.display = 'none'
+                menu.className = 'menu'
+                postCard.prepend(menu)
                 if (post.myId == post.user_id) {
+                    const select = document.createElement('button')
+                    select.innerHTML = '<i class="fa-solid fa-ellipsis-vertical"></i>'
+                    select.className = 'select'
+                    postCard.prepend(select)
+                    select.addEventListener('click', (e) => {
+                        e.preventDefault()
+                        menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+                    })
                     const button = document.createElement('button')
-                    button.textContent = 'Delete'
-                    postCard.prepend(button)
+                    button.innerHTML = `<i class="fa-solid fa-trash"></i> Delete`
+                    menu.prepend(button)
                     button.addEventListener('click', (e) => {
                         e.preventDefault()
                         deletepost(post.id)
                     })
                     const editPost = document.createElement('button')
-                    editPost.textContent = 'Edit'
-                    postCard.prepend(editPost)
+                    editPost.innerHTML = `<i class="fa-solid fa-file-pen"></i>  Edit `
+                    menu.prepend(editPost)
                     editPost.addEventListener('click', (e) => {
                         e.preventDefault()
                         editpost(post.id, post.title, post.content)

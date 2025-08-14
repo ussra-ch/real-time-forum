@@ -100,6 +100,11 @@ button:hover,
     flex-direction: column;
 }
 
+#message {
+    position: absolute;
+    right: 0;
+}
+
 .messageReceived {
     align-self: flex-end;
     background-color: #007bff;
@@ -286,6 +291,7 @@ button:hover,
 
 /* Posts Styling */
 .post-card1 {
+    position: relative;
     width: 80%;
     background: rgba(26, 35, 50, 0.6);
     border: 1px solid rgba(100, 255, 218, 0.2);
@@ -550,55 +556,33 @@ body::after {
 
 #sidebar {
     top: 40vh;
-    left: 35vw;
+    left: 90vw;
 }
 
-@media (max-width: 1370px) {
-    #all {
-        flex-direction: column;
-        gap: 20px;
-        margin-top: 20vh;
-    }
-
-    #user {
-        top: -30vh;
-        width: 100%;
-        flex: 0 0 auto;
-        min-width: 0;
-        max-height: 250px;
-        align-self: center;
-    }
-
-    #postsContainer {
-        position: absolute;
-        top: 0vh;
-        width: 100%;
-        min-width: 0;
-    }
-
-    #sidebar {
-        top: 65vh;
-        left: 5vw;
-    }
+button {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
+
 
 
 #users {
     padding: 10px;
     border-radius: 20px;
     width: 100%;
-    border: 1px solid rgba(100, 255, 218, 0.2);
-    max-height: 70%;
+
+    max-height: 90%;
     overflow: auto;
-    background-color: rgba(26, 35, 50, 0.6);
 }
 
 #message {
-    position: fixed;
+    position: absolute;
     bottom: 2vh;
-    left: 2vw;
+    right: 2vw;
     height: 65vh;
-    width: 300px;
+    width: 20vw;
+    min-width: 250px;
     display: flex;
     flex-direction: column;
     background: rgba(30, 40, 55, 0.97);
@@ -629,7 +613,8 @@ body::after {
     background-color: rgba(15, 20, 25, 0.95);
     overflow-y: auto;
     color: white;
-    width: 90%;
+    width: 100%;
+
 }
 
 .input-area {
@@ -898,45 +883,7 @@ form a:hover {
 }
 
 /* Responsive Design */
-@media (max-width: 1024px) {
-    #content {
-        grid-template-columns: 1fr;
-        gap: 1rem;
-    }
 
-    #catego {
-        position: static;
-        order: -1;
-    }
-
-    body::after {
-        display: none;
-    }
-
-    .notification-circle {
-        left: 23vw;
-    }
-}
-
-@media (max-width: 560px) {
-    #content {
-        grid-template-columns: 1fr;
-        gap: 1rem;
-    }
-
-    #catego {
-        position: static;
-        order: -1;
-    }
-
-    body::after {
-        display: none;
-    }
-
-    .notification-circle {
-        left: 23vw;
-    }
-}
 
 /* Scrollbar Styling */
 ::-webkit-scrollbar {
@@ -1152,4 +1099,243 @@ form a:hover {
     background-color: transparent;
 }
 
-#error-message {}
+.select {
+    position: absolute;
+    right: 0;
+    right: 2%;
+}
+
+.menu {
+    position: absolute;
+    right: 0;
+    top: 6vh;
+    width: 10vw;
+    max-width: 100px;
+    padding: 10px;
+    height: 20vh;
+    align-items: center;
+    text-align: center;
+    background-size: cover;
+    /* background-color: #1e2835;*/
+}
+
+.menu button {
+    margin: 10px;
+    left: 0;
+    display: inline-block
+}
+
+@media (max-width: 1370px) {
+    #all {
+        position: absolute;
+        left: 0;
+        flex-direction: column;
+        gap: 20px;
+        margin-top: 20vh;
+        width: 100vw;
+    }
+
+    #user {
+        top: -2vh;
+        left: 3%;
+        width: 90%;
+        flex: 0 0 auto;
+        min-width: 0;
+        max-height: 250px;
+        align-self: center;
+    }
+
+    #postsContainer {
+        position: absolute;
+        top: 30vh;
+        left: 3%;
+        width: 100%;
+        min-width: 0;
+    }
+
+    #sidebar {
+        top: 65vh;
+        left: 95vw;
+    }
+
+    .notification-circle {
+        left: 33vw;
+    }
+
+
+
+
+}
+
+@media (max-width: 1024px) {
+    #all {
+        position: absolute;
+        left: 0;
+        flex-direction: column;
+        gap: 20px;
+        margin-top: 20vh;
+        width: 100vw;
+    }
+
+    #user {
+        top: -2vh;
+        left: 3%;
+        width: 90%;
+        flex: 0 0 auto;
+        min-width: 0;
+        max-height: 250px;
+        align-self: center;
+    }
+
+    #postsContainer {
+        position: absolute;
+        top: 30vh;
+        left: 3%;
+        width: 100%;
+        min-width: 0;
+    }
+
+    #sidebar {
+        top: 65vh;
+
+    }
+
+    .notification-circle {
+        left: 30vw;
+    }
+
+
+}
+
+
+@media (max-width: 1000px) {
+    #all {
+        position: absolute;
+        left: 0;
+        flex-direction: column;
+        gap: 20px;
+        margin-top: 20vh;
+        width: 100vw;
+    }
+
+    #user {
+        top: -3vh;
+        left: 3%;
+        width: 90%;
+        flex: 0 0 auto;
+        min-width: 0;
+        max-height: 250px;
+        align-self: center;
+    }
+
+    #postsContainer {
+        position: absolute;
+        top: 28vh;
+        left: 3%;
+        width: 95%;
+        min-width: 0;
+    }
+
+    #sidebar {
+        top: 70vh;
+
+    }
+
+    .notification-circle {
+        left: 20vw;
+    }
+
+}
+
+@media (max-width: 630px) {
+    .notification-circle {
+        left: 0;
+    }
+
+    .menu {
+        right: 15%;
+    }
+}
+
+
+@media (max-width: 560px) {
+    #content {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+
+    #catego {
+        position: static;
+        order: -1;
+    }
+
+    body::after {
+        display: none;
+    }
+
+
+}
+/*
+@import url("https://fonts.googleapis.com/css?family=Montserrat:400,400i,700");
+
+*,
+*:after,
+*:before {
+    box-sizing: border-box;
+}
+
+body {
+    background-color: #313942;
+    font-family: 'Montserrat', sans-serif;
+}
+
+main {
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    justify-content: center;
+    text-align: center;
+}
+
+h1 {
+    color: #e7ebf2;
+    font-size: 12.5rem;
+    letter-spacing: .10em;
+    margin: .025em 0;
+    text-shadow: .05em .05em 0 rgba(0, 0, 0, .25);
+    white-space: nowrap;
+}
+
+h1>span {
+    animation: spooky 2s alternate infinite linear;
+    color: #528cce;
+    display: inline-block;
+}
+
+@media (max-width: 30rem) {
+    h1 {
+        font-size: 8.5rem;
+    }
+}
+
+h2 {
+    color: #e7ebf2;
+    margin-bottom: .40em;
+}
+
+p {
+    color: #ccc;
+    margin-top: 0;
+}
+
+@keyframes spooky {
+    from {
+        transform: translatey(.15em) scaley(.95);
+    }
+
+    to {
+        transform: translatey(-.15em);
+    }
+}
+*/

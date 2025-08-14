@@ -8,6 +8,7 @@ import { fetchPosts } from "./post.js";
 import { categories } from "./sort.js";
 import { comment } from "./comment.js";
 import { initWebSocket } from "./websocket.js";
+// import { Errorr } from "./errorPage.js";
 
 export function logindiv() {
     loginDiv.className = 'container';
@@ -172,12 +173,15 @@ export function login() {
                 body.innerHTML = `
                 <div id="content">
                 <header>
-                 <div class="notification-circle">
-                    🔔
-                    <div class="notification-badge" , id ="notification-circle">${notifications}</div>
-                </div>
-                <button id="profile" style="z-index: 10;"></button>
+              
+                <div class="notification-circle">
+                <i class="fa-regular fa-bell"></i>
+                   <div class="notification-badge" , id ="notification-circle">${notifications}</div>
+               </div>
+                <button id="profile" style="z-index: 10;">
+                </button>
                 <button id="Create" style="z-index: 10;">+</button>
+              
                 </header>
                 <div class="sidebar-left">
                 <div class="sidebar-label categories-label" style="top: 15vh;">Categories</div>
@@ -197,6 +201,8 @@ export function login() {
             `
                 if (res.photo && res.photo.trim() !== "") {
                     document.getElementById('profile').style.backgroundImage = `url(${res.photo})`;
+                } else {
+                    document.getElementById('profile').innerHTML = `${profil}`
                 }
 
                 const div = document.createElement('div');
