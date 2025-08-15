@@ -1,7 +1,10 @@
 import { comment } from "./comment.js";
 import { loadComments } from "./comment.js";
+import { deletepost, editpost } from "./postMenu.js";
+
+
 export function categories() {
-  let categories = ['All', 'Music', 'Sport', 'Tecknology', 'Science', 'Culture'];
+  let categories = ['All', 'Music', 'Sport', 'Technology', 'Science', 'Culture'];
   const categoDiv = document.getElementById('catego');
 
   categories.forEach(element => {

@@ -12,13 +12,11 @@ type Post struct {
 }
 
 func DeletePost(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodPost {
-		http.Redirect(w, r, "/", 301)
-		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
-		return
+	loggedIn, _ := IsLoggedIn(r)
+	if !loggedIn {
+		http.Redirect(w, r, "/", http.StatusUnauthorized)
 	}
 	var post Post
-
 	err := json.NewDecoder(r.Body).Decode(&post)
 	if err != nil {
 		http.Error(w, "Invalid request body", http.StatusBadRequest)
@@ -26,9 +24,38 @@ func DeletePost(w http.ResponseWriter, r *http.Request) {
 	}
 	query := "DELETE FROM posts WHERE id = ?"
 	_, err = databases.DB.Exec(query, post.ID)
+	if err != nil {
+		http.Error(w, "error deleting posts from post", http.StatusInternalServerError)
+		return
+	}
+
+	query1 := "SELECT categoryID from categories_post WHERE postID = ?"
+	rows, err1 := databases.DB.Query(query1, post.ID)
+	if err1 != nil {
+		http.Error(w, "error getting posts from categories_post", http.StatusInternalServerError)
+		return
+	}
+	categoryIDs := []int{}
+	for rows.Next() {
+		var categoryID int
+		if err := rows.Scan(&categoryID); err != nil {
+			http.Error(w, "error scanning categoryID", http.StatusInternalServerError)
+			return
+		}
+		categoryIDs = append(categoryIDs, categoryID)
+	}
+	for _, catecategoryID := range categoryIDs {
+		query3 := "DELETE FROM categories_post WHERE postID = ? AND categoryID = ?"
+		_, err = databases.DB.Exec(query3, post.ID, catecategoryID)
+		if err != nil {
+			http.Error(w, "error deleting posts from categories_post", http.StatusInternalServerError)
+			return
+		}
+	}
 
 	w.WriteHeader(http.StatusOK)
 	w.Write([]byte("Post deleted successfully"))
+
 }
 
 func EditPost(w http.ResponseWriter, r *http.Request) {

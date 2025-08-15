@@ -187,7 +187,7 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 	err := json.NewDecoder(r.Body).Decode(&aa)
 	// fmt.Println("aa content is :", aa)
 	var exists int
-	err = databases.DB.QueryRow("SELECT COUNT(*) FROM users WHERE email = ?", aa.Email).Scan(&exists)
+	err = databases.DB.QueryRow("SELECT COUNT(*) FROM users WHERE email = ? OR nickname = ?", aa.Email, aa.Nickname).Scan(&exists)
 	if err != nil {
 		// log.Println("Error checking email:", err)
 		errorr := ErrorStruct{
@@ -203,7 +203,7 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 	if exists > 0 {
 		errorr := ErrorStruct{
 			Type: "error",
-			Text: "Email already in use",
+			Text: "Email or nickname is already in use",
 		}
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusConflict)
@@ -326,7 +326,7 @@ func IsLoggedIn(r *http.Request) (bool, int) {
 	if err != nil {
 		return false, 0
 	}
-	fmt.Println("session cookie value:", cookie.Value)
+	// fmt.Println("session cookie value:", cookie.Value)
 
 	var userID int
 	err = databases.DB.QueryRow(`
