@@ -3,3 +3,11 @@ front :
     - 
 
 cleaning code
+
+(
+fach l user kims7 session wkidir chi action kan3ayat 3la l main,
+ wach machi khas n3ayat 3la logout bach mayb9ach yt7sb mloggini aslan) -----> mn ba3d ma testit l9it rah kib9a tal3 online 3nd l users lakhrin
+
+ khas nt2akdou rah dak l post kayn 9bl man deletiwh
+
+ fach l user kims7 session kib9a 9ad ysift msg wkitstora f database

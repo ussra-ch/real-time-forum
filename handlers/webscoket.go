@@ -45,16 +45,15 @@ var (
 	OpenedConversations = make(map[float64]map[float64]bool)
 )
 
-// openedConversations = make(map[int]int)
-
 // Send
 func WebSocketHandler(w http.ResponseWriter, r *http.Request) {
 	conn, err := Upgrader.Upgrade(w, r, nil)
 	if err != nil {
+		errorHandler(http.StatusInternalServerError, w)
 		return
 	}
-	_, userId := IsLoggedIn(r)
 	mu.Lock()
+	_, userId := IsLoggedIn(r)
 	broadcastUserStatus(conn, userId)
 	sendUnreadNotifications(userId, ConnectedUsers[float64(userId)])
 	mu.Unlock()

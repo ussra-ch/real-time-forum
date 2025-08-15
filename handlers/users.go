@@ -21,14 +21,16 @@ type User struct {
 }
 
 func FetchUsers(w http.ResponseWriter, r *http.Request) {
+	mu.Lock()
 	loggedIn, userID := IsLoggedIn(r)
+	mu.Unlock()
+
 	if !loggedIn {
 		w.Header().Set("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(map[string]interface{}{
 			"loggedIn":    false,
 			"nickname":    nil,
 			"onlineUsers": []string{},
-			
 		})
 		return
 	}
@@ -36,7 +38,7 @@ func FetchUsers(w http.ResponseWriter, r *http.Request) {
 	var myNickname string
 	err := databases.DB.QueryRow("SELECT nickname FROM users WHERE id = ?", userID).Scan(&myNickname)
 	if err != nil {
-		log.Println("Error getting nickname:", err)
+		errorHandler(http.StatusInternalServerError, w)
 		http.Error(w, "Database error", http.StatusInternalServerError)
 		return
 	}

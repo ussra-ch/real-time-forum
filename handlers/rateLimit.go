@@ -47,7 +47,9 @@ func UserInfos(r *http.Request) (*RateLimit, bool) {
 		BlockedUntil: time.Time{},
 		UserId:       -1,
 	}
+	mu.Lock()
 	_, userID := IsLoggedIn(r)
+	mu.Unlock()
 	rateLimit.UserId = userID
 	return rateLimit, true
 }
@@ -60,7 +62,10 @@ func RatelimitMiddleware(next http.HandlerFunc, rateLimitType string, maxAttempt
 		} else if rateLimitType == "comments" {
 			theMap = CommentRateLimits
 		}
+		mu.Lock()
 		userRateLimit, ok := UserInfos(r)
+		mu.Unlock()
+
 		if !ok {
 			errorr := ErrorStruct{
 				Type: "error",
@@ -75,19 +80,14 @@ func RatelimitMiddleware(next http.HandlerFunc, rateLimitType string, maxAttempt
 
 		ratelimit, exists := theMap[userRateLimit.UserId]
 		if !exists {
+			mu.Lock()
 			AddUserToTheMap(userRateLimit, theMap)
+			mu.Unlock()
 			ratelimit = userRateLimit
 		}
 
 		if !CheckRateLimit(ratelimit, 1*time.Minute, maxAttempts) {
-			errorr := ErrorStruct{
-				Type: "error",
-				Text: "Too many requests",
-			}
-
-			w.Header().Set("Content-Type", "application/json")
-			w.WriteHeader(http.StatusTooManyRequests)
-			json.NewEncoder(w).Encode(errorr)
+			errorHandler(http.StatusTooManyRequests, w)
 			return
 		}
 		next.ServeHTTP(w, r)
