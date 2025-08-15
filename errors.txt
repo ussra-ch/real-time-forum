@@ -2,9 +2,7 @@ refresh dyal lpage ratelimit
 
 front
 
-
 limit websocket size (machi ri l buffer)
-
 
 cleaning code
 chnage the Throttle function's name to Throttle
@@ -13,12 +11,8 @@ check dyal ga3 l errors dyal routes (404, 400, 500 ....) (redirect + khwi l page
 
 check l path dyal code dyali (style.css ....)
 
-khali function whda dyal ratelimit w passi limit ka param
-
 haydo l global variablee
 
 mansawch l error li kitl3 fach kansifto msg l chi wahd mamlogich
-
-delete l post mn category-post ila l post deleta
 
 ila session t overrytat khas l websocket t closa
