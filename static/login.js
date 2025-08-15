@@ -175,15 +175,15 @@ export function login() {
                 body.innerHTML = `
                 <div id="content">
                 <header>
-                
+                <div class="nav">
                 <div class="notification-circle">
                 <i class="fa-regular fa-bell"></i>
                    <div class="notification-badge" , id ="notification-circle">${notifications}</div>
                </div>
-                <button id="profile" style="z-index: 10;">
-                </button>
-                <button id="Create" style="z-index: 10;"><i class="fa-solid fa-plus"></i></button>
-              
+               <button id="Create" style="z-index: 10;"><i class="fa-solid fa-plus"></i></button>
+               <button id="profile" style="z-index: 10;">
+               </button>
+              </div>
                 </header>
                 <div class="sidebar-left">
                 <div class="sidebar-label categories-label" style="top: 15vh;">Categories</div>
@@ -201,8 +201,8 @@ export function login() {
             
             <script type="module" src="static/main.js"></script>
             `
-            console.log(res.photo);
-            
+                console.log(res.photo);
+
                 if (res.photo && res.photo.String.trim() !== "") {
                     document.getElementById('profile').style.backgroundImage = `url(${res.photo})`;
                 } else {
@@ -261,19 +261,19 @@ export function login() {
             }
         }).catch(err => {
             console.log(err);
-            
-                const existingPopup = document.querySelector(".content");
-                if (existingPopup) {
-                    existingPopup.remove();
-                }
-                const ErrorDiv = document.createElement('div');
-                ErrorDiv.className = 'error-container';
-                ErrorDiv.innerHTML = `<div class="content">${err.message}</div>`;
-                document.querySelector('body').append(ErrorDiv);
-                setTimeout(() => {
-                    ErrorDiv.remove()
-                }, 1000)
-  
-            });
+
+            const existingPopup = document.querySelector(".content");
+            if (existingPopup) {
+                existingPopup.remove();
+            }
+            const ErrorDiv = document.createElement('div');
+            ErrorDiv.className = 'error-container';
+            ErrorDiv.innerHTML = `<div class="content">${err.message}</div>`;
+            document.querySelector('body').append(ErrorDiv);
+            setTimeout(() => {
+                ErrorDiv.remove()
+            }, 1000)
+
+        });
 }
 

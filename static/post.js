@@ -88,6 +88,7 @@ export function Create() {
                 // CreateCard.style.display = 'none';
                 resetForm(form)
                 form.style.display = "none"
+                CreateCard.style.display = 'none' 
                 fetchPosts();
             })
             .catch(err => {
