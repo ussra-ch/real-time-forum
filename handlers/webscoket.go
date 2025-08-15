@@ -55,7 +55,6 @@ func WebSocketHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	_, userId := IsLoggedIn(r)
-	// ConnectedUsers[float64(userId)] = append(ConnectedUsers[float64(userId)], conn)
 	mu.Lock()
 	broadcastUserStatus(conn, userId)
 	sendUnreadNotifications(userId, ConnectedUsers[float64(userId)])
@@ -109,9 +108,6 @@ func WebSocketHandler(w http.ResponseWriter, r *http.Request) {
 				if typeValue == "OpenConversation" {
 					updateSeenValue(int(toolMap["senderId"].(float64)), int(toolMap["receiverId"].(float64)))
 				}
-				// if (typeValue == "CloseConversation"){
-				// 	fmt.Println("\n\n\nInside the CloseConversation section\n\n")
-				// }
 				sendUnreadNotifications(userId, ConnectedUsers[float64(userId)])
 				mu.Unlock()
 			}
