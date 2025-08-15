@@ -14,26 +14,23 @@ type CommentData struct {
 	Content string `json:"comment"`
 }
 
+type Comment struct {
+	ID        int
+	Content   string
+	CreatedAt string
+	UserID    string
+	PostID    string
+	Name      string
+}
+
 func CommentHandler(w http.ResponseWriter, r *http.Request) {
 	var cd CommentData
 	if err := json.NewDecoder(r.Body).Decode(&cd); err != nil {
-		errorr := ErrorStruct{
-			Type: "error",
-			Text: "Bad request",
-		}
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(errorr)
+		errorHandler(http.StatusBadRequest, w)
 		return
 	}
 	if cd.Content == "" {
-		errorr := ErrorStruct{
-			Type: "error",
-			Text: "Bad request",
-		}
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(errorr)
+		errorHandler(http.StatusBadRequest, w)
 		return
 	}
 	var exists bool
@@ -43,15 +40,10 @@ func CommentHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if !exists {
-		errorr := ErrorStruct{
-			Type: "error",
-			Text: "Bad request",
-		}
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(errorr)
+		errorHandler(http.StatusBadRequest, w)
 		return
 	}
+
 	// Get user ID from session
 	cookie, err := r.Cookie("session")
 	if err != nil {
@@ -61,13 +53,7 @@ func CommentHandler(w http.ResponseWriter, r *http.Request) {
 	var userID int
 	err = databases.DB.QueryRow(`SELECT user_id FROM sessions WHERE id = ?`, cookie.Value).Scan(&userID)
 	if err != nil {
-		errorr := ErrorStruct{
-			Type: "error",
-			Text: "Unauthorized",
-		}
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(http.StatusUnauthorized)
-		json.NewEncoder(w).Encode(errorr)
+		errorHandler(http.StatusUnauthorized, w)
 		return
 	}
 	// Insert comment
@@ -76,7 +62,7 @@ func CommentHandler(w http.ResponseWriter, r *http.Request) {
 		VALUES (?, ?, ?)
 	`, cd.PostID, userID, html.EscapeString(cd.Content))
 	if err != nil {
-		http.Error(w, "Database error", http.StatusInternalServerError)
+		errorHandler(http.StatusInternalServerError, w)
 		return
 	}
 
@@ -84,15 +70,6 @@ func CommentHandler(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(map[string]string{
 		"message": "Comment created successfully",
 	})
-}
-
-type Comment struct {
-	ID        int
-	Content   string
-	CreatedAt string
-	UserID    string
-	PostID    string
-	Name      string
 }
 
 func FetchCommentsHandler(w http.ResponseWriter, r *http.Request) {
@@ -109,7 +86,8 @@ func FetchCommentsHandler(w http.ResponseWriter, r *http.Request) {
 		ORDER BY comments.created_at DESC;
 	`)
 	if err != nil {
-		log.Fatal(err)
+		errorHandler(http.StatusInternalServerError, w)
+		return
 	}
 	defer rows.Close()
 
