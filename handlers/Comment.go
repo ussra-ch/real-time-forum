@@ -38,7 +38,6 @@ func CommentHandler(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode(errorr)
 		return
-		return
 	}
 	var exists bool
 	err := databases.DB.QueryRow("SELECT EXISTS(SELECT 1 FROM posts WHERE id = $1)", cd.PostID).Scan(&exists)

@@ -1,8 +1,10 @@
 package handlers
 
 import (
+	"encoding/json"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 	"os"
 	"time"
@@ -46,15 +48,54 @@ func EditProfile(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 	}
+	state := false
+	state1 := false
 
 	if nickname == "" {
 		_ = databases.DB.QueryRow("SELECT nickname FROM users WHERE id = ?", userID).Scan(&nickname)
+		state = true 
 	}
 	if email == "" {
 		_ = databases.DB.QueryRow("SELECT email FROM users WHERE id = ?", userID).Scan(&email)
+		state1 = true
 	}
 	if age == "" {
 		_ = databases.DB.QueryRow("SELECT age FROM users WHERE id = ?", userID).Scan(&age)
+	}
+	if (!state){
+		var exists bool
+		err = databases.DB.QueryRow("SELECT EXISTS(SELECT 1 FROM users WHERE nickname = ?)", nickname).Scan(&exists)
+		if err != nil {
+			log.Fatal(err)
+		}
+		if exists {
+			errorr := ErrorStruct{
+				Type: "error",
+				Text: "Nickname is already in use",
+			}
+			w.Header().Set("Content-Type", "application/json")
+			w.WriteHeader(http.StatusBadRequest)
+			json.NewEncoder(w).Encode(errorr)
+			return
+		}
+	}
+
+	if (!state1){
+		var exists bool
+		err = databases.DB.QueryRow("SELECT EXISTS(SELECT 1 FROM users WHERE email = ?)", email).Scan(&exists)
+		if err != nil {
+			log.Fatal(err)
+		}
+		if exists {
+			errorr := ErrorStruct{
+				Type: "error",
+				Text: "Email is already in use",
+			}
+			w.Header().Set("Content-Type", "application/json")
+			w.WriteHeader(http.StatusBadRequest)
+			json.NewEncoder(w).Encode(errorr)
+			return
+		}
 	}
 	args := []interface{}{nickname, email, age}
 	query := "UPDATE users SET nickname = ?, email = ?, age = ?"
@@ -72,5 +113,13 @@ func EditProfile(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	w.WriteHeader(http.StatusOK)
+	success := ErrorStruct{
+				Type: "success",
+				Text: "Your information has been updated",
+			}
+			w.Header().Set("Content-Type", "application/json")
+			w.WriteHeader(http.StatusOK)
+			json.NewEncoder(w).Encode(success)
+			// return
+	// w.WriteHeader(http.StatusOK)
 }

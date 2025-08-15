@@ -31,7 +31,7 @@ func main() {
 	http.HandleFunc("/static/", Test)
 	http.HandleFunc("/register", handlers.RegisterHandler)
 	http.HandleFunc("/login", handlers.RateLimitLoginMiddleware(handlers.LoginHandler))
-	http.HandleFunc("/logout", handlers.LogoutHandler)
+	// http.HandleFunc("/logout", handlers.LogoutHandler)
 	http.HandleFunc("/api/logout", handlers.LogoutHandler)
 	http.HandleFunc("/api/authenticated", handlers.IsAuthenticated)
 	http.HandleFunc("/api/post", handlers.RateLimitPostsMiddleware(handlers.PostHandler))

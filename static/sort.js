@@ -1,33 +1,39 @@
 import { comment } from "./comment.js";
 import { loadComments } from "./comment.js";
 import { deletepost, editpost } from "./postMenu.js";
+import { main } from "./main.js";
+import { isAuthenticated } from "./login.js";
 
 
 export function categories() {
   let categories = ['All', 'Music', 'Sport', 'Technology', 'Science', 'Culture'];
-  const categoDiv = document.getElementById('catego');
+  const categoDiv = document.getElementById('category');
 
   categories.forEach(element => {
-    const boutton = document.createElement('button');
-    boutton.className = 'categories';
-    boutton.innerText = element;
-    boutton.addEventListener('click', (e) => {
-      e.preventDefault()
-      fetch(`/api/fetch_posts`)
-        .then(res => res.json())
-        .then(posts => {
-          const postsContainer = document.getElementById('postsContainer');
-          if (!posts) {
-            return
-          }
+    const button = document.createElement('button');
+    button.className = 'categories';
+    button.innerText = element;
+    button.addEventListener('click', (e) => {
+      isAuthenticated().then(auth => {
+        if (!auth) {
+          main()
+        } else {
+          e.preventDefault()
+          fetch(`/api/fetch_posts`)
+            .then(res => res.json())
+            .then(posts => {
+              const postsContainer = document.getElementById('postsContainer');
+              if (!posts) {
+                return
+              }
 
-          postsContainer.innerHTML = '';
-          posts.forEach(post => {
-            const topics = post.interest ? post.interest.split(',') : [];
-            if (post.interest.split(',').includes(element) || element === 'All') {
-              const postCard = document.createElement('div');
-              postCard.className = 'post-card1';
-              postCard.innerHTML = `
+              postsContainer.innerHTML = '';
+              posts.forEach(post => {
+                const topics = post.interest ? post.interest.split(',') : [];
+                if (post.interest.split(',').includes(element) || element === 'All') {
+                  const postCard = document.createElement('div');
+                  postCard.className = 'post-card1';
+                  postCard.innerHTML = `
                              <h3>${post.title}</h3>
                              <p>${post.content}</p>
                              <p>Topics: ${topics.join(', ')}</p>
@@ -42,55 +48,57 @@ export function categories() {
                                </div>
                              </form>
                          `;
-              const menu = document.createElement('div')
-              menu.style.display = 'none'
-              menu.className = 'menu'
-              postCard.prepend(menu)
-              if (post.myId == post.user_id) {
-                const select = document.createElement('button')
-                select.innerHTML = '<i class="fa-solid fa-ellipsis-vertical"></i>'
-                select.className = 'select'
-                postCard.prepend(select)
-                select.addEventListener('click', (e) => {
-                  e.preventDefault()
-                  menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
-                })
-                const button = document.createElement('button')
-                button.innerHTML = `<i class="fa-solid fa-trash"></i> Delete`
-                menu.prepend(button)
-                button.addEventListener('click', (e) => {
-                  e.preventDefault()
-                  deletepost(post.id)
-                })
-                const editPost = document.createElement('button')
-                editPost.innerHTML = `<i class="fa-solid fa-file-pen"></i>  Edit `
-                menu.prepend(editPost)
-                editPost.addEventListener('click', (e) => {
-                  e.preventDefault()
-                  editpost(post.id, post.title, post.content)
-                })
-              }
+                  const menu = document.createElement('div')
+                  menu.style.display = 'none'
+                  menu.className = 'menu'
+                  postCard.prepend(menu)
+                  if (post.myId == post.user_id) {
+                    const select = document.createElement('button')
+                    select.innerHTML = '<i class="fa-solid fa-ellipsis-vertical"></i>'
+                    select.className = 'select'
+                    postCard.prepend(select)
+                    select.addEventListener('click', (e) => {
+                      e.preventDefault()
+                      menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+                    })
+                    const button = document.createElement('button')
+                    button.innerHTML = `<i class="fa-solid fa-trash"></i> Delete`
+                    menu.prepend(button)
+                    button.addEventListener('click', (e) => {
+                      e.preventDefault()
+                      deletepost(post.id)
+                    })
+                    const editPost = document.createElement('button')
+                    editPost.innerHTML = `<i class="fa-solid fa-file-pen"></i>  Edit `
+                    menu.prepend(editPost)
+                    editPost.addEventListener('click', (e) => {
+                      e.preventDefault()
+                      editpost(post.id, post.title, post.content)
+                    })
+                  }
 
-              const div = document.createElement('div');
-              div.className = 'comments-container';
-              postCard.appendChild(div);
-              postsContainer.prepend(postCard);
-              div.style.display = 'none'
-              document.querySelector('.show').addEventListener('click', (e) => {
-                e.preventDefault()
-                div.style.display = div.style.display === 'none' ? 'block' : 'none';
+                  const div = document.createElement('div');
+                  div.className = 'comments-container';
+                  postCard.appendChild(div);
+                  postsContainer.prepend(postCard);
+                  div.style.display = 'none'
+                  document.querySelector('.show').addEventListener('click', (e) => {
+                    e.preventDefault()
+                    div.style.display = div.style.display === 'none' ? 'block' : 'none';
 
-                loadComments(post.id, div);
+                    loadComments(post.id, div);
+                  });
+                  comment(div)
+                }
               });
-              comment(div)
-            }
-          });
 
+            })
+            .catch(err => console.error('Error fetching posts:', err));
 
-        })
-        .catch(err => console.error('Error fetching posts:', err));
+        }
+      })
 
     });
-    categoDiv.appendChild(boutton);
+    categoDiv.appendChild(button);
   });
 }

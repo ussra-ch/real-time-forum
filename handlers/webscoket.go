@@ -41,7 +41,7 @@ type Notification struct {
 }
 
 var (
-	ConnectedUsers      = make(map[float64]*websocket.Conn)
+	ConnectedUsers      = make(map[float64][]*websocket.Conn)
 	OpenedConversations = make(map[float64]map[float64]bool)
 )
 
@@ -57,21 +57,23 @@ func WebSocketHandler(w http.ResponseWriter, r *http.Request) {
 	_, userId := IsLoggedIn(r)
 	mu.Lock()
 	broadcastUserStatus(conn, userId)
-	sendUnreadNotifications(userId, conn)
+	sendUnreadNotifications(userId, ConnectedUsers[float64(userId)])
 	mu.Unlock()
 
 	defer func() {
 		mu.Lock()
 
 		newUser := make(map[string]interface{})
-		newUser["type"] = "ofling"
+		newUser["type"] = "offline"
 		newUser["userId"] = userId
 		toSend, err := json.Marshal(newUser)
 		if err != nil {
 			fmt.Println("error when sending the user's status : ", err)
 		}
 		for _, value := range ConnectedUsers {
-			value.WriteMessage(websocket.TextMessage, []byte(toSend))
+			for _, con := range value{
+				con.WriteMessage(websocket.TextMessage, []byte(toSend))
+			}
 		}
 
 		delete(ConnectedUsers, float64(userId))
@@ -88,7 +90,7 @@ func WebSocketHandler(w http.ResponseWriter, r *http.Request) {
 			mu.Unlock()
 		}
 		if err != nil {
-			fmt.Println("error when reading the upcoming message : ", err)
+			// fmt.Println("error when reading the upcoming message : ", err)
 			return
 		}
 
@@ -106,10 +108,7 @@ func WebSocketHandler(w http.ResponseWriter, r *http.Request) {
 				if typeValue == "OpenConversation" {
 					updateSeenValue(int(toolMap["senderId"].(float64)), int(toolMap["receiverId"].(float64)))
 				}
-				// if (typeValue == "CloseConversation"){
-				// 	fmt.Println("\n\n\nInside the CloseConversation section\n\n")
-				// }
-				sendUnreadNotifications(userId, conn)
+				sendUnreadNotifications(userId, ConnectedUsers[float64(userId)])
 				mu.Unlock()
 			}
 			if typeValue == "message" {
@@ -129,9 +128,11 @@ func WebSocketHandler(w http.ResponseWriter, r *http.Request) {
 					fmt.Println("error in the messageHandler")
 				}
 				if ConnectedUsers[toolMap["receiverId"].(float64)] != nil {
-					err = ConnectedUsers[toolMap["receiverId"].(float64)].WriteMessage(websocket.TextMessage, []byte(typingJson))
-					if err != nil {
-						fmt.Println("Error sending message:", err)
+					for _, con := range ConnectedUsers[toolMap["receiverId"].(float64)]{
+						err = con.WriteMessage(websocket.TextMessage, []byte(typingJson))
+						if err != nil {
+							fmt.Println("Error sending message:", err)
+						}
 					}
 				}
 			}
@@ -144,9 +145,11 @@ func WebSocketHandler(w http.ResponseWriter, r *http.Request) {
 				if err != nil {
 					fmt.Println("error in the messageHandler")
 				}
-				err = ConnectedUsers[messageStruct.ReceiverId].WriteMessage(websocket.TextMessage, []byte(Message))
-				if err != nil {
-					fmt.Println("Error sending message:", err)
+				for _, con := range ConnectedUsers[messageStruct.ReceiverId]{
+					err = con.WriteMessage(websocket.TextMessage, []byte(Message))
+					if err != nil {
+						fmt.Println("Error sending message:", err)
+					}
 				}
 
 				sendUnreadNotifications(int(messageStruct.ReceiverId), ConnectedUsers[messageStruct.ReceiverId])
@@ -160,7 +163,6 @@ func WebSocketHandler(w http.ResponseWriter, r *http.Request) {
 func FetchMessages(w http.ResponseWriter, r *http.Request) {
 	// fetch data
 	if r.Method != http.MethodGet {
-		http.Redirect(w, r, "/", 301)
 		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
 		return
 	}
@@ -174,7 +176,6 @@ func FetchMessages(w http.ResponseWriter, r *http.Request) {
 	// fmt.Println(offset, limit)
 
 	if err1 != nil || err2 != nil || limit <= 0 {
-		http.Redirect(w, r, "/", 301)
 		http.Error(w, "Invalid parameters", http.StatusBadRequest)
 		return
 	}
@@ -204,7 +205,7 @@ func FetchMessages(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 		}
 
-		fmt.Println(photo)
+		// fmt.Println(photo)
 		message := map[string]interface{}{
 			"id":        id,
 			"sender_id": sender_id,
@@ -231,11 +232,13 @@ func broadcastUserStatus(conn *websocket.Conn, userId int) {
 		if err != nil {
 			fmt.Println("error when sending the user's status : ", err)
 		}
-		for _, value := range ConnectedUsers {
-			value.WriteMessage(websocket.TextMessage, []byte(toSend))
+		for _, connections := range ConnectedUsers {
+			for _, con := range connections{
+				con.WriteMessage(websocket.TextMessage, []byte(toSend))
+			}
 		}
 	}
-	ConnectedUsers[float64(userId)] = conn
+	ConnectedUsers[float64(userId)] = append(ConnectedUsers[float64(userId)], conn)
 }
 
 func userOffline(userId int, conn *websocket.Conn) {
@@ -245,8 +248,10 @@ func userOffline(userId int, conn *websocket.Conn) {
 	newUser["type"] = "offline" ///////////////////////// hna rh kant online, makaynch dalil niit ms rh jatni khas tjun offline
 	newUser["userId"] = userId
 	toSend, _ := json.Marshal(newUser)
-	for _, value := range ConnectedUsers {
-		value.WriteMessage(websocket.TextMessage, []byte(toSend))
+	for _, connections := range ConnectedUsers {
+		for _, con := range connections{
+			con.WriteMessage(websocket.TextMessage, []byte(toSend))
+		}
 	}
 	conn.Close()
 }
@@ -296,7 +301,7 @@ func unreadMessages(receiverId int) int {
 	return unreadCount
 }
 
-func sendUnreadNotifications(userId int, conn *websocket.Conn) {
+func sendUnreadNotifications(userId int, conn []*websocket.Conn) {
 	notifs := Notification{
 		Type:        "unreadMessage",
 		UnreadCount: unreadMessages(userId),
@@ -305,5 +310,7 @@ func sendUnreadNotifications(userId int, conn *websocket.Conn) {
 	if err != nil {
 		fmt.Println("error in the messageHandler")
 	}
-	conn.WriteMessage(websocket.TextMessage, Notifs)
+	for _, con := range conn{
+		con.WriteMessage(websocket.TextMessage, Notifs)
+	}
 }

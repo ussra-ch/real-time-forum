@@ -30,7 +30,7 @@ header {
     right: 0;
     z-index: 1000;
     display: flex;
-    /* justify-content: space-between; */
+    justify-content: space-between;
     align-items: center;
     height: 6vh;
 }
@@ -43,22 +43,19 @@ header::before {
 }
 
 .notification-circle {
-    position: fixed;
+    /* position: fixed;*/
     color: white;
     right: 8vw;
-    width: 5vw;
     height: 5vh;
-    max-width: 50px;
     border-radius: 50%;
-
     font-size: 24px;
-
+    margin: 0 1vw;
 }
 
 .notification-badge {
     position: absolute;
     bottom: 1%;
-    right: 40%;
+    right: 75%;
     background-color: red;
     color: white;
     font-size: 12px;
@@ -159,8 +156,9 @@ button:hover,
 }
 
 #Create {
-    position: fixed;
+    /* position: fixed;*/
     right: 6.5rem;
+    margin: 0 1vw;
     top: 0.5rem;
     z-index: 1001;
 }
@@ -176,7 +174,7 @@ button:hover,
 }
 
 /* Categories Sidebar */
-#catego {
+#category {
     background: rgba(26, 35, 50, 0.8);
     backdrop-filter: blur(10px);
     border: 1px solid rgba(100, 255, 218, 0.1);
@@ -207,11 +205,12 @@ button:hover,
 }
 
 #profile {
-    position: fixed;
+    /* position: fixed;*/
     right: 1vw;
     width: 10vw;
     height: 4vh;
     max-width: 50px;
+    margin: 0 1vw 0 0;
     border: none;
     padding: 0;
     cursor: pointer;
@@ -248,7 +247,7 @@ button:hover,
     border-radius: 50%;
 }
 
-#catego h1 {
+#category h1 {
     content: 'Categories';
     display: block;
     color: #00b4d8;
@@ -302,13 +301,14 @@ button:hover,
     padding: 1.5rem;
     margin-bottom: 1.5rem;
     transition: all 0.3s ease;
-    margin: auto;
+    margin: 1% auto 1% auto;
 }
 
 
 
 .post-card1:hover {
     transform: translateY(-5px);
+    margin: 1% auto 1% auto;
     box-shadow: 0 10px 30px #00b4d8;
 }
 
@@ -542,7 +542,7 @@ body::after {
 }
 
 #user {
-      z-index: 100;
+    z-index: 100;
     position: relative;
     left: -25%;
     top: -10vh;
@@ -572,7 +572,7 @@ button {
 
 
 #users {
-  
+
     padding: 10px;
     border-radius: 20px;
     width: 100%;
@@ -901,12 +901,12 @@ form a:hover {
 }
 
 ::-webkit-scrollbar-thumb {
-    background: #00b4d8;
+    background:rgba(47, 62, 88, 0.6);
     border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-    background: #00b4d8;
+    background: rgb(15, 20, 25);
 }
 
 
@@ -1137,7 +1137,7 @@ form a:hover {
 
 }
 
-#userShow {
+#showUsers {
     z-index: 1001;
     background: transparent;
     color: #00b4d8;
@@ -1147,6 +1147,21 @@ form a:hover {
     top: 29vh;
     width: 15vw;
     height: 4vh;
+}
+
+#showUsers:hover {
+    background: #00b4d8;
+    color: #0f1419;
+}
+
+.nav {
+    display: flex;
+
+    justify-content: space-around;
+    align-items: center;
+    position: absolute;
+    top: 0;
+    right: 0;
 }
 
 @media (max-width: 1370px) {
@@ -1183,9 +1198,9 @@ form a:hover {
         left: 95vw;
     }
 
-    .notification-circle {
+    /* .notification-circle {
         right: 11vw;
-    }
+    } */
 
 
 
@@ -1225,9 +1240,9 @@ form a:hover {
 
     }
 
-    .notification-circle {
+    /* .notification-circle {
         right: 11vw;
-    }
+    } */
 
 
 }
@@ -1255,7 +1270,7 @@ form a:hover {
 
     #postsContainer {
         position: absolute;
-         top: 1%;
+        top: 1%;
         left: 3%;
         width: 95%;
         min-width: 0;
@@ -1267,16 +1282,16 @@ form a:hover {
     }
 
 
-    .notification-circle {
+    /* .notification-circle {
         right: 20vw;
-    }
+    } */
 
 }
 
 @media (max-width: 630px) {
-    .notification-circle {
+    /* .notification-circle {
         right: 11vw;
-    }
+    } */
 
     .menu {
         right: 15%;
@@ -1290,7 +1305,7 @@ form a:hover {
         gap: 1rem;
     }
 
-    #catego {
+    #category {
         position: static;
         order: -1;
     }
@@ -1299,7 +1314,7 @@ form a:hover {
         display: none;
     }
 
-    .notification-circle {
+    /* .notification-circle {
         right: 16vw;
-    }
+    } */
 }

@@ -153,9 +153,10 @@ func LogoutHandler(w http.ResponseWriter, r *http.Request) {
 			fmt.Println("error when sending the user's status : ", err)
 		}
 		// fmt.Println("11")
-		for _, value := range ConnectedUsers {
-			// fmt.Println("dkhal l loop bach ysift status dluser")
-			value.WriteMessage(websocket.TextMessage, []byte(toSend))
+		for _, connections := range ConnectedUsers {
+			for _, con := range connections{
+				con.WriteMessage(websocket.TextMessage, []byte(toSend))
+			}
 		}
 	}
 	mu.Unlock()
@@ -203,7 +204,7 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 	if exists > 0 {
 		errorr := ErrorStruct{
 			Type: "error",
-			Text: "Email or nickname is already in use",
+			Text: "Email or nickname is allready in use",
 		}
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusConflict)
@@ -290,8 +291,10 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			fmt.Println("error when sending the user's status : ", err)
 		}
-		for _, value := range ConnectedUsers {
-			value.WriteMessage(websocket.TextMessage, []byte(toSend))
+		for _, connections := range ConnectedUsers {
+			for _, con := range connections{
+				con.WriteMessage(websocket.TextMessage, []byte(toSend))
+			}
 		}
 	}
 	mu.Unlock()

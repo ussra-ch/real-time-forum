@@ -12,7 +12,7 @@ export function profile(age, email, nickname, photo) {
                 <img src="${photo}" alt="Profile Picture">
                 <br>
                 <input type="file" name="photo" accept="image/*">
-                <h2>${nickname} </h2>
+                <p>Nickname : ${nickname} </p>
                 <input type="text" name="nickname" id="title">
                 <p>Email: ${email} </p>
                 <input type="email" name="email" id="title">
@@ -35,25 +35,50 @@ export function profile(age, email, nickname, photo) {
         fetch('/editProfile', {
             method: 'POST',
             body: formData,
-        }).then(r => {
-            const existingPopup = document.querySelector(".content");
-            if (existingPopup) {
-                existingPopup.remove();
-            }
-
-            const popupDiv = document.createElement('div');
-            popupDiv.className = 'popup-container';
-            popupDiv.innerHTML = `
-                    <div class="content">
-                    Your information has been updated
-                    </div>`
-            document.getElementById('content').append(popupDiv)
-
-            const editProfileForm = document.getElementById('edit');
-            if (editProfileForm) {
-                editProfileForm.reset();
-            }
         })
+            .then(r => {
+                if (!r.ok) {
+                    return r.json().then(errorData => {
+                        throw new Error(errorData.Text || `HTTP error! Status: ${r.status}`);
+                    });
+                }
+                return r.json();
+            })
+            .then(r => {
+                const existingPopup = document.querySelector(".content");
+                if (existingPopup) {
+                    existingPopup.remove();
+                }
+
+                const popupDiv = document.createElement('div');
+                popupDiv.className = 'popup-container';
+                popupDiv.innerHTML = `
+                        <div class="content">
+                        Your information has been updated
+                        </div>`
+                document.getElementById('content').append(popupDiv)
+
+                const editProfileForm = document.getElementById('edit');
+                if (editProfileForm) {
+                    editProfileForm.reset();
+                }
+            }).catch(err => {
+                console.log("jjjjjjjjjjjjj: ", err);
+
+                const existingPopup = document.querySelector(".content");
+                if (existingPopup) {
+                    existingPopup.remove();
+                }
+                const ErrorDiv = document.createElement('div');
+                ErrorDiv.className = 'error-container';
+                ErrorDiv.innerHTML = `<div class="content">${err.message}</div>`;
+                document.querySelector('body').append(ErrorDiv);
+                setTimeout(() => {
+                    ErrorDiv.remove()
+                }, 1000)
+            }
+
+            )
     })
     document.getElementById('Back').addEventListener('click', () => {
         login()

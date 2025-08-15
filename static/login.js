@@ -8,6 +8,7 @@ import { fetchPosts } from "./post.js";
 import { categories } from "./sort.js";
 import { comment } from "./comment.js";
 import { initWebSocket } from "./websocket.js";
+import { main } from "./main.js";
 // import { Errorr } from "./errorPage.js";
 
 export function logindiv() {
@@ -172,25 +173,25 @@ export function login() {
             let profil = `<i class="fa-solid fa-user"></i>`
 
             if (res.ok) {
-                body.innerHTML = `
-                <div id="content">
+               body.innerHTML = 
+               ` <div id="content">
                 <header>
-                
+                <div class="nav">
                 <div class="notification-circle">
                 <i class="fa-regular fa-bell"></i>
                    <div class="notification-badge" , id ="notification-circle">${notifications}</div>
                </div>
-                <button id="profile" style="z-index: 10;">
-                </button>
-                <button id="Create" style="z-index: 10;"><i class="fa-solid fa-plus"></i></button>
-              
+               <button id="Create" style="z-index: 10;"><i class="fa-solid fa-plus"></i></button>
+               <button id="profile" style="z-index: 10;">
+               </button>
+              </div>
                 </header>
                 <div class="sidebar-left">
                 <div class="sidebar-label categories-label" style="top: 15vh;">Categories</div>
                 <div class="sidebar-label posts-label" id="sidebar" >Posts</div>
                 </div>
-                <div id="catego"></div>
-                <button id="userShow"><i class="fa-solid fa-users"></i></button>
+                <div id="category"></div>
+                <button id="showUsers"><i class="fa-solid fa-users"></i></button>
                 <div id="all">
                 <div id="user">
                 <div id="users"></div>
@@ -199,10 +200,10 @@ export function login() {
                 </div>
                 </div>
             
-            <script type="module" src="static/main.js"></script>
-            `
-            console.log(res.photo);
+            <script type="module" src="static/main.js"></script>`
             
+                console.log(res.photo);
+
                 if (res.photo && res.photo.String.trim() !== "") {
                     document.getElementById('profile').style.backgroundImage = `url(${res.photo})`;
                 } else {
@@ -234,20 +235,39 @@ export function login() {
                 editProfileButton.style.height = '5vh';
 
                 document.getElementById('profile').addEventListener('click', () => {
-                    if (div.style.display === 'none') {
-                        div.style.display = 'flex';
-                    } else {
-                        div.style.display = 'none';
-                    }
+                    isAuthenticated().then(auth => {
+                        if (!auth) {
+                            main()
+                        } else {
+                            if (div.style.display === 'none') {
+                                div.style.display = 'flex';
+                            } else {
+                                div.style.display = 'none';
+                            }
+                        }
+                    })
+
                 });
                 editProfileButton.addEventListener('click', () => {
-                    profile(res.age, res.email, res.nickname, res.photo)
+                    isAuthenticated().then(auth => {
+                        if (!auth) {
+                            main()
+                        } else {
+                            profile(res.age, res.email, res.nickname, res.photo)
+                        }
+                    })
                 })
-                const Shwo = document.getElementById('userShow')
+                const show = document.getElementById('showUsers')
                 const user = document.getElementById('user')
                 user.style.display = 'none'
-                Shwo.addEventListener('click', () => {
-                    user.style.display = user.style.display == 'none' ? 'block' : 'none'
+                show.addEventListener('click', () => {
+                    isAuthenticated().then(auth => {
+                        if (!auth) {
+                            main()
+                        } else {
+                            user.style.display = user.style.display == 'none' ? 'block' : 'none'
+                        }
+                    })
                 })
 
                 islogin();
@@ -261,19 +281,40 @@ export function login() {
             }
         }).catch(err => {
             console.log(err);
-            
-                const existingPopup = document.querySelector(".content");
-                if (existingPopup) {
-                    existingPopup.remove();
-                }
-                const ErrorDiv = document.createElement('div');
-                ErrorDiv.className = 'error-container';
-                ErrorDiv.innerHTML = `<div class="content">${err.message}</div>`;
-                document.querySelector('body').append(ErrorDiv);
-                setTimeout(() => {
-                    ErrorDiv.remove()
-                }, 1000)
-  
-            });
+
+            const existingPopup = document.querySelector(".content");
+            if (existingPopup) {
+                existingPopup.remove();
+            }
+            const ErrorDiv = document.createElement('div');
+            ErrorDiv.className = 'error-container';
+            ErrorDiv.innerHTML = `<div class="content">${err.message}</div>`;
+            document.querySelector('body').append(ErrorDiv);
+            setTimeout(() => {
+                ErrorDiv.remove()
+            }, 1000)
+
+        });
 }
 
+
+export function isAuthenticated() {
+    return fetch('/api/authenticated')
+        .then(r => r.json())
+        .then(res => {
+            return res.ok
+        }).catch(err => {
+            const existingPopup = document.querySelector(".content");
+            if (existingPopup) {
+                existingPopup.remove();
+            }
+            const ErrorDiv = document.createElement('div');
+            ErrorDiv.className = 'error-container';
+            ErrorDiv.innerHTML = `<div class="content">${err.message}</div>`;
+            document.querySelector('body').append(ErrorDiv);
+            setTimeout(() => {
+                ErrorDiv.remove()
+            }, 1000)
+            return false
+        });
+}

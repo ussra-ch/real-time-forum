@@ -56,6 +56,11 @@ p {
     color: #ccc;
     margin-top: 0;
 }
+#Back{
+    z-index: 10;
+    position: absolute;
+    top: 80vh;
+}
 
 @keyframes spooky {
     from {
@@ -71,7 +76,7 @@ p {
     const error = err.split('')
     document.head.appendChild(style);
     document.body.innerHTML = `
-                     <button id="Back" style="z-index: 10;">Home</button>
+                     <button id="Back">Home</button>
                       <h1>${error[0]}<span><i class="fas fa-ghost"></i></span>${error[2]}</h1>
                       <h2>Error: ${err} page not found</h2>
                       <p>Sorry, the page you're looking for cannot be accessed</p>
@@ -80,8 +85,7 @@ p {
         <script type="module" src="static/main.js"></script>
     `
     const button = document.getElementById('Back')
-    button.style.position = 'absolute'
-    button.style.top = '70%'
+
     button.addEventListener('click', (e) => {
         e.preventDefault()
         history.pushState({}, '', 'http://localhost:8080')

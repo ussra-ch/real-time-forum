@@ -1,6 +1,8 @@
 import { comment } from "./comment.js";
 import { loadComments } from "./comment.js";
 import { deletepost, editpost } from "./postMenu.js";
+import { main } from "./main.js";
+import { isAuthenticated } from "./login.js";
 window.deletepost = deletepost;
 
 
@@ -41,15 +43,22 @@ export function Create() {
     const deleteButton = document.createElement('button')
     deleteButton.innerHTML = `<i class="fa-solid fa-xmark"></i>`
     deleteButton.id = 'closeConversation'
-    
+
     const form = document.getElementById('createPostForm')
     let createPostDiv = document.getElementById('createPostCard')
     createPostDiv.prepend(deleteButton)
     // body.append(conversation)
 
     Create.addEventListener('click', (e) => {
-        form.style.display = "block"
-        CreateCard.style.display = 'block' 
+        isAuthenticated().then((auth) => {
+            if (!auth) {
+                main()
+            } else {
+                form.style.display = "block"
+                CreateCard.style.display = 'block'
+            }
+        })
+
     });
     document.getElementById('createPostForm').addEventListener('submit', async function (e) {
         e.preventDefault();
@@ -163,22 +172,41 @@ export function fetchPosts() {
                     select.className = 'select'
                     postCard.prepend(select)
                     select.addEventListener('click', (e) => {
-                        e.preventDefault()
-                        menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+                        isAuthenticated().then(auth => {
+                            if (!auth) {
+                                main()
+                            } else {
+                                e.preventDefault()
+                                menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+                            }
+                        })
                     })
-                    const button = document.createElement('button')
-                    button.innerHTML = `<i class="fa-solid fa-trash"></i> Delete`
-                    menu.prepend(button)
-                    button.addEventListener('click', (e) => {
-                        e.preventDefault()
-                        deletepost(post.id)
+                    const deletePost = document.createElement('button')
+                    deletePost.innerHTML = `<i class="fa-solid fa-trash"></i> Delete`
+                    menu.prepend(deletePost)
+                    deletePost.addEventListener('click', (e) => {
+                        isAuthenticated().then(auth => {
+                            if (!auth) {
+                                main()
+                            } else {
+                                e.preventDefault()
+                                deletepost(post.id)
+                            }
+                        })
                     })
                     const editPost = document.createElement('button')
                     editPost.innerHTML = `<i class="fa-solid fa-file-pen"></i>  Edit `
                     menu.prepend(editPost)
                     editPost.addEventListener('click', (e) => {
-                        e.preventDefault()
-                        editpost(post.id, post.title, post.content)
+                        isAuthenticated().then(auth => {
+                            if (!auth) {
+                                main()
+                            } else {
+                                e.preventDefault()
+                                editpost(post.id, post.title, post.content)
+
+                            }
+                        })
                     })
                 }
 
