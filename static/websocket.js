@@ -4,7 +4,7 @@ let lastCall = 0;
 let typingTimeout;
 
 function typingInProgress(Id) {
-    const chat = document.getElementById('chat-body');
+    const chat = document.getElementById('footer');
     if (!chat) return;
 
     let typingEl = document.getElementById('typing');
@@ -28,7 +28,7 @@ function typingInProgress(Id) {
     typingTimeout = setTimeout(() => {
         const el = document.getElementById('typing');
         if (el) el.remove();
-    }, 500);
+    }, 1000);
 }
 
 export function initWebSocket(onMessageCallback) {

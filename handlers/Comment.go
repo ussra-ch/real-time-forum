@@ -17,11 +17,13 @@ type CommentData struct {
 func CommentHandler(w http.ResponseWriter, r *http.Request) {
 	var cd CommentData
 	if err := json.NewDecoder(r.Body).Decode(&cd); err != nil {
+		http.Redirect(w, r, "/", 301)
 		http.Error(w, "Bad Request", http.StatusBadRequest)
 		fmt.Println("Error decoding comment data:", err)
 		return
 	}
-		if cd.Content == "" {
+	if cd.Content == "" {
+		//http.Redirect(w, r, "/", 301)
 		http.Error(w, "Bad Request", http.StatusBadRequest)
 		return
 	}

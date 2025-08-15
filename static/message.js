@@ -24,6 +24,7 @@ export function mesaageDiv(user, userId, receiverId) {
             <h3>${user}</h3>
         </div>
         <div class="body" id="chat-body"></div>
+        <div id="footer"></div>
         <form class="input-area">
             <input type="text" placeholder="..." class="chat-input" required>
             <button type="submit" class="send-btn"><i class="fa-solid fa-paper-plane"></i></button>

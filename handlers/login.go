@@ -44,7 +44,6 @@ func generateSessionID() string {
 }
 
 func LoginHandler(w http.ResponseWriter, r *http.Request) {
-	
 	var aa a
 	err := json.NewDecoder(r.Body).Decode(&aa)
 	// fmt.Println(aa.Nickname)
@@ -57,7 +56,7 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 			Text: "Invalid Nickname or password",
 		}
 
-		// http.Redirect(w, r, "/", 301)
+		http.Redirect(w, r, "/", 301)
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusUnauthorized)
 		json.NewEncoder(w).Encode(errorr)
@@ -225,6 +224,7 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 			Type: "error",
 			Text: "Please make sure to fill out all the fields",
 		}
+		http.Redirect(w, r, "/", 301)
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode(errorr)

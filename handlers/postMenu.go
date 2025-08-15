@@ -2,8 +2,9 @@ package handlers
 
 import (
 	"encoding/json"
-	"handlers/databases"
 	"net/http"
+
+	"handlers/databases"
 )
 
 type Post struct {
@@ -11,6 +12,11 @@ type Post struct {
 }
 
 func DeletePost(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		http.Redirect(w, r, "/", 301)
+		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
+		return
+	}
 	var post Post
 
 	err := json.NewDecoder(r.Body).Decode(&post)
@@ -27,6 +33,7 @@ func DeletePost(w http.ResponseWriter, r *http.Request) {
 
 func EditPost(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
+		http.Redirect(w, r, "/", 301)
 		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
 		return
 	}
@@ -38,6 +45,7 @@ func EditPost(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err := json.NewDecoder(r.Body).Decode(&data); err != nil {
+
 		http.Error(w, "Bad Request", http.StatusBadRequest)
 		return
 	}

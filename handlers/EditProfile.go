@@ -2,15 +2,17 @@ package handlers
 
 import (
 	"fmt"
-	"handlers/databases"
 	"io"
 	"net/http"
 	"os"
 	"time"
+
+	"handlers/databases"
 )
 
 func EditProfile(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
+		http.Redirect(w, r, "/", 301)
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 		return
 	}
@@ -48,10 +50,10 @@ func EditProfile(w http.ResponseWriter, r *http.Request) {
 	if nickname == "" {
 		_ = databases.DB.QueryRow("SELECT nickname FROM users WHERE id = ?", userID).Scan(&nickname)
 	}
-	if email == ""{
+	if email == "" {
 		_ = databases.DB.QueryRow("SELECT email FROM users WHERE id = ?", userID).Scan(&email)
 	}
-	if age == ""{
+	if age == "" {
 		_ = databases.DB.QueryRow("SELECT age FROM users WHERE id = ?", userID).Scan(&age)
 	}
 	args := []interface{}{nickname, email, age}

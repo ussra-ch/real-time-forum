@@ -148,6 +148,8 @@ function islogin() {
                             <h7>${formatDate(Date.now())}</h7>`;
         newMsg.className = 'messageSent'
         chatBody.append(newMsg);
+        const el = document.getElementById('typing');
+        if (el) el.remove();
         chatBody.scrollTop = chatBody.scrollHeight;
 
 
@@ -241,6 +243,7 @@ export function login() {
                 })
                 const Shwo = document.getElementById('userShow')
                 const user = document.getElementById('user')
+                user.style.display = 'none'
                 Shwo.addEventListener('click', () => {
                     user.style.display = user.style.display == 'none' ? 'block' : 'none'
                 })

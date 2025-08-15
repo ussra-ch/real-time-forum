@@ -159,6 +159,7 @@ func WebSocketHandler(w http.ResponseWriter, r *http.Request) {
 func FetchMessages(w http.ResponseWriter, r *http.Request) {
 	// fetch data
 	if r.Method != http.MethodGet {
+		http.Redirect(w, r, "/", 301)
 		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
 		return
 	}
@@ -172,6 +173,7 @@ func FetchMessages(w http.ResponseWriter, r *http.Request) {
 	// fmt.Println(offset, limit)
 
 	if err1 != nil || err2 != nil || limit <= 0 {
+		http.Redirect(w, r, "/", 301)
 		http.Error(w, "Invalid parameters", http.StatusBadRequest)
 		return
 	}
