@@ -14,15 +14,16 @@ import (
 
 func EditProfile(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
-		http.Redirect(w, r, "/", 301)
-		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		errorHandler(http.StatusMethodNotAllowed, w)
 		return
 	}
 
+	mu.Lock()
 	_, userID := IsLoggedIn(r)
-
+	mu.Unlock()
+	
 	if err := r.ParseMultipartForm(10 << 20); err != nil {
-		http.Error(w, "Cannot parse form", http.StatusBadRequest)
+		errorHandler(http.StatusBadRequest, w)
 		return
 	}
 
@@ -37,13 +38,13 @@ func EditProfile(w http.ResponseWriter, r *http.Request) {
 		photoPath = fmt.Sprintf("static/uploads/%d_%s", time.Now().UnixNano(), handler.Filename)
 		dst, err := os.Create(photoPath)
 		if err != nil {
-			http.Error(w, "Failed to save photo", http.StatusInternalServerError)
+			errorHandler(http.StatusInternalServerError, w)
 			return
 		}
 		defer dst.Close()
 		_, err = io.Copy(dst, file)
 		if err != nil {
-			http.Error(w, "Failed to save photo", http.StatusInternalServerError)
+			errorHandler(http.StatusInternalServerError, w)
 			return
 		}
 	}
@@ -52,7 +53,7 @@ func EditProfile(w http.ResponseWriter, r *http.Request) {
 
 	if nickname == "" {
 		_ = databases.DB.QueryRow("SELECT nickname FROM users WHERE id = ?", userID).Scan(&nickname)
-		state = true 
+		state = true
 	}
 	if email == "" {
 		_ = databases.DB.QueryRow("SELECT email FROM users WHERE id = ?", userID).Scan(&email)
@@ -61,7 +62,7 @@ func EditProfile(w http.ResponseWriter, r *http.Request) {
 	if age == "" {
 		_ = databases.DB.QueryRow("SELECT age FROM users WHERE id = ?", userID).Scan(&age)
 	}
-	if (!state){
+	if !state {
 		var exists bool
 		err = databases.DB.QueryRow("SELECT EXISTS(SELECT 1 FROM users WHERE nickname = ?)", nickname).Scan(&exists)
 		if err != nil {
@@ -79,7 +80,7 @@ func EditProfile(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	if (!state1){
+	if !state1 {
 		var exists bool
 		err = databases.DB.QueryRow("SELECT EXISTS(SELECT 1 FROM users WHERE email = ?)", email).Scan(&exists)
 		if err != nil {
@@ -113,12 +114,11 @@ func EditProfile(w http.ResponseWriter, r *http.Request) {
 	}
 
 	success := ErrorStruct{
-				Type: "success",
-				Text: "Your information has been updated",
-			}
-			w.Header().Set("Content-Type", "application/json")
-			w.WriteHeader(http.StatusOK)
-			json.NewEncoder(w).Encode(success)
-			// return
-	// w.WriteHeader(http.StatusOK)
+		Type: "success",
+		Text: "Your information has been updated",
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(success)
+
 }

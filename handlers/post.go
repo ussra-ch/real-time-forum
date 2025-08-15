@@ -21,31 +21,19 @@ type PostData struct {
 	Topics      []string `json:"topics"`
 }
 type Category struct {
-		Id int
-		Name string
-	}
+	Id   int
+	Name string
+}
 
 func PostHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
-		errorr := ErrorStruct{
-			Type: "error",
-			Text: "Method not allowed",
-		}
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(http.StatusMethodNotAllowed)
-		json.NewEncoder(w).Encode(errorr)
+		errorHandler(http.StatusMethodNotAllowed, w)
 		return
 	}
 
 	err := r.ParseMultipartForm(10 << 20)
 	if err != nil {
-		errorr := ErrorStruct{
-			Type: "error",
-			Text: "Bad request",
-		}
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(errorr)
+		errorHandler(http.StatusBadRequest, w)
 		return
 	}
 
@@ -53,30 +41,16 @@ func PostHandler(w http.ResponseWriter, r *http.Request) {
 	description := r.FormValue("description")
 	topics := r.Form["topics"]
 	if title == "" || description == "" || len(topics) == 0 {
-		errorr := ErrorStruct{
-			Type: "error",
-			Text: "Bad request",
-		}
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(errorr)
+		errorHandler(http.StatusBadRequest, w)
 		return
 	}
 
 	categoriesRows, err := databases.DB.Query("SELECT * FROM categories")
 	defer categoriesRows.Close()
 
-	if err != nil{
-		if err != nil {
-			errorr := ErrorStruct{
-				Type: "error",
-				Text: "Internal server error",
-			}
-			w.Header().Set("Content-Type", "application/json")
-			w.WriteHeader(http.StatusInternalServerError)
-			json.NewEncoder(w).Encode(errorr)
-			return
-		}
+	if err != nil {
+		errorHandler(http.StatusInternalServerError, w)
+		return
 	}
 
 	var allCategories []Category
@@ -86,7 +60,7 @@ func PostHandler(w http.ResponseWriter, r *http.Request) {
 		if err := categoriesRows.Scan(&categoryId, &name); err != nil {
 			log.Fatal(err)
 		}
-		allCategories = append(allCategories, Category{Id:categoryId ,Name: name})
+		allCategories = append(allCategories, Category{Id: categoryId, Name: name})
 	}
 
 	var updatedTopics []Category
@@ -96,19 +70,13 @@ func PostHandler(w http.ResponseWriter, r *http.Request) {
 		if !ok {
 			found = false
 			break
-		}else{
+		} else {
 			updatedTopics = append(updatedTopics, Category{Id: id, Name: topic})
 		}
 	}
 
 	if !found {
-		errorr := ErrorStruct{
-			Type: "error",
-			Text: "Bad request",
-		}
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(errorr)
+		errorHandler(http.StatusBadRequest, w)
 		return
 	}
 
@@ -132,25 +100,13 @@ func PostHandler(w http.ResponseWriter, r *http.Request) {
 		filename = fmt.Sprintf("static/uploads/%d_%s", time.Now().UnixNano(), handler.Filename)
 		dst, err := os.Create(filename)
 		if err != nil {
-			errorr := ErrorStruct{
-				Type: "error",
-				Text: "Internal server error",
-			}
-			w.Header().Set("Content-Type", "application/json")
-			w.WriteHeader(http.StatusInternalServerError)
-			json.NewEncoder(w).Encode(errorr)
+			errorHandler(http.StatusInternalServerError, w)
 			return
 		}
 		defer dst.Close()
 		_, err = io.Copy(dst, file)
 		if err != nil {
-			errorr := ErrorStruct{
-				Type: "error",
-				Text: "Internal server error",
-			}
-			w.Header().Set("Content-Type", "application/json")
-			w.WriteHeader(http.StatusInternalServerError)
-			json.NewEncoder(w).Encode(errorr)
+			errorHandler(http.StatusInternalServerError, w)
 			return
 		}
 	} else {
@@ -163,46 +119,24 @@ func PostHandler(w http.ResponseWriter, r *http.Request) {
 	`
 	res, err := databases.DB.Exec(query, html.EscapeString(title), html.EscapeString(description), strings.Join(topics, ","), userID, filename)
 	if err != nil {
-		// log.Println("Insert post error:", err)
-		errorr := ErrorStruct{
-			Type: "error",
-			Text: "Internal server error",
-		}
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode(errorr)
+		errorHandler(http.StatusInternalServerError, w)
 		return
 	}
-
-	
-
+	mu.Lock()
 	postID, err := res.LastInsertId()
 	if err != nil {
-		// log.Println("Error getting inserted post ID:", err)
-		errorr := ErrorStruct{
-			Type: "error",
-			Text: "Internal server error",
-		}
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode(errorr)
+		errorHandler(http.StatusInternalServerError, w)
 		return
 	}
-
-	for _, x := range updatedTopics{
+	for _, x := range updatedTopics {
 		query2 := `INSERT INTO categories_post (categoryID, postID) VALUES (?, ?)`
 		_, err := databases.DB.Exec(query2, x.Id, postID)
-		if err != nil{
-			errorr := ErrorStruct{
-			Type: "error",
-			Text: "Internal server error",
-		}
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode(errorr)
-		return
+		if err != nil {
+			errorHandler(http.StatusInternalServerError, w)
+			return
 		}
 	}
+	mu.Unlock()
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(map[string]interface{}{
 		"message":  "Data received successfully",
@@ -216,28 +150,17 @@ func PostHandler(w http.ResponseWriter, r *http.Request) {
 
 func FetchPostsHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
-		errorr := ErrorStruct{
-			Type: "error",
-			Text: "Method Not Allowed",
-		}
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(http.StatusMethodNotAllowed)
-		json.NewEncoder(w).Encode(errorr)
+		errorHandler(http.StatusMethodNotAllowed, w)
 		return
 	}
+	mu.Lock()
 	_, UserID := IsLoggedIn(r)
+	mu.Unlock()
 
 	query := `SELECT id, user_id, content, title, interest, photo, created_at FROM posts`
 	rows, err := databases.DB.Query(query)
 	if err != nil {
-		// log.Println("Error fetching posts:", err)
-		errorr := ErrorStruct{
-			Type: "error",
-			Text: "Internal server error",
-		}
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode(errorr)
+		errorHandler(http.StatusInternalServerError, w)
 		return
 	}
 	defer rows.Close()

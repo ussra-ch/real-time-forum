@@ -12,50 +12,55 @@ type RateLimit struct {
 	BlockedUntil time.Time
 	UserId       int
 }
+
 type ErrorStruct struct {
 	Type string
 	Text string
 }
 
 var (
-	PostRateLimits = make(map[int]*RateLimit)
-	userID         int
+	CommentRateLimits = make(map[int]*RateLimit)
+	PostRateLimits    = make(map[int]*RateLimit)
 )
 
-func CheckRateLimitPost(ratelimit *RateLimit, window time.Duration) bool {
+func CheckRateLimit(ratelimit *RateLimit, window time.Duration, maxAttempts int) bool {
 	if time.Now().Before(ratelimit.BlockedUntil) {
 		return false
 	}
-	if time.Now().After(ratelimit.BlockedUntil) && ratelimit.count > 10 {
+	if time.Now().After(ratelimit.BlockedUntil) && ratelimit.count > maxAttempts {
 		ratelimit.FirstTime = time.Now()
 		ratelimit.BlockedUntil = time.Time{}
 		ratelimit.count = 0
 	}
 	ratelimit.count++
-	if ratelimit.count > 10 {
+	if ratelimit.count > maxAttempts {
 		ratelimit.BlockedUntil = time.Now().Add(window)
 		return false
 	}
 	return true
 }
 
-func UserInfosPosts(r *http.Request) (*RateLimit, bool) {
+func UserInfos(r *http.Request) (*RateLimit, bool) {
 	rateLimit := &RateLimit{
 		count:        0,
 		FirstTime:    time.Now(),
 		BlockedUntil: time.Time{},
 		UserId:       -1,
 	}
-	_, userID = IsLoggedIn(r)
-
+	_, userID := IsLoggedIn(r)
 	rateLimit.UserId = userID
 	return rateLimit, true
 }
 
-func RateLimitPostsMiddleware(next http.HandlerFunc) http.HandlerFunc {
+func RatelimitMiddleware(next http.HandlerFunc, rateLimitType string, maxAttempts int) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		userRateLimit, ok := UserInfosPosts(r)
-		_, userID = IsLoggedIn(r)
+		theMap := make(map[int]*RateLimit)
+		if rateLimitType == "posts" {
+			theMap = PostRateLimits
+		} else if rateLimitType == "comments" {
+			theMap = CommentRateLimits
+		}
+		userRateLimit, ok := UserInfos(r)
 		if !ok {
 			errorr := ErrorStruct{
 				Type: "error",
@@ -68,13 +73,13 @@ func RateLimitPostsMiddleware(next http.HandlerFunc) http.HandlerFunc {
 			return
 		}
 
-		ratelimit, exists := PostRateLimits[userRateLimit.UserId]
+		ratelimit, exists := theMap[userRateLimit.UserId]
 		if !exists {
-			AddUserToTheMap_Post(userRateLimit)
+			AddUserToTheMap(userRateLimit, theMap)
 			ratelimit = userRateLimit
 		}
 
-		if !CheckRateLimitPost(ratelimit, 1*time.Hour) {
+		if !CheckRateLimit(ratelimit, 1*time.Minute, maxAttempts) {
 			errorr := ErrorStruct{
 				Type: "error",
 				Text: "Too many requests",
@@ -89,6 +94,6 @@ func RateLimitPostsMiddleware(next http.HandlerFunc) http.HandlerFunc {
 	}
 }
 
-func AddUserToTheMap_Post(ratelimit *RateLimit) {
-	PostRateLimits[ratelimit.UserId] = ratelimit
+func AddUserToTheMap(ratelimit *RateLimit, theMap map[int]*RateLimit) {
+	theMap[ratelimit.UserId] = ratelimit
 }

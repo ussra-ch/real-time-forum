@@ -1,10 +1,9 @@
 package handlers
 
 import (
-	"crypto/rand"
 	"database/sql"
-	"encoding/hex"
 	"encoding/json"
+	"html"
 	"log"
 	"net/http"
 	"time"
@@ -18,7 +17,7 @@ import (
 
 var UsersStatus = make(map[int]string)
 
-type a struct {
+type loginInformation struct {
 	Nickname string `json:"Nickname"`
 	Password string `json:"password"`
 }
@@ -33,23 +32,17 @@ type data struct {
 	Password  string `json:"password"`
 }
 
-func generateSessionID() string {
-	bytes := make([]byte, 16)
-	_, err := rand.Read(bytes)
-	if err != nil {
-		panic(err)
-	}
-	return hex.EncodeToString(bytes)
-}
-
 func LoginHandler(w http.ResponseWriter, r *http.Request) {
-	var aa a
-	err := json.NewDecoder(r.Body).Decode(&aa)
+	var loginInformations loginInformation
+	err := json.NewDecoder(r.Body).Decode(&loginInformations)
+	if err != nil {
+		errorHandler(http.StatusBadRequest, w)
+	}
 
 	var dbPassword string
 	var userID int
-	err = databases.DB.QueryRow("SELECT id, password FROM users WHERE( nickname = ? or email = ?)", aa.Nickname, aa.Nickname).Scan(&userID, &dbPassword)
-	if err == sql.ErrNoRows || bcrypt.CompareHashAndPassword([]byte(dbPassword), []byte(aa.Password)) != nil {
+	err = databases.DB.QueryRow("SELECT id, password FROM users WHERE( nickname = ? or email = ?)", loginInformations.Nickname, loginInformations.Nickname).Scan(&userID, &dbPassword)
+	if err == sql.ErrNoRows || bcrypt.CompareHashAndPassword([]byte(dbPassword), []byte(loginInformations.Password)) != nil {
 		errorr := ErrorStruct{
 			Type: "error",
 			Text: "Invalid Nickname or password",
@@ -59,7 +52,6 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 		json.NewEncoder(w).Encode(errorr)
 		return
 	} else if err != nil {
-		// log.Println(err)
 		errorr := ErrorStruct{
 			Type: "error",
 			Text: "Internal server error",
@@ -127,17 +119,18 @@ func IsAuthenticated(w http.ResponseWriter, r *http.Request) {
 		"status":        "online",
 		"notifications": notifs,
 	}
+	mu.Lock()
 	UsersStatus[userID] = "online"
+	mu.Unlock()
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(user)
 }
 
 func LogoutHandler(w http.ResponseWriter, r *http.Request) {
-	_, userID := IsLoggedIn(r)
-	UsersStatus[userID] = "offline"
-	delete(ConnectedUsers, float64(userID))
-	_, userId := IsLoggedIn(r)
 	mu.Lock()
+	_, userId := IsLoggedIn(r)
+	UsersStatus[userId] = "offline"
+	delete(ConnectedUsers, float64(userId))
 	if _, exists := ConnectedUsers[float64(userId)]; !exists {
 		oldUser := make(map[string]interface{})
 		oldUser["type"] = "offline"
@@ -176,19 +169,15 @@ func LogoutHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func RegisterHandler(w http.ResponseWriter, r *http.Request) {
-	var aa data
-	err := json.NewDecoder(r.Body).Decode(&aa)
+	var userInformation data
+	err := json.NewDecoder(r.Body).Decode(&userInformation)
+	if err != nil{
+		errorHandler(http.StatusBadRequest, w)
+	}
 	var exists int
-	err = databases.DB.QueryRow("SELECT COUNT(*) FROM users WHERE email = ? OR nickname = ?", aa.Email, aa.Nickname).Scan(&exists)
+	err = databases.DB.QueryRow("SELECT COUNT(*) FROM users WHERE email = ? OR nickname = ?", html.EscapeString(userInformation.Email), html.EscapeString(userInformation.Nickname)).Scan(&exists)
 	if err != nil {
-
-		errorr := ErrorStruct{
-			Type: "error",
-			Text: "Internal server error",
-		}
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode(errorr)
+		errorHandler(http.StatusInternalServerError, w)
 		return
 	}
 
@@ -203,19 +192,13 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(aa.Password), bcrypt.DefaultCost)
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(userInformation.Password), bcrypt.DefaultCost)
 	if err != nil {
-		errorr := ErrorStruct{
-			Type: "error",
-			Text: "Internal server error",
-		}
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode(errorr)
+		errorHandler(http.StatusInternalServerError, w)
 		return
 	}
 
-	if aa.Nickname == "" || aa.Age == "" || aa.Gender == "" || aa.Firstname == "" || aa.Lastname == "" || aa.Email == "" || aa.Password == "" {
+	if userInformation.Nickname == "" || userInformation.Age == "" || userInformation.Gender == "" || userInformation.Firstname == "" || userInformation.Lastname == "" || userInformation.Email == "" || userInformation.Password == "" {
 		errorr := ErrorStruct{
 			Type: "error",
 			Text: "Please make sure to fill out all the fields",
@@ -228,31 +211,20 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 	res, err := databases.DB.Exec(`
 		INSERT INTO users (nickname, age, gender, first_name, last_name, email, password)
 		VALUES (?, ?, ?, ?, ?, ?, ?)`,
-		aa.Nickname, aa.Age, aa.Gender, aa.Firstname, aa.Lastname, aa.Email, hashedPassword)
+		html.EscapeString(userInformation.Nickname), userInformation.Age, html.EscapeString(userInformation.Gender), html.EscapeString(userInformation.Firstname), html.EscapeString(userInformation.Lastname), html.EscapeString(userInformation.Email), hashedPassword)
 	if err != nil {
-		errorr := ErrorStruct{
-			Type: "error",
-			Text: "Internal server error",
-		}
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode(errorr)
+		errorHandler(http.StatusInternalServerError, w)
 		return
 	}
 
 	userID, err := res.LastInsertId()
 	if err != nil {
-		errorr := ErrorStruct{
-			Type: "error",
-			Text: "Internal server error",
-		}
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode(errorr)
+		errorHandler(http.StatusInternalServerError, w)
 		return
 	}
-
+	mu.Lock()
 	UsersStatus[int(userID)] = "online"
+	mu.Unlock()
 	sessionID := uuid.New().String()
 	expiresAt := time.Now().Add(24 * time.Hour)
 
@@ -261,18 +233,11 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 		VALUES (?, ?, ?)`,
 		sessionID, userID, expiresAt)
 	if err != nil {
-		// log.Println("Error inserting session:", err)
-		errorr := ErrorStruct{
-			Type: "error",
-			Text: "Internal server error",
-		}
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode(errorr)
+		errorHandler(http.StatusInternalServerError, w)
 		return
 	}
-	_, userId := IsLoggedIn(r)
 	mu.Lock()
+	_, userId := IsLoggedIn(r)
 
 	if _, exists := ConnectedUsers[float64(userId)]; !exists {
 		newUser := make(map[string]interface{})
@@ -296,40 +261,3 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 		HttpOnly: true,
 	})
 }
-
-func GetUserIDFromSession(r *http.Request) (int64, error) {
-	cookie, err := r.Cookie("session")
-	if err != nil {
-		return 0, err
-	}
-
-	var userID int64
-	err = databases.DB.QueryRow(`
-		SELECT user_id FROM sessions
-		WHERE id = ? AND expires_at > datetime('now')`, cookie.Value).Scan(&userID)
-	if err != nil {
-		return 0, err
-	}
-
-	return userID, nil
-}
-
-func IsLoggedIn(r *http.Request) (bool, int) {
-	cookie, err := r.Cookie("session")
-	if err != nil {
-		return false, 0
-	}
-
-	var userID int
-	err = databases.DB.QueryRow(`
-		SELECT user_id FROM sessions 
-		WHERE id = ? AND expires_at > DATETIME('now')
-	`, cookie.Value).Scan(&userID)
-	if err != nil {
-		return false, 0
-	}
-
-	return true, userID
-}
-
-// 0d99353e-302d-4c9e-aa43-c6a984dfe882
