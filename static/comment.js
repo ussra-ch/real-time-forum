@@ -37,7 +37,7 @@ export function comment(div) {
 
                 })
                 .catch(err => {
-                    // console.error("Error:", err);
+                    console.error("Error  :", err);
                     const existingPopup = document.querySelector(".content");
                     if (existingPopup) {
                         existingPopup.remove();
