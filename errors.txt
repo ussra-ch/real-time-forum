@@ -1,18 +1,4 @@
-refresh dyal lpage ratelimit
 
 front
 
-
-limit websocket size (machi ri l buffer)
-
-
 cleaning code
-
-nraj3o conn dyal kola user ka array, bach ila 7al ktar mn tab n9dr nsift l message l ga3 tabs.
-
-check dyal ga3 l errors dyal routes (404, 400, 500 ....) (redirect + khwi l page + 7ot l error) 
-
-
-khali function whda dyal ratelimit w passi limit ka param
-
-haydo l global variablee

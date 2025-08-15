@@ -166,7 +166,7 @@ function islogin() {
 export function login() {
     // console.log('dkhal l log function');
     const body = document.querySelector('body')
-    fetch('/api/anthenticated')
+    fetch('/api/authenticated')
         .then(r => r.json())
         .then(res => {
             let profil = `<i class="fa-solid fa-user"></i>`
@@ -201,7 +201,9 @@ export function login() {
             
             <script type="module" src="static/main.js"></script>
             `
-                if (res.photo && res.photo.trim() !== "") {
+            console.log(res.photo);
+            
+                if (res.photo && res.photo.String.trim() !== "") {
                     document.getElementById('profile').style.backgroundImage = `url(${res.photo})`;
                 } else {
                     document.getElementById('profile').innerHTML = `${profil}`
@@ -257,6 +259,21 @@ export function login() {
                 logindiv()
                 return false
             }
-        }).catch(err => console.error('Error:', err));
+        }).catch(err => {
+            console.log(err);
+            
+                const existingPopup = document.querySelector(".content");
+                if (existingPopup) {
+                    existingPopup.remove();
+                }
+                const ErrorDiv = document.createElement('div');
+                ErrorDiv.className = 'error-container';
+                ErrorDiv.innerHTML = `<div class="content">${err.message}</div>`;
+                document.querySelector('body').append(ErrorDiv);
+                setTimeout(() => {
+                    ErrorDiv.remove()
+                }, 1000)
+  
+            });
 }
 

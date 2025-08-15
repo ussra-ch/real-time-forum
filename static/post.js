@@ -27,8 +27,8 @@ export function Create() {
   <label><input type="checkbox" id="music" name="topic" value="Music" style="margin-right: 39px;"> Music</label>
   <label><input type="checkbox" id="sport" name="topic" value="Sport"> Sport</label>
   <label><input type="checkbox" id="technology" name="topic" value="Technology"> Technology</label>
-  <label><input type="checkbox" id="culture" name="topic" value="Culture" style="margin-left: 10px;"> Culture</label>
-  <label><input type="checkbox" id="gcience" name="topic" value="Science" style="margin-right: 27px;"> Science</label>
+  <label><input type="checkbox" id="culture" name="topic" value="Culture"> Culture</label>
+  <label><input type="checkbox" id="gcience" name="topic" value="Science"> Science</label>
   </div>
   <div id="errorMsg" style="display:none; color:red; margin: 10px 10px;"></div>
   <button type="submit">Post</button>
@@ -41,7 +41,7 @@ export function Create() {
     const deleteButton = document.createElement('button')
     deleteButton.innerHTML = `<i class="fa-solid fa-xmark"></i>`
     deleteButton.id = 'closeConversation'
-
+    
     const form = document.getElementById('createPostForm')
     let createPostDiv = document.getElementById('createPostCard')
     createPostDiv.prepend(deleteButton)
@@ -49,7 +49,7 @@ export function Create() {
 
     Create.addEventListener('click', (e) => {
         form.style.display = "block"
-        CreateCard.style.display = 'block'
+        CreateCard.style.display = 'block' 
     });
     document.getElementById('createPostForm').addEventListener('submit', async function (e) {
         e.preventDefault();
@@ -61,7 +61,6 @@ export function Create() {
         if (this.photo.files[0]) {
             formData.append('photo', this.photo.files[0]);
         }
-
 
         fetch('/api/post', {
             method: 'POST',
@@ -104,7 +103,6 @@ export function Create() {
                 setTimeout(() => {
                     ErrorDiv.remove()
                 }, 1000)
-
             });
     });
 

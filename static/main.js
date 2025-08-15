@@ -13,8 +13,8 @@ export function main() {
   
   if (urlArr[urlArr.length - 1] != "" || urlArr.length != 4) {
     Errorr('404')
-
-
+   
+    
     return
   }
 

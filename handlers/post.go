@@ -21,9 +21,9 @@ type PostData struct {
 	Topics      []string `json:"topics"`
 }
 type Category struct {
-	Id   int
-	Name string
-}
+		Id int
+		Name string
+	}
 
 func PostHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
@@ -31,7 +31,6 @@ func PostHandler(w http.ResponseWriter, r *http.Request) {
 			Type: "error",
 			Text: "Method not allowed",
 		}
-		http.Redirect(w, r, "/", 301)
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusMethodNotAllowed)
 		json.NewEncoder(w).Encode(errorr)
@@ -69,7 +68,7 @@ func PostHandler(w http.ResponseWriter, r *http.Request) {
 	categoriesRows, err := databases.DB.Query("SELECT * FROM categories")
 	defer categoriesRows.Close()
 
-	if err != nil {
+	if err != nil{
 		if err != nil {
 			// fmt.Println(err)
 			errorr := ErrorStruct{
@@ -90,7 +89,7 @@ func PostHandler(w http.ResponseWriter, r *http.Request) {
 		if err := categoriesRows.Scan(&categoryId, &name); err != nil {
 			log.Fatal(err)
 		}
-		allCategories = append(allCategories, Category{Id: categoryId, Name: name})
+		allCategories = append(allCategories, Category{Id:categoryId ,Name: name})
 	}
 
 	var updatedTopics []Category
@@ -101,7 +100,7 @@ func PostHandler(w http.ResponseWriter, r *http.Request) {
 			// fmt.Println("tooopic is :", topic)
 			found = false
 			break
-		} else {
+		}else{
 			updatedTopics = append(updatedTopics, Category{Id: id, Name: topic})
 		}
 	}
@@ -181,6 +180,8 @@ func PostHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	
+
 	postID, err := res.LastInsertId()
 	if err != nil {
 		// log.Println("Error getting inserted post ID:", err)
@@ -194,18 +195,18 @@ func PostHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	for _, x := range updatedTopics {
+	for _, x := range updatedTopics{
 		query2 := `INSERT INTO categories_post (categoryID, postID) VALUES (?, ?)`
 		_, err := databases.DB.Exec(query2, x.Id, postID)
-		if err != nil {
+		if err != nil{
 			errorr := ErrorStruct{
-				Type: "error",
-				Text: "Internal server error",
-			}
-			w.Header().Set("Content-Type", "application/json")
-			w.WriteHeader(http.StatusInternalServerError)
-			json.NewEncoder(w).Encode(errorr)
-			return
+			Type: "error",
+			Text: "Internal server error",
+		}
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(errorr)
+		return
 		}
 	}
 	w.Header().Set("Content-Type", "application/json")
@@ -225,7 +226,6 @@ func FetchPostsHandler(w http.ResponseWriter, r *http.Request) {
 			Type: "error",
 			Text: "Method Not Allowed",
 		}
-		http.Redirect(w, r, "/", 301)
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusMethodNotAllowed)
 		json.NewEncoder(w).Encode(errorr)

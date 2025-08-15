@@ -3,6 +3,7 @@ package handlers
 import (
 	"encoding/json"
 	"fmt"
+	"html"
 	"log"
 	"net/http"
 
@@ -17,16 +18,44 @@ type CommentData struct {
 func CommentHandler(w http.ResponseWriter, r *http.Request) {
 	var cd CommentData
 	if err := json.NewDecoder(r.Body).Decode(&cd); err != nil {
-		http.Redirect(w, r, "/", 301)
-		http.Error(w, "Bad Request", http.StatusBadRequest)
+		errorr := ErrorStruct{
+			Type: "error",
+			Text: "Bad request",
+		}
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(errorr)
+		return
 		fmt.Println("Error decoding comment data:", err)
 		return
 	}
 	if cd.Content == "" {
-		//http.Redirect(w, r, "/", 301)
-		http.Error(w, "Bad Request", http.StatusBadRequest)
+		errorr := ErrorStruct{
+			Type: "error",
+			Text: "Bad request",
+		}
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(errorr)
+		return
 		return
 	}
+	var exists bool
+	err := databases.DB.QueryRow("SELECT EXISTS(SELECT 1 FROM posts WHERE id = $1)", cd.PostID).Scan(&exists)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	if !exists {
+		errorr := ErrorStruct{
+			Type: "error",
+			Text: "Bad request",
+		}
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(errorr)
+		return
+	} 
 	// Get user ID from session
 	cookie, err := r.Cookie("session")
 	if err != nil {
@@ -37,14 +66,20 @@ func CommentHandler(w http.ResponseWriter, r *http.Request) {
 	err = databases.DB.QueryRow(`SELECT user_id FROM sessions WHERE id = ?`, cookie.Value).Scan(&userID)
 	if err != nil {
 		fmt.Println("Error retrieving session cookie:", err)
-		w.Write([]byte(`{"loggedIn": false}`))
+		errorr := ErrorStruct{
+			Type: "error",
+			Text: "Unauthorized",
+		}
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusUnauthorized)
+		json.NewEncoder(w).Encode(errorr)
 		return
 	}
 	// Insert comment
 	_, err = databases.DB.Exec(`
 		INSERT INTO comments (post_id, user_id, content)
 		VALUES (?, ?, ?)
-	`, cd.PostID, userID, cd.Content)
+	`, cd.PostID, userID, html.EscapeString(cd.Content))
 	if err != nil {
 		fmt.Println(err)
 		http.Error(w, "Database error", http.StatusInternalServerError)

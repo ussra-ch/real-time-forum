@@ -56,7 +56,8 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 			Text: "Invalid Nickname or password",
 		}
 
-		http.Redirect(w, r, "/", 301)
+		// http.Redirect(w, r, "/", 301)
+		fmt.Println("2222222222222222")
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusUnauthorized)
 		json.NewEncoder(w).Encode(errorr)
@@ -102,6 +103,7 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 func IsAuthenticated(w http.ResponseWriter, r *http.Request) {
 	islogin, userID := IsLoggedIn(r)
 	if !islogin {
+		fmt.Println("1111111111111")
 		w.WriteHeader(http.StatusUnauthorized)
 		json.NewEncoder(w).Encode(map[string]any{
 			"ok":    false,
@@ -110,10 +112,12 @@ func IsAuthenticated(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var nickname, age, photo, email string
+	var nickname, age, email string
+	var photo sql.NullString
 	err := databases.DB.QueryRow("SELECT nickname, age, email, photo FROM users WHERE id = ?", userID).Scan(&nickname, &age, &email, &photo)
 	if err != nil {
-		fmt.Println("err", err)
+		fmt.Println("3333333333333")
+		fmt.Println("the errooooooor is :", err)
 	}
 	notifs, _ := databases.DB.Exec(`
 	SELECT COUNT(*) FROM messages
@@ -224,7 +228,6 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 			Type: "error",
 			Text: "Please make sure to fill out all the fields",
 		}
-		http.Redirect(w, r, "/", 301)
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode(errorr)
@@ -323,6 +326,7 @@ func IsLoggedIn(r *http.Request) (bool, int) {
 	if err != nil {
 		return false, 0
 	}
+	fmt.Println("session cookie value:", cookie.Value)
 
 	var userID int
 	err = databases.DB.QueryRow(`
@@ -335,3 +339,5 @@ func IsLoggedIn(r *http.Request) (bool, int) {
 
 	return true, userID
 }
+
+//0d99353e-302d-4c9e-aa43-c6a984dfe882
