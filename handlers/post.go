@@ -39,7 +39,6 @@ func PostHandler(w http.ResponseWriter, r *http.Request) {
 
 	err := r.ParseMultipartForm(10 << 20)
 	if err != nil {
-		// fmt.Println("error when parsing the forms")
 		errorr := ErrorStruct{
 			Type: "error",
 			Text: "Bad request",
@@ -54,7 +53,6 @@ func PostHandler(w http.ResponseWriter, r *http.Request) {
 	description := r.FormValue("description")
 	topics := r.Form["topics"]
 	if title == "" || description == "" || len(topics) == 0 {
-		// fmt.Println("error int the iputs size")
 		errorr := ErrorStruct{
 			Type: "error",
 			Text: "Bad request",
@@ -70,7 +68,6 @@ func PostHandler(w http.ResponseWriter, r *http.Request) {
 
 	if err != nil{
 		if err != nil {
-			// fmt.Println(err)
 			errorr := ErrorStruct{
 				Type: "error",
 				Text: "Internal server error",
@@ -97,7 +94,6 @@ func PostHandler(w http.ResponseWriter, r *http.Request) {
 	for _, topic := range topics {
 		ok, id := contains(allCategories, topic)
 		if !ok {
-			// fmt.Println("tooopic is :", topic)
 			found = false
 			break
 		}else{
@@ -106,7 +102,6 @@ func PostHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if !found {
-		// fmt.Println("error in !found statement")
 		errorr := ErrorStruct{
 			Type: "error",
 			Text: "Bad request",
@@ -137,7 +132,6 @@ func PostHandler(w http.ResponseWriter, r *http.Request) {
 		filename = fmt.Sprintf("static/uploads/%d_%s", time.Now().UnixNano(), handler.Filename)
 		dst, err := os.Create(filename)
 		if err != nil {
-			// fmt.Println(err)
 			errorr := ErrorStruct{
 				Type: "error",
 				Text: "Internal server error",

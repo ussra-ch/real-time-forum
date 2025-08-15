@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"encoding/json"
-	"fmt"
 	"html"
 	"log"
 	"net/http"
@@ -25,8 +24,6 @@ func CommentHandler(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode(errorr)
-		return
-		fmt.Println("Error decoding comment data:", err)
 		return
 	}
 	if cd.Content == "" {
@@ -54,7 +51,7 @@ func CommentHandler(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode(errorr)
 		return
-	} 
+	}
 	// Get user ID from session
 	cookie, err := r.Cookie("session")
 	if err != nil {
@@ -64,7 +61,6 @@ func CommentHandler(w http.ResponseWriter, r *http.Request) {
 	var userID int
 	err = databases.DB.QueryRow(`SELECT user_id FROM sessions WHERE id = ?`, cookie.Value).Scan(&userID)
 	if err != nil {
-		fmt.Println("Error retrieving session cookie:", err)
 		errorr := ErrorStruct{
 			Type: "error",
 			Text: "Unauthorized",
@@ -80,12 +76,10 @@ func CommentHandler(w http.ResponseWriter, r *http.Request) {
 		VALUES (?, ?, ?)
 	`, cd.PostID, userID, html.EscapeString(cd.Content))
 	if err != nil {
-		fmt.Println(err)
 		http.Error(w, "Database error", http.StatusInternalServerError)
 		return
 	}
 
-	// fmt.Println("Comment created successfully for post ID:", cd.PostID, userID)
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(map[string]string{
 		"message": "Comment created successfully",

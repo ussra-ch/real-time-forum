@@ -5,7 +5,6 @@ import (
 	"database/sql"
 	"encoding/hex"
 	"encoding/json"
-	"fmt"
 	"log"
 	"net/http"
 	"time"
@@ -46,7 +45,7 @@ func generateSessionID() string {
 func LoginHandler(w http.ResponseWriter, r *http.Request) {
 	var aa a
 	err := json.NewDecoder(r.Body).Decode(&aa)
-	// fmt.Println(aa.Nickname)
+
 	var dbPassword string
 	var userID int
 	err = databases.DB.QueryRow("SELECT id, password FROM users WHERE( nickname = ? or email = ?)", aa.Nickname, aa.Nickname).Scan(&userID, &dbPassword)
@@ -55,9 +54,6 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 			Type: "error",
 			Text: "Invalid Nickname or password",
 		}
-
-		// http.Redirect(w, r, "/", 301)
-		fmt.Println("2222222222222222")
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusUnauthorized)
 		json.NewEncoder(w).Encode(errorr)
@@ -103,7 +99,7 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 func IsAuthenticated(w http.ResponseWriter, r *http.Request) {
 	islogin, userID := IsLoggedIn(r)
 	if !islogin {
-		fmt.Println("1111111111111")
+
 		w.WriteHeader(http.StatusUnauthorized)
 		json.NewEncoder(w).Encode(map[string]any{
 			"ok":    false,
@@ -116,8 +112,6 @@ func IsAuthenticated(w http.ResponseWriter, r *http.Request) {
 	var photo sql.NullString
 	err := databases.DB.QueryRow("SELECT nickname, age, email, photo FROM users WHERE id = ?", userID).Scan(&nickname, &age, &email, &photo)
 	if err != nil {
-		fmt.Println("3333333333333")
-		fmt.Println("the errooooooor is :", err)
 	}
 	notifs, _ := databases.DB.Exec(`
 	SELECT COUNT(*) FROM messages
@@ -150,20 +144,18 @@ func LogoutHandler(w http.ResponseWriter, r *http.Request) {
 		oldUser["userId"] = userId
 		toSend, err := json.Marshal(oldUser)
 		if err != nil {
-			fmt.Println("error when sending the user's status : ", err)
 		}
-		// fmt.Println("11")
+
 		for _, connections := range ConnectedUsers {
-			for _, con := range connections{
+			for _, con := range connections {
 				con.WriteMessage(websocket.TextMessage, []byte(toSend))
 			}
 		}
 	}
 	mu.Unlock()
-	// fmt.Println("in logout :", UsersStatus)
+
 	cookie, err := r.Cookie("session")
 	if err != nil {
-		fmt.Println(err)
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 		return
 	}
@@ -186,11 +178,10 @@ func LogoutHandler(w http.ResponseWriter, r *http.Request) {
 func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 	var aa data
 	err := json.NewDecoder(r.Body).Decode(&aa)
-	// fmt.Println("aa content is :", aa)
 	var exists int
 	err = databases.DB.QueryRow("SELECT COUNT(*) FROM users WHERE email = ? OR nickname = ?", aa.Email, aa.Nickname).Scan(&exists)
 	if err != nil {
-		// log.Println("Error checking email:", err)
+
 		errorr := ErrorStruct{
 			Type: "error",
 			Text: "Internal server error",
@@ -289,10 +280,9 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 		newUser["userId"] = userId
 		toSend, err := json.Marshal(newUser)
 		if err != nil {
-			fmt.Println("error when sending the user's status : ", err)
 		}
 		for _, connections := range ConnectedUsers {
-			for _, con := range connections{
+			for _, con := range connections {
 				con.WriteMessage(websocket.TextMessage, []byte(toSend))
 			}
 		}
@@ -329,7 +319,6 @@ func IsLoggedIn(r *http.Request) (bool, int) {
 	if err != nil {
 		return false, 0
 	}
-	// fmt.Println("session cookie value:", cookie.Value)
 
 	var userID int
 	err = databases.DB.QueryRow(`
@@ -343,4 +332,4 @@ func IsLoggedIn(r *http.Request) (bool, int) {
 	return true, userID
 }
 
-//0d99353e-302d-4c9e-aa43-c6a984dfe882
+// 0d99353e-302d-4c9e-aa43-c6a984dfe882

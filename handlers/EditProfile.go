@@ -22,7 +22,6 @@ func EditProfile(w http.ResponseWriter, r *http.Request) {
 	_, userID := IsLoggedIn(r)
 
 	if err := r.ParseMultipartForm(10 << 20); err != nil {
-		fmt.Println(err)
 		http.Error(w, "Cannot parse form", http.StatusBadRequest)
 		return
 	}
