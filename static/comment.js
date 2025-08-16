@@ -68,6 +68,7 @@ export function fetchComments(postId, container) {
                 if (comment.PostID != postId) return;
 
                 const p = document.createElement("div");
+                p.className='comment'
                 p.innerHTML = `
                             <p><strong>${comment.Name}:</strong> ${comment.Content}</p>
                             <p class="comment-date">${new Date(comment.CreatedAt).toLocaleDateString()}</p>

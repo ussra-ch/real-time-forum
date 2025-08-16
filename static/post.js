@@ -71,7 +71,7 @@ export function Create() {
         if (this.photo.files[0]) {
             formData.append('photo', this.photo.files[0]);
         }
-
+     
         fetch('/api/post', {
             method: 'POST',
             body: formData
@@ -87,6 +87,7 @@ export function Create() {
             .then(data => {
                 resetForm(form)
                 form.style.display = "none"
+                CreateCard.style.display = 'none'
                 fetchPosts();
             })
             .catch(err => {

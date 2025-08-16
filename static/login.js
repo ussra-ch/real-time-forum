@@ -185,7 +185,9 @@ export function login() {
                 <div class="sidebar-label categories-label" style="top: 15vh;">Categories</div>
                 <div class="sidebar-label posts-label" id="sidebar" >Posts</div>
                 </div>
-                <div id="category"></div>
+                <div id="category">
+                    <div id="catgoryUI"></div>
+                </div>
                 <button id="showUsers"><i class="fa-solid fa-users"></i></button>
                 <div id="all">
                 <div id="user">
