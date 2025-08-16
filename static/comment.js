@@ -33,8 +33,7 @@ export function comment(div) {
                         })
                         .then(data => {
                             commentInput.value = "";
-                            fetchComments(post_id, div)
-
+                            fetchComments(post_id, div, 0, 10)
                         })
                         .catch(err => {
                             console.error("Error  :", err);
@@ -56,24 +55,26 @@ export function comment(div) {
     });
 }
 
-export function fetchComments(postId, container) {
-    container.innerHTML = ``
-    fetch('/api/fetch_comments')
+export function fetchComments(postId, container, offset, limit) {
+    fetch(`/api/fetch_comments?offset=${offset}&limit=${limit}`)
         .then(res => res.json())
         .then(comments => {
             if (!comments) {
                 return
             }
+            console.log(comments);
+            
             comments.forEach(comment => {
                 if (comment.PostID != postId) return;
 
                 const p = document.createElement("div");
-                p.className='comment'
+                p.className = 'comment'
                 p.innerHTML = `
                             <p><strong>${comment.Name}:</strong> ${comment.Content}</p>
                             <p class="comment-date">${new Date(comment.CreatedAt).toLocaleDateString()}</p>
                 `;
                 container.appendChild(p);
             });
+        }).catch(err=>{console.log(err);
         });
 }

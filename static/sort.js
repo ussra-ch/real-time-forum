@@ -83,11 +83,35 @@ export function categories() {
                   postCard.appendChild(div);
                   postsContainer.prepend(postCard);
                   div.style.display = 'none'
+                  let offset = 0;
+                  const limit = 10;
                   document.querySelector('.show').addEventListener('click', (e) => {
                     e.preventDefault()
-                    div.style.display = div.style.display === 'none' ? 'block' : 'none';
+                    if (div.style.display === 'none') {
+                      div.style.display = 'block'
+                      div.innerHTML = ``
 
-                    fetchComments(post.id, div);
+                    } else {
+                      div.style.display = 'none'
+                    }
+                    fetchComments(post.id, div, offset, limit);
+                  });
+
+
+                  let lastCall = 0;
+                  const delay = 500;
+
+                  div.addEventListener("scroll", () => {
+                    if (div.scrollTop + div.clientHeight >= div.scrollHeight) {
+                      const now = Date.now();
+                      const canCall = now - lastCall >= delay;
+
+                      if (canCall) {
+                        lastCall = now;
+                        offset += limit;
+                        fetchComments(post.id, div, offset, limit);
+                      }
+                    }
                   });
                   comment(div)
                 }

@@ -2,9 +2,11 @@ package handlers
 
 import (
 	"encoding/json"
+	"fmt"
 	"html"
 	"log"
 	"net/http"
+	"strconv"
 
 	"handlers/databases"
 )
@@ -73,19 +75,29 @@ func CommentHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func FetchCommentsHandler(w http.ResponseWriter, r *http.Request) {
-	rows, err := databases.DB.Query(`
-		SELECT 
-			comments.id,
-			comments.content,
-			comments.created_at,
-			comments.user_id,
-			comments.post_id,
-			users.nickname
-		FROM comments
-		JOIN users ON comments.user_id = users.id
-		ORDER BY comments.created_at DESC;
-	`)
+	offsetStr := r.URL.Query().Get("offset")
+	limitStr := r.URL.Query().Get("limit")
+	offset, err1 := strconv.Atoi(offsetStr)
+	limit, err2 := strconv.Atoi(limitStr)
+
+	if err1 != nil || err2 != nil || limit <= 0 {
+		http.Error(w, "Invalid parameters", http.StatusBadRequest)
+		return
+	}
+	rows, err := databases.DB.Query(fmt.Sprintf(`
+    SELECT 
+        comments.id,
+        comments.content,
+        comments.created_at,
+        comments.user_id,
+        comments.post_id,
+        users.nickname
+    FROM comments
+    JOIN users ON comments.user_id = users.id
+    ORDER BY comments.created_at DESC
+    LIMIT %d OFFSET %d;`, limit, offset))
 	if err != nil {
+		fmt.Println(err)
 		errorHandler(http.StatusInternalServerError, w)
 		return
 	}
