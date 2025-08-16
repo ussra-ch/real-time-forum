@@ -45,6 +45,8 @@ func PostHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	fmt.Println("title is :", title)
+	fmt.Println("description is :", description)
 	categoriesRows, err := databases.DB.Query("SELECT * FROM categories")
 	defer categoriesRows.Close()
 

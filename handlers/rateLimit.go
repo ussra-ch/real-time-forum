@@ -62,9 +62,7 @@ func RatelimitMiddleware(next http.HandlerFunc, rateLimitType string, maxAttempt
 		} else if rateLimitType == "comments" {
 			theMap = CommentRateLimits
 		}
-		mu.Lock()
 		userRateLimit, ok := UserInfos(r)
-		mu.Unlock()
 
 		if !ok {
 			errorr := ErrorStruct{

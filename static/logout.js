@@ -1,5 +1,7 @@
-import { login } from "./login.js";
+import { login, logindiv } from "./login.js";
 import { fetchUser } from "./users.js";
+import { ws } from "./websocket.js";
+// import { loginDiv } from "./var.js";
 // import { connectedUsers } from "./var.js";
 
 
@@ -14,6 +16,7 @@ export function logout() {
       credentials: 'include'
     }).then(res => {
       if (res.ok) {
+        logindiv();
         login()
         // connectedUsers.set(res.id, 'offline');
       } else {
@@ -21,5 +24,12 @@ export function logout() {
       }
     });
   });
+
+}
+
+export function logoutTheUser() {
+  let logoutJson = { "ws": ws, "type": "offline" }
+  const logouT = JSON.stringify(logoutJson);
+  ws.send(logouT)
 
 }

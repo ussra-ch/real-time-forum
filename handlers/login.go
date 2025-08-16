@@ -3,6 +3,7 @@ package handlers
 import (
 	"database/sql"
 	"encoding/json"
+	"fmt"
 	"html"
 	"log"
 	"net/http"
@@ -127,8 +128,9 @@ func IsAuthenticated(w http.ResponseWriter, r *http.Request) {
 }
 
 func LogoutHandler(w http.ResponseWriter, r *http.Request) {
-	mu.Lock()
+	fmt.Println("backenddddd lougout")
 	_, userId := IsLoggedIn(r)
+	mu.Lock()
 	UsersStatus[userId] = "offline"
 	delete(ConnectedUsers, float64(userId))
 	if _, exists := ConnectedUsers[float64(userId)]; !exists {
@@ -141,6 +143,7 @@ func LogoutHandler(w http.ResponseWriter, r *http.Request) {
 
 		for _, connections := range ConnectedUsers {
 			for _, con := range connections {
+				fmt.Println("Inside the broadcast loop")
 				con.WriteMessage(websocket.TextMessage, []byte(toSend))
 			}
 		}
@@ -171,7 +174,7 @@ func LogoutHandler(w http.ResponseWriter, r *http.Request) {
 func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 	var userInformation data
 	err := json.NewDecoder(r.Body).Decode(&userInformation)
-	if err != nil{
+	if err != nil {
 		errorHandler(http.StatusBadRequest, w)
 	}
 	var exists int
@@ -260,4 +263,23 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 		Expires:  expiresAt,
 		HttpOnly: true,
 	})
+}
+
+func logoutWhenSessionIsDeleted(conn *websocket.Conn)float64 {
+	userId, state := findKeyByConn(conn)
+	if !state {
+		return 0
+	}
+	return userId
+}
+
+func findKeyByConn(conn *websocket.Conn) (float64, bool) {
+    for key, conns := range ConnectedUsers {
+        for _, c := range conns {
+            if c == conn {
+                return key, true
+            }
+        }
+    }
+    return 0, false
 }

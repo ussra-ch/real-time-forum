@@ -1,5 +1,6 @@
 import { main } from "./main.js";
 import { isAuthenticated } from "./login.js";
+import { logoutTheUser } from "./logout.js";
 export function comment(div) {
     const forms = document.querySelectorAll('.commentForm');
 
@@ -9,7 +10,8 @@ export function comment(div) {
             e.preventDefault()
             isAuthenticated().then(auth => {
                 if (!auth) {
-                    main()
+                    logoutTheUser()
+                   main()
                 } else {
 
                     const commentInput = form.querySelector(".commentInput");

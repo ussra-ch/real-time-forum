@@ -114,7 +114,8 @@ func WebSocketHandler(w http.ResponseWriter, r *http.Request) {
 				messageStruct.MessageContent = toolMap["messageContent"].(string)
 				messageHandler(messageStruct)
 				isConversationOpened = OpenedConversations[toolMap["receiverId"].(float64)][toolMap["senderId"].(float64)]
-			} else if typeValue == "typing" {
+			}
+			if typeValue == "typing" {
 				typing := map[string]interface{}{
 					"type":   "typing",
 					"sender": toolMap["senderId"].(float64),
@@ -129,6 +130,27 @@ func WebSocketHandler(w http.ResponseWriter, r *http.Request) {
 						}
 					}
 				}
+			}
+			if typeValue == "offline" {
+				userID := logoutWhenSessionIsDeleted(conn)
+				mu.Lock()
+				UsersStatus[int(userID)] = "offline"
+				delete(ConnectedUsers, float64(userID))
+				if _, exists := ConnectedUsers[float64(userID)]; !exists {
+					oldUser := make(map[string]interface{})
+					oldUser["type"] = "offline"
+					oldUser["userId"] = userID
+					toSend, err := json.Marshal(oldUser)
+					if err != nil {
+					}
+
+					for _, connections := range ConnectedUsers {
+						for _, con := range connections {
+							con.WriteMessage(websocket.TextMessage, []byte(toSend))
+						}
+					}
+				}
+				mu.Unlock()
 			}
 		}
 
