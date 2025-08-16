@@ -6,7 +6,12 @@ let typingTimeout;
 function typingInProgress(Id) {
     const chat = document.getElementById('footer');
     if (!chat) return;
-
+    const userID = document.getElementById('message_id')
+    console.log(userID.value,Id);
+    
+    if (userID.value != Id) {
+        return
+    }
     let typingEl = document.getElementById('typing');
     if (!typingEl) {
         const div = document.createElement('div');
@@ -40,9 +45,9 @@ export function initWebSocket(onMessageCallback) {
 
     ws.onmessage = (event) => {
         if (event.data) {
-            
+
             const data = JSON.parse(event.data);
-            
+
             if (data.type === 'online' || data.type === 'offline') {
                 fetchUser()
             } else if (data.type === "message") {

@@ -25,6 +25,7 @@ export function mesaageDiv(user, userId, receiverId) {
     conversation.id = 'message'
     conversation.innerHTML = `
         <div class="head">
+            <input type="hidden" id="message_id" name="message_id" value="${receiverId}">
             <h3>${user}</h3>
         </div>
         <div class="body" id="chat-body"></div>
