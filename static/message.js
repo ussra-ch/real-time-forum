@@ -15,7 +15,7 @@ function throttle(func, delay) {
     };
 }
 
-export function mesaageDiv(user, userId, receiverId) {
+export function mesaageDiv(user, userId, receiverId, username) {
     const body = document.querySelector('body')
     if (document.getElementById('message')) {
         document.getElementById('message').remove()
@@ -40,7 +40,7 @@ export function mesaageDiv(user, userId, receiverId) {
     let offset = 0;
     const limit = 10;
 
-    fetchMessages(userId, receiverId, offset, limit, user)
+    fetchMessages(userId, receiverId, offset, limit, user, username)
     let lastCall = 0;
     const delay = 500;
 
@@ -52,7 +52,7 @@ export function mesaageDiv(user, userId, receiverId) {
             if (canCall) {
                 lastCall = now;
                 offset += limit;
-                throttle(fetchMessages, 500)(userId, receiverId, offset, limit, user);
+                throttle(fetchMessages, 500)(userId, receiverId, offset, limit, user, username);
             }
         }
     });
@@ -74,9 +74,17 @@ export function mesaageDiv(user, userId, receiverId) {
                     let newMsg = document.createElement('div')
                     newMsg.className = 'messageReceived'
                     let msgContent = document.createElement('h3')
-                    msgContent.textContent = message
+                    msgContent.innerHTML = `
+                            <div class="messagProfil">
+                                <div class="profile"></div>
+                                <h7>${username}</h7>
+                            </div>
+                            <h3>${message}</h3>
+                            <h7>${formatDate(Date.now())}</h7>`
                     let timestamp = document.createElement('h7')
-                    timestamp.textContent = formatDate(Date.now())
+                    document.querySelector('.profile').innerHTML = `
+                                    <i class="fa-solid fa-user"></i>
+                                `
                     newMsg.appendChild(msgContent)
                     newMsg.appendChild(timestamp)
                     chatBody.append(newMsg)
@@ -134,7 +142,7 @@ export function mesaageDiv(user, userId, receiverId) {
 
 }
 
-function fetchMessages(userId, receiverId, offset, limit, name) {
+function fetchMessages(userId, receiverId, offset, limit, name, username) {
     const body = document.getElementById('chat-body');
     var previousScrollHeight = body.scrollHeight;
 
@@ -178,9 +186,17 @@ function fetchMessages(userId, receiverId, offset, limit, name) {
                         let newMsg = document.createElement('div')
                         newMsg.className = 'messageReceived'
                         newMsg.innerHTML = `
+                                            <div class="messagProfil">
+                                                <div class="profile">
+                                                </div>
+                                                   <h7>${username}</h7>
+                                            </div>
                                             <h3>${message.content}</h3>
                                             <h7>${formatDate(message.time)}</h7>`
                         body.prepend(newMsg)
+                        document.querySelector('.profile').innerHTML = `
+                                    <i class="fa-solid fa-user"></i>
+                                `
                     }
                 }
             }

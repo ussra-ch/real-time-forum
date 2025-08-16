@@ -4,7 +4,7 @@ import { main } from "./main.js";
 import { isAuthenticated } from "./login.js";
 import { triggerUserLogout } from "./logout.js";
 
-export function fetchUser() {
+export function fetchUser(username) {
   const usern = document.getElementById('users');
   fetch('/user').then(r => r.json()).then(users => {
     usern.textContent = '';
@@ -69,7 +69,7 @@ export function fetchUser() {
             let isConversationOpen = { "senderId": users.UserId, "receiverId": user.userId, "isOpen": true, "type": "OpenConversation" }
             const jsonIsConversationOpen = JSON.stringify(isConversationOpen);
             ws.send(jsonIsConversationOpen);
-            mesaageDiv(user.nickname, users.UserId, user.userId)
+            mesaageDiv(user.nickname, users.UserId, user.userId,username)
           }
         })
       })

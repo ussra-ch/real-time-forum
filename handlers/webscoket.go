@@ -31,6 +31,7 @@ type Message struct {
 	MessageContent string  `json:"messageContent"`
 	Seen           bool    `json:"seen"`
 	Type           string  `json:"type"`
+	Name           string  `json:"name"`
 	// Notifications  int     `json:notifications`
 }
 
@@ -83,7 +84,7 @@ func WebSocketHandler(w http.ResponseWriter, r *http.Request) {
 		if message == nil {
 			mu.Lock()
 			ok, _ := IsLoggedIn(r)
-			if !ok{
+			if !ok {
 				fmt.Println("inside the if")
 				userOffline(userId, conn)
 			}
@@ -112,9 +113,14 @@ func WebSocketHandler(w http.ResponseWriter, r *http.Request) {
 			}
 			if typeValue == "message" {
 				messageStruct.SenderId = toolMap["senderId"].(float64)
+				var username string
+				err := databases.DB.QueryRow("SELECT nickname FROM users WHERE id = ?", messageStruct.SenderId).Scan(&username)
+				if err != nil {
+				}
 				messageStruct.ReceiverId = toolMap["receiverId"].(float64)
 				messageStruct.Type = toolMap["type"].(string)
 				messageStruct.MessageContent = toolMap["messageContent"].(string)
+				messageStruct.Name = username
 				messageHandler(messageStruct)
 				isConversationOpened = OpenedConversations[toolMap["receiverId"].(float64)][toolMap["senderId"].(float64)]
 			}

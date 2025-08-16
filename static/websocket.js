@@ -51,9 +51,11 @@ export function initWebSocket(onMessageCallback) {
             if (data.type === 'online' || data.type === 'offline') {
                 fetchUser()
             } else if (data.type === "message") {
+              
+                
                 let notifs = document.getElementById('notification-circle')
                 notifs.textContent = data.Notifications
-                onMessageCallback(data.messageContent);
+                onMessageCallback(data.messageContent,data.name);
 
             } else if (data.type == 'notification' || data.type === "unreadMessage") {
                 let notifs = document.getElementById('notification-circle')

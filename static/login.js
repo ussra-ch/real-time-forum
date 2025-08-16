@@ -11,7 +11,6 @@ import { initWebSocket } from "./websocket.js";
 import { main } from "./main.js";
 import { triggerUserLogout } from "./logout.js";
 
-
 export function logindiv() {
     loginDiv.className = 'container';
     loginDiv.id = 'container';
@@ -136,14 +135,19 @@ export function logindiv() {
     });
 }
 
-function handleUserLogin() {
-    initWebSocket((msg) => {
+function handleUserLogin(username) {
+    initWebSocket((msg,user) => {
         let chatBody = document.getElementById('chat-body');
         if (!chatBody || msg == "") {
             return
         }
         let newMsg = document.createElement('div');
-        newMsg.innerHTML = `<h3>${msg}</h3>
+        newMsg.innerHTML = `
+                            <div class="messagProfil">
+                                <div class="profile"></div>
+                                   <h7>${user}</h7>
+                            </div>
+                            <h3>${msg}</h3>
                             <h7>${formatDate(Date.now())}</h7>`;
         newMsg.className = 'messageSent'
         chatBody.append(newMsg);
@@ -157,7 +161,7 @@ function handleUserLogin() {
     fetchPosts();
     categories();
     comment();
-    fetchUser()
+    fetchUser(username)
 }
 
 export function login() {
@@ -244,6 +248,7 @@ export function login() {
                     })
 
                 });
+                const username = res.nickname
                 editProfileButton.addEventListener('click', () => {
                     isAuthenticated().then(auth => {
                         if (!auth) {
@@ -268,7 +273,7 @@ export function login() {
                     })
                 })
 
-                handleUserLogin();
+                handleUserLogin(username);
                 return true
             } else {
                 body.innerHTML = `
