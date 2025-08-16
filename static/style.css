@@ -16,14 +16,15 @@ body {
     letter-spacing: 0.01em;
     line-height: 1.6;
     min-height: 100vh;
-    overflow-x: hidden;
+    /* overflow-x: hidden; */
+    overflow: hidden;
 }
 
 /* Header */
 header {
     background: rgba(15, 20, 25, 0.95);
     backdrop-filter: blur(10px);
-    margin: 10px;
+    margin: 6px 10px;
     border: none;
     border-bottom: 2px solid #00b4d8;
     border-radius: 0 0 20px 20px;
@@ -84,8 +85,8 @@ button,
     border-radius: 30px;
     font-weight: 700;
     font-size: 1rem;
-    box-shadow: 0 2px 8px rgba(0,180,216,0.10);
-    transition: all 0.2s cubic-bezier(.4,0,.2,1);
+    box-shadow: 0 2px 8px rgba(0, 180, 216, 0.10);
+    transition: all 0.2s cubic-bezier(.4, 0, .2, 1);
 }
 
 button:hover,
@@ -93,7 +94,7 @@ button:hover,
     background: linear-gradient(90deg, #64ffda 60%, #00b4d8 100%);
     color: #0f1419;
     transform: translateY(-3px) scale(1.04);
-    box-shadow: 0 8px 24px rgba(100,255,218,0.18);
+    box-shadow: 0 8px 24px rgba(100, 255, 218, 0.18);
 }
 
 #chat-body {
@@ -174,9 +175,9 @@ button:hover,
     padding: 2rem 1.5rem;
     margin-top: 90px;
     min-height: calc(100vh - 80px);
-    background: rgba(26,35,50,0.85);
+    background: rgba(26, 35, 50, 0.85);
     border-radius: 18px;
-    box-shadow: 0 8px 32px rgba(0,180,216,0.10);
+    box-shadow: 0 8px 32px rgba(0, 180, 216, 0.10);
 }
 
 /* Categories Sidebar */
@@ -307,11 +308,11 @@ button:hover,
     background: linear-gradient(135deg, #00b4d8 60%, #64ffda 100%);
     color: #0f1419;
     border: none;
-    box-shadow: 0 2px 8px rgba(0,180,216,0.10);
+    box-shadow: 0 2px 8px rgba(0, 180, 216, 0.10);
     font-weight: 700;
     font-size: 1rem;
     border-radius: 100%;
-    transition: all 0.2s cubic-bezier(.4,0,.2,1);
+    transition: all 0.2s cubic-bezier(.4, 0, .2, 1);
 }
 
 .categories:hover,
@@ -319,32 +320,37 @@ button:hover,
     background: linear-gradient(135deg, #64ffda 60%, #00b4d8 100%);
     color: #0f1419;
     transform: scale(1.08);
-    box-shadow: 0 8px 24px rgba(100,255,218,0.18);
+    box-shadow: 0 8px 24px rgba(100, 255, 218, 0.18);
 }
 
 /* Posts Container */
 #postsContainer {
     z-index: 10;
-    background: rgba(26,35,50,0.97);
+    background: rgba(26, 35, 50, 0.97);
     border: 1.5px solid #00b4d8;
-    border-radius: 18px;
-    box-shadow: 0 8px 32px rgba(0,180,216,0.10);
-    padding: 2rem 1.5rem;
-    width: 70vw;
-    height: 70vh;
-    max-height: 80vh;
+    box-shadow: 0 8px 32px rgba(0, 180, 216, 0.10);
+    margin-top: -30px;
+
+    position: absolute;
+    top: -10vh;
+    left: 20%;
+    width: 65vw;
+    flex: 1 1 60%;
+    min-width: 280px;
+    height: 69vh;
+    border-radius: 15px;
+    padding: 1.5rem;
     overflow: auto;
-    margin-top: 20px;
 }
 
 /* Posts Styling */
 .post-card1 {
     position: relative;
     width: 80%;
-    background: rgba(0,180,216,0.08);
+    background: rgba(0, 180, 216, 0.08);
     border: 1.5px solid #64ffda;
     border-radius: 18px;
-    box-shadow: 0 2px 12px rgba(0,180,216,0.08);
+    box-shadow: 0 2px 12px rgba(0, 180, 216, 0.08);
     padding: 1.5rem 1rem;
     margin-bottom: 2rem;
     transition: box-shadow 0.2s, transform 0.2s;
@@ -391,15 +397,18 @@ button:hover,
 .inputWrapper {
     position: relative;
     width: 100%;
+    display: inline-flex;
+    align-items: center;
 }
 
 .commentInput {
-    background: rgba(100,255,218,0.10);
+    background: rgba(100, 255, 218, 0.10);
     border: 1.5px solid #00b4d8;
     border-radius: 12px;
     padding: 0.7rem 1rem;
     color: #00b4d8;
     font-size: 1rem;
+    flex: 1;
 }
 
 .commentInput::placeholder {
@@ -560,21 +569,6 @@ body::after {
     position: relative;
 }
 
-#postsContainer {
-    position: absolute;
-    top: -10vh;
-    left: 20%;
-    width: 65vw;
-    flex: 1 1 60%;
-    min-width: 280px;
-    height: 70vh;
-    max-height: 80vh;
-    border-radius: 15px;
-    padding: 1.5rem;
-    overflow: auto;
-    margin-top: 20px;
-
-}
 
 #user {
     z-index: 100;
@@ -785,7 +779,7 @@ form select {
     margin: 8px 0;
     width: 100%;
     border-radius: 8px;
-    color: #009db3 ;
+    color: #009db3;
     font-size: 14px;
 }
 
@@ -1233,6 +1227,7 @@ form a:hover {
         top: 65vh;
         left: 95vw;
     }
+    
 
     /* .notification-circle {
         right: 11vw;
@@ -1253,7 +1248,7 @@ form a:hover {
         width: 100vw;
     }
 
-   /* #user {
+    /* #user {
         top: -2vh;
         left: 3%;
         width: 90%;
@@ -1275,6 +1270,9 @@ form a:hover {
         top: 65vh;
 
     }
+    .category-title{
+        display: none;
+    }
 
     /* .notification-circle {
         right: 11vw;
@@ -1294,7 +1292,7 @@ form a:hover {
         width: 100vw;
     }
 
-  /*  #user {
+    /*  #user {
         top: -3vh;
         left: 3%;
         width: 90%;
@@ -1316,7 +1314,8 @@ form a:hover {
         top: 70vh;
 
     }
-    #showUsers{
+
+    #showUsers {
         top: 30vh;
     }
 
@@ -1334,6 +1333,7 @@ form a:hover {
     .menu {
         right: 15%;
     }
+
     #message {
         position: static;
         width: 100vw;
@@ -1343,6 +1343,7 @@ form a:hover {
         height: 50vh;
         margin: 0 auto 10px auto;
     }
+
     #postsContainer {
         position: static;
         width: 100vw;
@@ -1354,7 +1355,8 @@ form a:hover {
         margin: 0 auto 10px auto;
         padding: 0.5rem;
     }
-   /* #user {
+
+    /* #user {
         position: static;
         width: 100vw;
         min-width: 0;
@@ -1365,21 +1367,26 @@ form a:hover {
         margin: 0 auto 10px auto;
         padding: 0.5rem;
     }*/
-    .sidebar-left, .sidebar-right {
+    .sidebar-left,
+    .sidebar-right {
         display: none;
     }
+
     .forum-header h1 {
         font-size: 1.3em;
         padding: 8px;
     }
+
     .forum-content {
         padding: 10px;
     }
+
     .categories {
         min-width: 60px;
         min-height: 60px;
         font-size: 0.8rem;
     }
+
     #showUsers {
         width: 80vw;
         left: 10vw;
@@ -1392,11 +1399,13 @@ form a:hover {
         height: 40vh;
         font-size: 0.9em;
     }
+
     #postsContainer {
         max-height: 40vh;
         font-size: 0.9em;
     }
-  /*  #user {
+
+    /*  #user {
         max-height: 120px;
         font-size: 0.9em;
     }*/
@@ -1405,12 +1414,26 @@ form a:hover {
         min-height: 40px;
         font-size: 0.7rem;
     }
+
     .forum-header h1 {
         font-size: 1em;
         padding: 5px;
     }
+
     .content {
         font-size: 1em;
         padding: 6px 10px;
     }
 }
+
+/* .show{
+    position: absolute;
+    top: 16%;
+    right: 1%;
+}
+
+.commentButton{
+    position: absolute;
+    top: 18%;
+    right: 10%;
+} */

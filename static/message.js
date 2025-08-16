@@ -78,16 +78,19 @@ export function mesaageDiv(user, userId, receiverId, username) {
                             <div class="messagProfil">
                                 <div class="profile"><i class="fa-solid fa-user"></i></div>
                                 <h7>${username}</h7>
-                            </div>
-                            <h3>${message}</h3>
-                            <h7>${formatDate(Date.now())}</h7>`
-                    let timestamp = document.createElement('h7')
-                    newMsg.appendChild(msgContent)
-                    newMsg.appendChild(timestamp)
+                            </div>`
+
+                    newMsg.append(msgContent)
+
+                    let msgDiv = document.createElement('h3')
+                    msgDiv.textContent = `${message}`
+                    newMsg.append(msgDiv)
+
+                    let timeDiv = document.createElement('h7')
+                    timeDiv.textContent = `${formatDate(Date.now())}`
+                    newMsg.append(timeDiv)
+
                     chatBody.append(newMsg)
-                    document.querySelector('.profile').innerHTML = `
-                                    <i class="fa-solid fa-user"></i>
-                                `
 
                     const payload = {
                         "senderId": userId,

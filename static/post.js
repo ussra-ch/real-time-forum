@@ -149,7 +149,7 @@ export function fetchPosts() {
                      <input type="hidden" name="post_id" value="${post.id}">
                       <input type="text" name="content" class="commentInput" placeholder="Write a comment..." required>
                       <button type="submit" class="commentButton"><i class="fa-solid fa-comment"></i></button>
-                      <button type="button" class="show">Show Comments</button>
+                      <button type="button" class="show"><i class="fa-solid fa-arrow-down"></i></button>
                       </div>
                     </form>
                 `;

@@ -7,6 +7,7 @@ import (
 	"html"
 	"log"
 	"net/http"
+	"regexp"
 	"time"
 
 	"handlers/databases"
@@ -42,7 +43,7 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 
 	var dbPassword string
 	var userID int
-	
+
 	err = databases.DB.QueryRow("SELECT id, password FROM users WHERE( nickname = ? or email = ?)", loginInformations.Nickname, loginInformations.Nickname).Scan(&userID, &dbPassword)
 	if err == sql.ErrNoRows || bcrypt.CompareHashAndPassword([]byte(dbPassword), []byte(loginInformations.Password)) != nil {
 		errorr := ErrorStruct{
@@ -196,6 +197,21 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	emailRegex := `^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$`
+
+	re := regexp.MustCompile(emailRegex)
+
+	if !re.MatchString(userInformation.Email) {
+		errorr := ErrorStruct{
+			Type: "error",
+			Text: "Invalid email",
+		}
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(errorr)
+		return
+	} 
+
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(userInformation.Password), bcrypt.DefaultCost)
 	if err != nil {
 		errorHandler(http.StatusInternalServerError, w)
@@ -266,7 +282,7 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-func logoutWhenSessionIsDeleted(conn *websocket.Conn)float64 {
+func logoutWhenSessionIsDeleted(conn *websocket.Conn) float64 {
 	userId, state := findKeyByConn(conn)
 	if !state {
 		return 0
@@ -275,12 +291,12 @@ func logoutWhenSessionIsDeleted(conn *websocket.Conn)float64 {
 }
 
 func findKeyByConn(conn *websocket.Conn) (float64, bool) {
-    for key, conns := range ConnectedUsers {
-        for _, c := range conns {
-            if c == conn {
-                return key, true
-            }
-        }
-    }
-    return 0, false
+	for key, conns := range ConnectedUsers {
+		for _, c := range conns {
+			if c == conn {
+				return key, true
+			}
+		}
+	}
+	return 0, false
 }
