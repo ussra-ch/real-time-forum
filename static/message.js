@@ -76,7 +76,7 @@ export function mesaageDiv(user, userId, receiverId, username) {
                     let msgContent = document.createElement('h3')
                     msgContent.innerHTML = `
                             <div class="messagProfil">
-                                <div class="profile"></div>
+                                <div class="profile"><i class="fa-solid fa-user"></i></div>
                                 <h7>${username}</h7>
                             </div>
                             <h3>${message}</h3>

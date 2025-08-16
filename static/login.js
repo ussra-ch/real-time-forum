@@ -136,7 +136,7 @@ export function logindiv() {
 }
 
 function handleUserLogin(username) {
-    initWebSocket((msg,user) => {
+    initWebSocket((msg, user) => {
         let chatBody = document.getElementById('chat-body');
         if (!chatBody || msg == "") {
             return
@@ -144,13 +144,19 @@ function handleUserLogin(username) {
         let newMsg = document.createElement('div');
         newMsg.innerHTML = `
                             <div class="messagProfil">
-                                <div class="profile"></div>
-                                   <h7>${user}</h7>
-                            </div>
+                                                <div class="profile">
+                                                <i class="fa-solid fa-user"></i>
+                                                </div>
+                                                   <h7>${user}</h7>
+                                            </div>
+                            
                             <h3>${msg}</h3>
                             <h7>${formatDate(Date.now())}</h7>`;
         newMsg.className = 'messageSent'
         chatBody.append(newMsg);
+
+        
+        console.log(document.querySelector('.profile'));
         const el = document.getElementById('typing');
         if (el) el.remove();
         chatBody.scrollTop = chatBody.scrollHeight;
