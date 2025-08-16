@@ -9,7 +9,8 @@ import { categories } from "./sort.js";
 import { comment } from "./comment.js";
 import { initWebSocket } from "./websocket.js";
 import { main } from "./main.js";
-// import { Errorr } from "./errorPage.js";
+import { triggerUserLogout } from "./logout.js";
+
 
 export function logindiv() {
     loginDiv.className = 'container';
@@ -87,11 +88,9 @@ export function logindiv() {
             login();
         })
             .catch(err => {
-                console.error('Login errorrrrrrrrrr:', err)
                 const ErrorDiv = document.getElementById("error-message");
                 ErrorDiv.style.display = 'block'
                 ErrorDiv.innerHTML = `${err.message}`;
-                // document.querySelector('body').append(ErrorDiv);
                 setTimeout(() => {
                     ErrorDiv.style.display = 'none'
                 }, 2000)
@@ -137,9 +136,8 @@ export function logindiv() {
     });
 }
 
-function islogin() {
+function handleUserLogin() {
     initWebSocket((msg) => {
-        console.log(msg);
         let chatBody = document.getElementById('chat-body');
         if (!chatBody || msg == "") {
             return
@@ -152,8 +150,6 @@ function islogin() {
         const el = document.getElementById('typing');
         if (el) el.remove();
         chatBody.scrollTop = chatBody.scrollHeight;
-
-
     });
 
     logout();
@@ -165,7 +161,6 @@ function islogin() {
 }
 
 export function login() {
-    // console.log('dkhal l log function');
     const body = document.querySelector('body')
     fetch('/api/authenticated')
         .then(r => r.json())
@@ -173,8 +168,8 @@ export function login() {
             let profil = `<i class="fa-solid fa-user"></i>`
 
             if (res.ok) {
-               body.innerHTML = 
-               ` <div id="content">
+                body.innerHTML =
+                    ` <div id="content">
                 <header>
                 <div class="nav">
                 <div class="notification-circle">
@@ -201,8 +196,6 @@ export function login() {
                 </div>
             
             <script type="module" src="static/main.js"></script>`
-            
-                console.log(res.photo);
 
                 if (res.photo && res.photo.String.trim() !== "") {
                     document.getElementById('profile').style.backgroundImage = `url(${res.photo})`;
@@ -237,6 +230,7 @@ export function login() {
                 document.getElementById('profile').addEventListener('click', () => {
                     isAuthenticated().then(auth => {
                         if (!auth) {
+                            triggerUserLogout()
                             main()
                         } else {
                             if (div.style.display === 'none') {
@@ -251,6 +245,7 @@ export function login() {
                 editProfileButton.addEventListener('click', () => {
                     isAuthenticated().then(auth => {
                         if (!auth) {
+                            triggerUserLogout()
                             main()
                         } else {
                             profile(res.age, res.email, res.nickname, res.photo)
@@ -263,6 +258,7 @@ export function login() {
                 show.addEventListener('click', () => {
                     isAuthenticated().then(auth => {
                         if (!auth) {
+                            triggerUserLogout()
                             main()
                         } else {
                             user.style.display = user.style.display == 'none' ? 'block' : 'none'
@@ -270,7 +266,7 @@ export function login() {
                     })
                 })
 
-                islogin();
+                handleUserLogin();
                 return true
             } else {
                 body.innerHTML = `
@@ -280,8 +276,6 @@ export function login() {
                 return false
             }
         }).catch(err => {
-            console.log(err);
-
             const existingPopup = document.querySelector(".content");
             if (existingPopup) {
                 existingPopup.remove();
@@ -296,7 +290,6 @@ export function login() {
 
         });
 }
-
 
 export function isAuthenticated() {
     return fetch('/api/authenticated')

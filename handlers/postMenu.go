@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"encoding/json"
+	"log"
 	"net/http"
 
 	"handlers/databases"
@@ -25,6 +26,17 @@ func DeletePost(w http.ResponseWriter, r *http.Request) {
 		errorHandler(http.StatusBadRequest, w)
 		return
 	}
+
+	var exists bool
+	err = databases.DB.QueryRow("SELECT EXISTS(SELECT 1 FROM posts WHERE id = ?)", post.ID).Scan(&exists)
+	if err != nil {
+		log.Fatal(err)
+	}
+	if !exists {
+		errorHandler(http.StatusBadRequest, w)
+		return
+	}
+
 	query := "DELETE FROM posts WHERE id = ?"
 	_, err = databases.DB.Exec(query, post.ID)
 	if err != nil {
@@ -59,7 +71,6 @@ func DeletePost(w http.ResponseWriter, r *http.Request) {
 	// errorHandler(http.StatusOK, w)
 	w.WriteHeader(http.StatusOK)
 	w.Write([]byte("Post deleted successfully"))
-
 }
 
 func EditPost(w http.ResponseWriter, r *http.Request) {
@@ -80,7 +91,17 @@ func EditPost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	_, err := databases.DB.Exec("UPDATE posts SET title = ?, content = ? WHERE id = ?", data.Title, data.Content, data.ID)
+	var exists bool
+	err := databases.DB.QueryRow("SELECT EXISTS(SELECT 1 FROM posts WHERE id = ?)", data.ID).Scan(&exists)
+	if err != nil {
+		log.Fatal(err)
+	}
+	if !exists {
+		errorHandler(http.StatusBadRequest, w)
+		return
+	}
+
+	_, err = databases.DB.Exec("UPDATE posts SET title = ?, content = ? WHERE id = ?", data.Title, data.Content, data.ID)
 	if err != nil {
 		errorHandler(http.StatusInternalServerError, w)
 		return

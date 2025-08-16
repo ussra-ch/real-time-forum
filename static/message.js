@@ -1,5 +1,8 @@
 import { ws } from "./websocket.js"
 import { fetchUser } from "./users.js"
+import { main } from "./main.js";
+import { isAuthenticated } from "./login.js";
+import { triggerUserLogout } from "./logout.js";
 
 function throttle(func, delay) {
     let lastCall = 0;
@@ -11,6 +14,7 @@ function throttle(func, delay) {
         }
     };
 }
+
 export function mesaageDiv(user, userId, receiverId) {
     const body = document.querySelector('body')
     if (document.getElementById('message')) {
@@ -30,24 +34,11 @@ export function mesaageDiv(user, userId, receiverId) {
             <button type="submit" class="send-btn"><i class="fa-solid fa-paper-plane"></i></button>
         </form>
     `
-
-    /////////////////////// Delete conversation Button
-    // const deleteButton = document.createElement('button')
-    // const icon = document.createElement('i');
-    // icon.className = 'fas fa-trash';
-    // deleteButton.id = 'closeConversation'
-    // deleteButton.appendChild(icon);
-    // deleteButton.appendChild(document.createTextNode(' Delete'));
-    // let divHeader = conversation.getElementsByClassName('head')[0]
-    // divHeader.append(deleteButton)
     body.append(conversation)
-    ///////////////////////
-
-
-    //throtlle khas tkoun hna
     const container = document.getElementById('chat-body')
     let offset = 0;
     const limit = 10;
+
     fetchMessages(userId, receiverId, offset, limit, user)
     let lastCall = 0;
     const delay = 500;
@@ -61,7 +52,6 @@ export function mesaageDiv(user, userId, receiverId) {
                 lastCall = now;
                 offset += limit;
                 throttle(fetchMessages, 500)(userId, receiverId, offset, limit, user);
-                //fetchMessages(userId, receiverId, offset, limit, user);
             }
         }
     });
@@ -70,47 +60,59 @@ export function mesaageDiv(user, userId, receiverId) {
 
     conversation.querySelector('.input-area').addEventListener('submit', (e) => {
         e.preventDefault()
-        // webSocket(userId, receiverId, "", true, true, "conversation")
-        const input = conversation.querySelector('.chat-input')
-        const message = input.value.trim()
-        let chatBody = document.getElementById('chat-body')
+        isAuthenticated().then(auth => {
+            if (!auth) {
+                triggerUserLogout()
+                main()
+            } else {
+                const input = conversation.querySelector('.chat-input')
+                const message = input.value.trim()
+                let chatBody = document.getElementById('chat-body')
 
-        if (message !== "") {
-            // console.log(1);
-            let newMsg = document.createElement('div')
-            newMsg.className = 'messageReceived'
-            let msgContent = document.createElement('h3')
-            msgContent.textContent = message
-            let timestamp = document.createElement('h7')
-            timestamp.textContent = formatDate(Date.now())
-            newMsg.appendChild(msgContent)
-            newMsg.appendChild(timestamp)
-            chatBody.append(newMsg)
+                if (message !== "") {
+                    let newMsg = document.createElement('div')
+                    newMsg.className = 'messageReceived'
+                    let msgContent = document.createElement('h3')
+                    msgContent.textContent = message
+                    let timestamp = document.createElement('h7')
+                    timestamp.textContent = formatDate(Date.now())
+                    newMsg.appendChild(msgContent)
+                    newMsg.appendChild(timestamp)
+                    chatBody.append(newMsg)
 
-            const payload = {
-                "senderId": userId,
-                "receiverId": receiverId,
-                "messageContent": input.value,
-                "type": "message",
-            };
-            // console.log("type is :", payload.type);
+                    const payload = {
+                        "senderId": userId,
+                        "receiverId": receiverId,
+                        "messageContent": input.value,
+                        "type": "message",
+                    };
 
-            ws.send(JSON.stringify(payload));
-            fetchUser()
-            // webSocket(userId, receiverId, input.value, "message")
-            input.value = ''
-            const container = document.getElementById('chat-body')
-            container.scrollTop = container.scrollHeight;
-        }
+                    ws.send(JSON.stringify(payload));
+                    fetchUser()
+                    input.value = ''
+                    const container = document.getElementById('chat-body')
+                    container.scrollTop = container.scrollHeight;
+                }
+            }
+        })
+
     })
     conversation.querySelector('.input-area').addEventListener('input', (e) => {
-        const payload = {
-            "senderId": userId,
-            "receiverId": receiverId,
-            "type": "typing",
-        };
+        isAuthenticated().then(auth => {
+            if (!auth) {
+                triggerUserLogout()
+                main()
+            } else {
+                const payload = {
+                    "senderId": userId,
+                    "receiverId": receiverId,
+                    "type": "typing",
+                };
 
-        ws.send(JSON.stringify(payload));
+                ws.send(JSON.stringify(payload));
+            }
+        })
+
 
     })
 
@@ -126,7 +128,7 @@ export function mesaageDiv(user, userId, receiverId) {
             ws.send(JSON.stringify(isConversationOpen));
             conversation.remove();
         }
-        done=false
+        done = false
     });
 
 }

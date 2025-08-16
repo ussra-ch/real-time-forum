@@ -1,12 +1,8 @@
 import { login, logindiv } from "./login.js";
 import { fetchUser } from "./users.js";
 import { ws } from "./websocket.js";
-// import { loginDiv } from "./var.js";
-// import { connectedUsers } from "./var.js";
 
 
-
-//katloggouti (katfetshi data mn backend bach katms7 session)
 export function logout() {
   const Logout = document.getElementById('logout');
 
@@ -18,7 +14,6 @@ export function logout() {
       if (res.ok) {
         logindiv();
         login()
-        // connectedUsers.set(res.id, 'offline');
       } else {
         console.log("Logout failed");
       }
@@ -27,9 +22,8 @@ export function logout() {
 
 }
 
-export function logoutTheUser() {
+export function triggerUserLogout() {
   let logoutJson = { "ws": ws, "type": "offline" }
   const logouT = JSON.stringify(logoutJson);
   ws.send(logouT)
-
 }

@@ -40,10 +40,8 @@ export function initWebSocket(onMessageCallback) {
 
     ws.onmessage = (event) => {
         if (event.data) {
-            console.log("event.data::::::::::", event.data);
             
             const data = JSON.parse(event.data);
-            console.log(data);
             
             if (data.type === 'online' || data.type === 'offline') {
                 fetchUser()

@@ -2,7 +2,7 @@ import { mesaageDiv } from "./message.js";
 import { ws } from "./websocket.js"
 import { main } from "./main.js";
 import { isAuthenticated } from "./login.js";
-
+import { triggerUserLogout } from "./logout.js";
 
 export function fetchUser() {
   const usern = document.getElementById('users');
@@ -40,12 +40,9 @@ export function fetchUser() {
       conversationButton.style.marginRight = '0'
       const div = document.createElement('div');
       div.innerHTML = `${profil} ${user.nickname}`;
-      // for (const value of connectedUsers.values()){
       if (user.status == 'online') {
-        // console.log(12121212);
         div.style.color = 'rgb(89, 230, 187)';
       }
-      // }
       div.style.display = 'flex';
       div.style.justifyContent = 'space-between';
       div.style.alignItems = 'center'
@@ -65,6 +62,7 @@ export function fetchUser() {
       conversationButton.addEventListener('click', () => {
         isAuthenticated().then(auth => {
           if (!auth) {
+            triggerUserLogout()
             main()
           } else {
             if (document.getElementById('message')) document.getElementById('message').remove()

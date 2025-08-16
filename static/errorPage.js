@@ -1,6 +1,6 @@
 import { main } from "./main.js";
 
-export function Errorr(err) {
+export function errorPage(err) {
     const style = document.createElement("style");
     style.id = 'style'
     style.textContent = `

@@ -1,19 +1,17 @@
 import { main } from "./main.js";
 import { isAuthenticated } from "./login.js";
-import { logoutTheUser } from "./logout.js";
+import { triggerUserLogout } from "./logout.js";
+
 export function comment(div) {
     const forms = document.querySelectorAll('.commentForm');
-
     forms.forEach((form) => {
         form.addEventListener("submit", (e) => {
-            
             e.preventDefault()
             isAuthenticated().then(auth => {
                 if (!auth) {
-                    logoutTheUser()
-                   main()
+                    triggerUserLogout()
+                    main()
                 } else {
-
                     const commentInput = form.querySelector(".commentInput");
                     const comment = commentInput.value;
                     const post_id = form.querySelector("[name='post_id']").value;
@@ -35,7 +33,7 @@ export function comment(div) {
                         })
                         .then(data => {
                             commentInput.value = "";
-                            loadComments(post_id, div)
+                            fetchComments(post_id, div)
 
                         })
                         .catch(err => {
@@ -58,8 +56,7 @@ export function comment(div) {
     });
 }
 
-//fetch comments (l kola post)
-export function loadComments(postId, container) {
+export function fetchComments(postId, container) {
     container.innerHTML = ``
     fetch('/api/fetch_comments')
         .then(res => res.json())

@@ -1,9 +1,9 @@
 import { comment } from "./comment.js";
-import { loadComments } from "./comment.js";
+import { fetchComments } from "./comment.js";
 import { deletepost, editpost } from "./postMenu.js";
 import { main } from "./main.js";
 import { isAuthenticated } from "./login.js";
-
+import { triggerUserLogout } from "./logout.js";
 
 export function categories() {
   let categories = ['All', 'Music', 'Sport', 'Technology', 'Science', 'Culture'];
@@ -16,6 +16,7 @@ export function categories() {
     button.addEventListener('click', (e) => {
       isAuthenticated().then(auth => {
         if (!auth) {
+          triggerUserLogout()
           main()
         } else {
           e.preventDefault()
@@ -86,7 +87,7 @@ export function categories() {
                     e.preventDefault()
                     div.style.display = div.style.display === 'none' ? 'block' : 'none';
 
-                    loadComments(post.id, div);
+                    fetchComments(post.id, div);
                   });
                   comment(div)
                 }

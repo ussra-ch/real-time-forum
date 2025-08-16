@@ -60,7 +60,6 @@ func WebSocketHandler(w http.ResponseWriter, r *http.Request) {
 
 	defer func() {
 		mu.Lock()
-
 		newUser := make(map[string]interface{})
 		newUser["type"] = "offline"
 		newUser["userId"] = userId
@@ -83,7 +82,11 @@ func WebSocketHandler(w http.ResponseWriter, r *http.Request) {
 		_, message, err := conn.NextReader()
 		if message == nil {
 			mu.Lock()
-			userOffline(userId, conn)
+			ok, _ := IsLoggedIn(r)
+			if !ok{
+				fmt.Println("inside the if")
+				userOffline(userId, conn)
+			}
 			mu.Unlock()
 		}
 		if err != nil {

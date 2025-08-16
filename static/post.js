@@ -1,8 +1,9 @@
 import { comment } from "./comment.js";
-import { loadComments } from "./comment.js";
+import { fetchComments } from "./comment.js";
 import { deletepost, editpost } from "./postMenu.js";
 import { main } from "./main.js";
 import { isAuthenticated } from "./login.js";
+import { triggerUserLogout } from "./logout.js";
 window.deletepost = deletepost;
 
 
@@ -47,11 +48,11 @@ export function Create() {
     const form = document.getElementById('createPostForm')
     let createPostDiv = document.getElementById('createPostCard')
     createPostDiv.prepend(deleteButton)
-    // body.append(conversation)
 
     Create.addEventListener('click', (e) => {
         isAuthenticated().then((auth) => {
             if (!auth) {
+                triggerUserLogout()
                 main()
             } else {
                 form.style.display = "block"
@@ -84,17 +85,6 @@ export function Create() {
                 return r.json();
             })
             .then(data => {
-                // console.log("data content is :", data);
-                // if (data.Type === 'error') {
-                //     const ErrorDiv = document.createElement('div');
-                //     ErrorDiv.className = 'error-container';
-                //     ErrorDiv.innerHTML = `
-                //                 <div class="errorDiv">
-                //                 ${data.Text}
-                //                 </div>`
-                //     document.querySelector('body').append(ErrorDiv)
-                // }
-                // CreateCard.style.display = 'none';
                 resetForm(form)
                 form.style.display = "none"
                 fetchPosts();
@@ -174,6 +164,7 @@ export function fetchPosts() {
                     select.addEventListener('click', (e) => {
                         isAuthenticated().then(auth => {
                             if (!auth) {
+                                triggerUserLogout()
                                 main()
                             } else {
                                 e.preventDefault()
@@ -187,6 +178,7 @@ export function fetchPosts() {
                     deletePost.addEventListener('click', (e) => {
                         isAuthenticated().then(auth => {
                             if (!auth) {
+                                triggerUserLogout()
                                 main()
                             } else {
                                 e.preventDefault()
@@ -200,6 +192,7 @@ export function fetchPosts() {
                     editPost.addEventListener('click', (e) => {
                         isAuthenticated().then(auth => {
                             if (!auth) {
+                                triggerUserLogout()
                                 main()
                             } else {
                                 e.preventDefault()
@@ -219,7 +212,7 @@ export function fetchPosts() {
                     e.preventDefault()
                     div.style.display = div.style.display === 'none' ? 'block' : 'none';
 
-                    loadComments(post.id, div);
+                    fetchComments(post.id, div);
                 });
                 comment(div)
             });
