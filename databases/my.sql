@@ -1,3 +1,4 @@
+PRAGMA foreign_keys = 1;
 CREATE TABLE
     IF NOT EXISTS users (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -20,14 +21,14 @@ CREATE TABLE
         interest TEXT,
         photo TEXT,
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-        FOREIGN KEY (user_id) REFERENCES users (id)
+        FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
     );
 
 CREATE TABLE
     IF NOT EXISTS sessions (
         id TEXT PRIMARY KEY,
         user_id INTEGER NOT NULL,
-        expires_at DATETIME NOT NULL,
+        expires_at DATETIME NOT NULL, 
         FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
     );
 

@@ -42,6 +42,7 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 
 	var dbPassword string
 	var userID int
+	
 	err = databases.DB.QueryRow("SELECT id, password FROM users WHERE( nickname = ? or email = ?)", loginInformations.Nickname, loginInformations.Nickname).Scan(&userID, &dbPassword)
 	if err == sql.ErrNoRows || bcrypt.CompareHashAndPassword([]byte(dbPassword), []byte(loginInformations.Password)) != nil {
 		errorr := ErrorStruct{
@@ -128,7 +129,7 @@ func IsAuthenticated(w http.ResponseWriter, r *http.Request) {
 }
 
 func LogoutHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("backenddddd lougout")
+	// fmt.Println("backenddddd lougout")
 	_, userId := IsLoggedIn(r)
 	mu.Lock()
 	UsersStatus[userId] = "offline"

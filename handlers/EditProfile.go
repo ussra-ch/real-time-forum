@@ -13,6 +13,7 @@ import (
 )
 
 func EditProfile(w http.ResponseWriter, r *http.Request) {
+	//PUT PATCH
 	if r.Method != http.MethodPost {
 		errorHandler(http.StatusMethodNotAllowed, w)
 		return
@@ -35,7 +36,7 @@ func EditProfile(w http.ResponseWriter, r *http.Request) {
 	file, handler, err := r.FormFile("photo")
 	if err == nil {
 		defer file.Close()
-		photoPath = fmt.Sprintf("static/uploads/%d_%s", time.Now().UnixNano(), handler.Filename)
+		photoPath = fmt.Sprintf("static/uploads/%d_%s", time.Now().UnixNano(), handler.Filename) /// TRAVERSAL ATTACK
 		dst, err := os.Create(photoPath)
 		if err != nil {
 			errorHandler(http.StatusInternalServerError, w)
