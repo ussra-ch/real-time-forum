@@ -130,7 +130,7 @@ export function fetchPosts() {
         .then(res => res.json())
         .then(posts => {
             const postsContainer = document.getElementById('postsContainer');
-            postsContainer.innerHTML = '';
+            postsContainer.innerHTML = '<span class="posts-title">Posts</span>';
             if (!posts) {
                 return
             }

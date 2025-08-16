@@ -7,7 +7,7 @@ import { triggerUserLogout } from "./logout.js";
 
 export function categories() {
   let categories = ['All', 'Music', 'Sport', 'Technology', 'Science', 'Culture'];
-  const categoDiv = document.getElementById('catgoryUI');
+  const categoDiv = document.getElementById('category');
 
   categories.forEach(element => {
     const button = document.createElement('button');

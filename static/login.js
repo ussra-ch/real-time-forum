@@ -185,19 +185,18 @@ export function login() {
                </button>
               </div>
                 </header>
-                <div class="sidebar-left">
-                <div class="sidebar-label categories-label" style="top: 15vh;">Categories</div>
-                <div class="sidebar-label posts-label" id="sidebar" >Posts</div>
-                </div>
+                
                 <div id="category">
-                    <div id="catgoryUI"></div>
+                    <span class="category-title">Category</span>
                 </div>
                 <button id="showUsers"><i class="fa-solid fa-users"></i></button>
                 <div id="all">
                 <div id="user">
                 <div id="users"></div>
                 </div>
-                <div id="postsContainer"></div>
+                <div id="postsContainer">
+                <span class="posts-title">Posts</span>
+                </div>
                 </div>
                 </div>
             
