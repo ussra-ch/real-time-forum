@@ -68,8 +68,11 @@ func WebSocketHandler(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 		}
 		for _, value := range ConnectedUsers {
-			for _, con := range value {
-				con.WriteMessage(websocket.TextMessage, []byte(toSend))
+			if len(value) == 0 {
+				fmt.Println("No connections for user:", userId)
+				for _, con := range value {
+					con.WriteMessage(websocket.TextMessage, []byte(toSend))
+				}
 			}
 		}
 
