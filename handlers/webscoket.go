@@ -67,16 +67,16 @@ func WebSocketHandler(w http.ResponseWriter, r *http.Request) {
 		toSend, err := json.Marshal(newUser)
 		if err != nil {
 		}
-		for _, value := range ConnectedUsers {
-			if len(value) == 0 {
-				fmt.Println("No connections for user:", userId)
+		fmt.Println("connections for this user is :1", ConnectedUsers[float64(userId)])
+		deleteOneconnection(userId, conn)
+		fmt.Println("connections for this user is 2:", ConnectedUsers[float64(userId)])
+		if len(ConnectedUsers[float64(userId)]) == 0 {
+			for _, value := range ConnectedUsers {
 				for _, con := range value {
 					con.WriteMessage(websocket.TextMessage, []byte(toSend))
 				}
 			}
 		}
-
-		delete(ConnectedUsers, float64(userId))
 		conn.Close()
 		mu.Unlock()
 	}()
@@ -332,5 +332,23 @@ func sendUnreadNotifications(userId int, conn []*websocket.Conn) {
 	}
 	for _, con := range conn {
 		con.WriteMessage(websocket.TextMessage, Notifs)
+	}
+}
+
+func deleteOneconnection(userId int, conn *websocket.Conn) {
+
+	for id, c := range ConnectedUsers {
+		if id == float64(userId) {
+			for i, connection := range c {
+				if connection == conn {
+					ConnectedUsers[id] = append(c[:i], c[i+1:]...)
+					if len(ConnectedUsers[id]) == 0 {
+						delete(ConnectedUsers, id)
+					}
+					break
+				}
+			}
+			break
+		}
 	}
 }
