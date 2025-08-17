@@ -4,6 +4,11 @@ import { main } from "./main.js";
 import { isAuthenticated } from "./login.js";
 import { triggerUserLogout } from "./logout.js";
 import { Username } from "./login.js";
+export let toool = {
+  offset: 0,
+  limit: 10
+}
+
 
 function throttle(func, delay) {
     let lastCall = 0;
@@ -38,10 +43,9 @@ export function mesaageDiv(user, userId, receiverId) {
     `
     body.append(conversation)
     const container = document.getElementById('chat-body')
-    let offset = 0;
-    const limit = 10;
 
-    fetchMessages(userId, receiverId, offset, limit, user, Username)
+
+    fetchMessages(userId, receiverId, toool.offset, toool.limit, user, Username)
     let lastCall = 0;
     const delay = 500;
 
@@ -52,8 +56,8 @@ export function mesaageDiv(user, userId, receiverId) {
 
             if (canCall) {
                 lastCall = now;
-                offset += limit;
-                throttle(fetchMessages, 500)(userId, receiverId, offset, limit, user, Username);
+                toool.offset += toool.limit;
+                throttle(fetchMessages, 500)(userId, receiverId, toool.offset, toool.limit, user, Username);
             }
         }
     });
@@ -75,12 +79,25 @@ export function mesaageDiv(user, userId, receiverId) {
                     let newMsg = document.createElement('div')
                     newMsg.className = 'messageReceived'
                     let msgContent = document.createElement('h3')
-                    msgContent.innerHTML = `
-                            <div class="messagProfil">
-                                <div class="profile"><i class="fa-solid fa-user"></i></div>
-                                <h7>${Username}</h7>
-                            </div>`
-
+                    let messagProfil = document.createElement('div')
+                    messagProfil.className = 'messagProfil'
+                 let profile = document.createElement('div')
+                    profile.className = 'profile'
+                    if (document.querySelector('.profile')) {
+                        profile.innerHTML = `<i class="fa-solid fa-user"></i>`
+                    }
+                    messagProfil.appendChild(profile)
+                    let h7 = document.createElement('h7')
+                    h7.textContent = Username
+                    messagProfil.appendChild(h7)
+                    msgContent.appendChild(messagProfil)
+                   
+                    // msgContent.innerHTML = `
+                    //         <div class="messagProfil">
+                    //             <div class="profile"><i class="fa-solid fa-user"></i></div>
+                    //             <h7>${Username}</h7>
+                    //         </div>`
+                    toool.offset++
                     newMsg.append(msgContent)
 
                     let msgDiv = document.createElement('h3')
@@ -158,11 +175,11 @@ function fetchMessages(userId, receiverId, offset, limit, name) {
             if (!messages) {
                 return
             }
-            
+
 
             for (const message of messages) {
                 console.log(message);
-                
+
                 if (message.content != "") {
                     if (message.userId == userId && message.sender_id == receiverId) {
                         let newMsg = document.createElement('div')

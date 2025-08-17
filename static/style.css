@@ -758,7 +758,6 @@ button {
 }
 
 form {
-    background: rgba(26, 35, 50, 0.95);
     display: flex;
     align-items: center;
     justify-content: center;

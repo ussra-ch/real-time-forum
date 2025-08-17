@@ -7,7 +7,3 @@ declare categories f database using check wman3amrhumch manuellement
 
 
 
-
-
-profile yban
-scroll handling (check dyal duplicated data)
