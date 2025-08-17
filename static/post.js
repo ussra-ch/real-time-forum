@@ -211,27 +211,26 @@ export function fetchPosts() {
                 div.style.display = 'none'
                 let offset = 0;
                 const limit = 10;
-                document.querySelector('.show').addEventListener('click', (e) => {
-                    e.preventDefault()
+                const showBtn = postCard.querySelector('.show');
+                showBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
                     if (div.style.display === 'none') {
-                        div.style.display = 'block'
-                        div.innerHTML = ``
-
+                        div.style.display = 'block';
+                        div.innerHTML = '';
+                        offset = 0;
+                        fetchComments(post.id, div, offset, limit);
                     } else {
-                        div.style.display = 'none'
+                        div.style.display = 'none';
                     }
-                    fetchComments(post.id, div, offset, limit);
                 });
-
 
                 let lastCall = 0;
                 const delay = 500;
 
-                div.addEventListener("scroll", () => {
-                    if (div.scrollTop + div.clientHeight >= div.scrollHeight) {
+                div.addEventListener('scroll', () => {
+                    if (div.scrollTop + div.clientHeight >= div.scrollHeight-1) {
                         const now = Date.now();
                         const canCall = now - lastCall >= delay;
-
                         if (canCall) {
                             lastCall = now;
                             offset += limit;

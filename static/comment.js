@@ -33,7 +33,7 @@ export function comment(div) {
                         })
                         .then(data => {
                             commentInput.value = "";
-                            div.innerHTML=``
+                            div.innerHTML = "";
                             fetchComments(post_id, div, 0, 10)
                         })
                         .catch(err => {
