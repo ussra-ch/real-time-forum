@@ -9,7 +9,5 @@ declare categories f database using check wman3amrhumch manuellement
 
 
 
-write l error fl header ila l  user mcha l route makaynch
-bdl l button dyal l online wl offline
 profile yban
 scroll handling (check dyal duplicated data)

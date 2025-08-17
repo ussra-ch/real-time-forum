@@ -207,9 +207,11 @@ export function login() {
                 </div>
             
             <script type="module" src="static/main.js"></script>`
+            console.log(res);
+            
 
                 if (res.photo && res.photo.String.trim() !== "") {
-                    document.getElementById('profile').style.backgroundImage = `url(${res.photo})`;
+                    document.getElementById('profile').style.backgroundImage = `url(${res.photo.String})`;
                 } else {
                     document.getElementById('profile').innerHTML = `${profil}`
                 }
@@ -260,7 +262,7 @@ export function login() {
                             triggerUserLogout()
                             main()
                         } else {
-                            profile(res.age, res.email, Username, res.photo)
+                            profile(res.age, res.email, Username, res.photo.String)
                         }
                     })
                 })

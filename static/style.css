@@ -15,6 +15,7 @@ body {
     font-size: 1.05rem;
     letter-spacing: 0.01em;
     line-height: 1.6;
+
     min-height: 100vh;
     /* overflow-x: hidden; */
     overflow: hidden;
@@ -1169,19 +1170,14 @@ form a:hover {
 
 #showUsers {
     z-index: 1001;
-    background: transparent;
-    color: #00b4d8;
+    background: #00b4d8;
+    color: #0f1419;
     border: 2px solid #00b4d8;
     text-align: center;
     position: absolute;
     top: 33vh;
     width: 15vw;
     height: 4vh;
-}
-
-#showUsers:hover {
-    background: #00b4d8;
-    color: #0f1419;
 }
 
 .nav {
@@ -1195,9 +1191,10 @@ form a:hover {
 }
 
 @media (max-width: 1370px) {
-    body{
+    body {
         overflow: hidden;
     }
+
     #all {
         position: absolute;
         left: 0;
@@ -1230,7 +1227,7 @@ form a:hover {
         top: 65vh;
         left: 95vw;
     }
-    
+
 
     /* .notification-circle {
         right: 11vw;
@@ -1242,9 +1239,10 @@ form a:hover {
 }
 
 @media (max-width: 1024px) {
-    body{
+    body {
         overflow: hidden;
     }
+
     #all {
         position: absolute;
         left: 0;
@@ -1276,7 +1274,8 @@ form a:hover {
         top: 65vh;
 
     }
-    .category-title{
+
+    .category-title {
         display: none;
     }
 
@@ -1336,9 +1335,10 @@ form a:hover {
         right: 11vw;
     } */
 
-    body{
+    body {
         overflow: hidden;
     }
+
     .menu {
         right: 15%;
     }
@@ -1404,9 +1404,10 @@ form a:hover {
 }
 
 @media (max-width: 430px) {
-    body{
+    body {
         overflow: hidden;
     }
+
     #message {
         height: 40vh;
         font-size: 0.9em;
@@ -1438,7 +1439,19 @@ form a:hover {
     }
 }
 
-.user-container{
+.user-container {
     overflow: hidden;
-    flex-wrap : wrap
+    flex-wrap: wrap
+}
+
+.user-info i {
+    margin: 0 10px 0 0;
+}
+
+.user-info img {
+    margin: 0 10px 0 0;
+}
+
+.user-info {
+    color: #f5f6fa;
 }
