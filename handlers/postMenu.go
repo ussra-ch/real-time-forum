@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
+	"strings"
 
 	"handlers/databases"
 )
@@ -97,6 +98,10 @@ func EditPost(w http.ResponseWriter, r *http.Request) {
 		log.Fatal(err)
 	}
 	if !exists {
+		errorHandler(http.StatusBadRequest, w)
+		return
+	}
+	if len(strings.TrimSpace(data.Title)) == 0 || len(strings.TrimSpace(data.Content)) == 0 {
 		errorHandler(http.StatusBadRequest, w)
 		return
 	}
