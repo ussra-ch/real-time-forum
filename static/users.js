@@ -4,7 +4,7 @@ import { main } from "./main.js";
 import { isAuthenticated } from "./login.js";
 import { triggerUserLogout } from "./logout.js";
 
-export function fetchUser(username) {
+export function fetchUser() {
   const usern = document.getElementById('users');
   fetch('/user').then(r => r.json()).then(users => {
     usern.textContent = '';
@@ -51,9 +51,8 @@ export function fetchUser(username) {
       div.style.borderRadius = '70px';
       div.style.width = '60%';
       div.style.margin = '10px'
-      div.style.maxWidth = '200px'
-      div.style.minWidth = '120px'
       div.style.background = 'rgba(26, 35, 50, 0.95)';
+      div.className = "user-container"
       div.append(conversationButton)
 
       usern.appendChild(div);
@@ -69,7 +68,7 @@ export function fetchUser(username) {
             let isConversationOpen = { "senderId": users.UserId, "receiverId": user.userId, "isOpen": true, "type": "OpenConversation" }
             const jsonIsConversationOpen = JSON.stringify(isConversationOpen);
             ws.send(jsonIsConversationOpen);
-            mesaageDiv(user.nickname, users.UserId, user.userId,username)
+            mesaageDiv(user.nickname, users.UserId, user.userId)
           }
         })
       })

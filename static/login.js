@@ -135,7 +135,7 @@ export function logindiv() {
     });
 }
 
-function handleUserLogin(username) {
+function handleUserLogin() {
     initWebSocket((msg, user) => {
         let chatBody = document.getElementById('chat-body');
         if (!chatBody || msg == "") {
@@ -156,7 +156,6 @@ function handleUserLogin(username) {
         chatBody.append(newMsg);
 
         
-        console.log(document.querySelector('.profile'));
         const el = document.getElementById('typing');
         if (el) el.remove();
         chatBody.scrollTop = chatBody.scrollHeight;
@@ -167,9 +166,10 @@ function handleUserLogin(username) {
     fetchPosts();
     categories();
     comment();
-    fetchUser(username)
+    fetchUser()
 }
 
+export let Username 
 export function login() {
     const body = document.querySelector('body')
     fetch('/api/authenticated')
@@ -253,14 +253,14 @@ export function login() {
                     })
 
                 });
-                const username = res.nickname
+                Username = res.nickname
                 editProfileButton.addEventListener('click', () => {
                     isAuthenticated().then(auth => {
                         if (!auth) {
                             triggerUserLogout()
                             main()
                         } else {
-                            profile(res.age, res.email, res.nickname, res.photo)
+                            profile(res.age, res.email, Username, res.photo)
                         }
                     })
                 })
@@ -278,7 +278,7 @@ export function login() {
                     })
                 })
 
-                handleUserLogin(username);
+                handleUserLogin();
                 return true
             } else {
                 body.innerHTML = `

@@ -7,7 +7,6 @@ function typingInProgress(Id) {
     const chat = document.getElementById('footer');
     if (!chat) return;
     const userID = document.getElementById('message_id')
-    console.log(userID.value,Id);
     
     if (userID.value != Id) {
         return

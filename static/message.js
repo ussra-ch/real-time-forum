@@ -3,6 +3,7 @@ import { fetchUser } from "./users.js"
 import { main } from "./main.js";
 import { isAuthenticated } from "./login.js";
 import { triggerUserLogout } from "./logout.js";
+import { Username } from "./login.js";
 
 function throttle(func, delay) {
     let lastCall = 0;
@@ -15,7 +16,7 @@ function throttle(func, delay) {
     };
 }
 
-export function mesaageDiv(user, userId, receiverId, username) {
+export function mesaageDiv(user, userId, receiverId) {
     const body = document.querySelector('body')
     if (document.getElementById('message')) {
         document.getElementById('message').remove()
@@ -40,7 +41,7 @@ export function mesaageDiv(user, userId, receiverId, username) {
     let offset = 0;
     const limit = 10;
 
-    fetchMessages(userId, receiverId, offset, limit, user, username)
+    fetchMessages(userId, receiverId, offset, limit, user, Username)
     let lastCall = 0;
     const delay = 500;
 
@@ -52,7 +53,7 @@ export function mesaageDiv(user, userId, receiverId, username) {
             if (canCall) {
                 lastCall = now;
                 offset += limit;
-                throttle(fetchMessages, 500)(userId, receiverId, offset, limit, user, username);
+                throttle(fetchMessages, 500)(userId, receiverId, offset, limit, user, Username);
             }
         }
     });
@@ -77,7 +78,7 @@ export function mesaageDiv(user, userId, receiverId, username) {
                     msgContent.innerHTML = `
                             <div class="messagProfil">
                                 <div class="profile"><i class="fa-solid fa-user"></i></div>
-                                <h7>${username}</h7>
+                                <h7>${Username}</h7>
                             </div>`
 
                     newMsg.append(msgContent)
@@ -131,7 +132,6 @@ export function mesaageDiv(user, userId, receiverId, username) {
     window.addEventListener('click', (e) => {
 
         if (conversation && !conversation.contains(e.target) && !done) {
-            console.log(1);
             let isConversationOpen = {
                 senderId: userId,
                 receiverId: receiverId,
@@ -145,7 +145,7 @@ export function mesaageDiv(user, userId, receiverId, username) {
 
 }
 
-function fetchMessages(userId, receiverId, offset, limit, name, username) {
+function fetchMessages(userId, receiverId, offset, limit, name) {
     const body = document.getElementById('chat-body');
     var previousScrollHeight = body.scrollHeight;
 
@@ -158,9 +158,11 @@ function fetchMessages(userId, receiverId, offset, limit, name, username) {
             if (!messages) {
                 return
             }
-
+            
 
             for (const message of messages) {
+                console.log(message);
+                
                 if (message.content != "") {
                     if (message.userId == userId && message.sender_id == receiverId) {
                         let newMsg = document.createElement('div')
@@ -192,7 +194,7 @@ function fetchMessages(userId, receiverId, offset, limit, name, username) {
                                             <div class="messagProfil">
                                                 <div class="profile">
                                                 </div>
-                                                   <h7>${username}</h7>
+                                                   <h7>${message.receiverName}</h7>
                                             </div>
                                             <h3>${message.content}</h3>
                                             <h7>${formatDate(message.time)}</h7>`

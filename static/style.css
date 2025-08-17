@@ -1195,6 +1195,9 @@ form a:hover {
 }
 
 @media (max-width: 1370px) {
+    body{
+        overflow: hidden;
+    }
     #all {
         position: absolute;
         left: 0;
@@ -1239,6 +1242,9 @@ form a:hover {
 }
 
 @media (max-width: 1024px) {
+    body{
+        overflow: hidden;
+    }
     #all {
         position: absolute;
         left: 0;
@@ -1330,12 +1336,15 @@ form a:hover {
         right: 11vw;
     } */
 
+    body{
+        overflow: hidden;
+    }
     .menu {
         right: 15%;
     }
 
     #message {
-        position: static;
+        position: absolute;
         width: 100vw;
         min-width: 0;
         right: 0;
@@ -1395,6 +1404,9 @@ form a:hover {
 }
 
 @media (max-width: 430px) {
+    body{
+        overflow: hidden;
+    }
     #message {
         height: 40vh;
         font-size: 0.9em;
@@ -1426,14 +1438,7 @@ form a:hover {
     }
 }
 
-/* .show{
-    position: absolute;
-    top: 16%;
-    right: 1%;
+.user-container{
+    overflow: hidden;
+    flex-wrap : wrap
 }
-
-.commentButton{
-    position: absolute;
-    top: 18%;
-    right: 10%;
-} */

@@ -63,7 +63,6 @@ export function fetchComments(postId, container, offset, limit) {
             if (!comments) {
                 return
             }
-            console.log(comments);
             
             comments.forEach(comment => {
                 if (comment.PostID != postId) return;

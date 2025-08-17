@@ -32,7 +32,7 @@ type Message struct {
 	Seen           bool    `json:"seen"`
 	Type           string  `json:"type"`
 	Name           string  `json:"name"`
-	// Notifications  int     `json:notifications`
+	ReceiverName   string  `json:"receivername"`
 }
 
 type Notification struct {
@@ -85,7 +85,6 @@ func WebSocketHandler(w http.ResponseWriter, r *http.Request) {
 			mu.Lock()
 			ok, _ := IsLoggedIn(r)
 			if !ok {
-				fmt.Println("inside the if")
 				userOffline(userId, conn)
 			}
 			mu.Unlock()
@@ -113,14 +112,16 @@ func WebSocketHandler(w http.ResponseWriter, r *http.Request) {
 			}
 			if typeValue == "message" {
 				messageStruct.SenderId = toolMap["senderId"].(float64)
-				var username string
+				var username, receiverName string
 				err := databases.DB.QueryRow("SELECT nickname FROM users WHERE id = ?", messageStruct.SenderId).Scan(&username)
 				if err != nil {
 				}
+
 				messageStruct.ReceiverId = toolMap["receiverId"].(float64)
 				messageStruct.Type = toolMap["type"].(string)
 				messageStruct.MessageContent = toolMap["messageContent"].(string)
 				messageStruct.Name = username
+				messageStruct.ReceiverName = receiverName
 				messageHandler(messageStruct)
 				isConversationOpened = OpenedConversations[toolMap["receiverId"].(float64)][toolMap["senderId"].(float64)]
 			}
@@ -193,6 +194,7 @@ func FetchMessages(w http.ResponseWriter, r *http.Request) {
 	offsetStr := r.URL.Query().Get("offset")
 	limitStr := r.URL.Query().Get("limit")
 	senderID := r.URL.Query().Get("sender")
+	receiverName := ""
 
 	offset, err1 := strconv.Atoi(offsetStr)
 	limit, err2 := strconv.Atoi(limitStr)
@@ -205,10 +207,14 @@ func FetchMessages(w http.ResponseWriter, r *http.Request) {
 	query := fmt.Sprintf(`
     SELECT * FROM messages 
     WHERE (sender_id = ? AND receiver_id = ?) OR (receiver_id = ? AND sender_id = ?)
-    ORDER BY sent_at DESC
+    ORDER BY id DESC
     LIMIT %d OFFSET %d;`, limit, offset)
 
 	rows, err := databases.DB.Query(query, userId, senderID, userId, senderID)
+	if err != nil {
+	}
+
+	err = databases.DB.QueryRow("SELECT nickname FROM users WHERE id = ?", userId).Scan(&receiverName)
 	if err != nil {
 	}
 	var messages []map[string]interface{}
@@ -226,12 +232,13 @@ func FetchMessages(w http.ResponseWriter, r *http.Request) {
 		}
 
 		message := map[string]interface{}{
-			"id":        id,
-			"sender_id": sender_id,
-			"userId":    userId,
-			"content":   content,
-			"time":      time,
-			"photo":     photo,
+			"id":           id,
+			"sender_id":    sender_id,
+			"userId":       userId,
+			"content":      content,
+			"time":         time,
+			"photo":        photo,
+			"receiverName": receiverName,
 		}
 
 		messages = append(messages, message)

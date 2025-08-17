@@ -3,7 +3,6 @@ package handlers
 import (
 	"database/sql"
 	"encoding/json"
-	"fmt"
 	"html"
 	"log"
 	"net/http"
@@ -130,7 +129,6 @@ func IsAuthenticated(w http.ResponseWriter, r *http.Request) {
 }
 
 func LogoutHandler(w http.ResponseWriter, r *http.Request) {
-	// fmt.Println("backenddddd lougout")
 	_, userId := IsLoggedIn(r)
 	mu.Lock()
 	UsersStatus[userId] = "offline"
@@ -145,7 +143,6 @@ func LogoutHandler(w http.ResponseWriter, r *http.Request) {
 
 		for _, connections := range ConnectedUsers {
 			for _, con := range connections {
-				fmt.Println("Inside the broadcast loop")
 				con.WriteMessage(websocket.TextMessage, []byte(toSend))
 			}
 		}
@@ -210,7 +207,7 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode(errorr)
 		return
-	} 
+	}
 
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(userInformation.Password), bcrypt.DefaultCost)
 	if err != nil {

@@ -63,7 +63,6 @@ export function profile(age, email, nickname, photo) {
                     editProfileForm.reset();
                 }
             }).catch(err => {
-                console.log("jjjjjjjjjjjjj: ", err);
 
                 const existingPopup = document.querySelector(".content");
                 if (existingPopup) {
