@@ -1,4 +1,4 @@
-offline ila l user msa7 tab w7da makhashach tkoun
+**offline ila l user msa7 tab w7da makhashach tkoun
 send json f ga3 l errors f backend
 no need l check dyal nickname, email wach kayn hit rh unique f database
 check ila len dyal l inputs f register == 0 w machi empty string

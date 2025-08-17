@@ -40,7 +40,7 @@ func PostHandler(w http.ResponseWriter, r *http.Request) {
 	title := r.FormValue("title")
 	description := r.FormValue("description")
 	topics := r.Form["topics"]
-	if title == "" || description == "" || len(topics) == 0 {
+	if len(strings.TrimSpace(title)) == 0 || len(strings.TrimSpace(description)) == 0|| len(topics) == 0 {
 		errorHandler(http.StatusBadRequest, w)
 		return
 	}

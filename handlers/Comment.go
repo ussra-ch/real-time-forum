@@ -7,6 +7,7 @@ import (
 	"log"
 	"net/http"
 	"strconv"
+	"strings"
 
 	"handlers/databases"
 )
@@ -31,7 +32,7 @@ func CommentHandler(w http.ResponseWriter, r *http.Request) {
 		errorHandler(http.StatusBadRequest, w)
 		return
 	}
-	if cd.Content == "" {
+	if len(strings.TrimSpace(cd.Content)) == 0{
 		errorHandler(http.StatusBadRequest, w)
 		return
 	}
