@@ -67,7 +67,7 @@ func ProtectStaticDir(w http.ResponseWriter, r *http.Request) {
 	fs := http.FileServer(http.Dir("static"))
 	path := r.URL.Path
 	if path == "/static/" || path == "/static/uploads/" {
-		http.Error(w, "forbidden", http.StatusForbidden)
+		errorHandler(http.StatusForbidden, w)
 		return
 	}
 

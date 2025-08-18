@@ -7,6 +7,8 @@ import (
 	"log"
 	"net/http"
 	"regexp"
+	"strconv"
+	"strings"
 	"time"
 
 	"handlers/databases"
@@ -215,10 +217,13 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if userInformation.Nickname == "" || userInformation.Age == "" || userInformation.Gender == "" || userInformation.Firstname == "" || userInformation.Lastname == "" || userInformation.Email == "" || userInformation.Password == "" {
+	tmpAge, _ := strconv.Atoi(userInformation.Age)
+	if len(strings.TrimSpace(userInformation.Nickname)) == 0 || tmpAge < 13 || tmpAge > 120 ||
+		userInformation.Gender == "" || len(strings.TrimSpace(userInformation.Firstname)) == 0 ||
+		len(strings.TrimSpace(userInformation.Lastname)) == 0 || userInformation.Email == "" || userInformation.Password == "" {
 		errorr := ErrorStruct{
 			Type: "error",
-			Text: "Please make sure to fill out all the fields",
+			Text: "Please make sure to fill out all the fields with valid information",
 		}
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusBadRequest)

@@ -3,17 +3,20 @@ package handlers
 import (
 	"encoding/json"
 	"fmt"
+	"html"
 	"io"
-	"log"
 	"net/http"
 	"os"
+	"regexp"
+	"strconv"
+	"strings"
 	"time"
 
 	"handlers/databases"
 )
 
 func EditProfile(w http.ResponseWriter, r *http.Request) {
-	//PUT PATCH
+	// PUT PATCH
 	if r.Method != http.MethodPost {
 		errorHandler(http.StatusMethodNotAllowed, w)
 		return
@@ -22,7 +25,7 @@ func EditProfile(w http.ResponseWriter, r *http.Request) {
 	mu.Lock()
 	_, userID := IsLoggedIn(r)
 	mu.Unlock()
-	
+
 	if err := r.ParseMultipartForm(10 << 20); err != nil {
 		errorHandler(http.StatusBadRequest, w)
 		return
@@ -49,48 +52,21 @@ func EditProfile(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 	}
-	state := false
-	state1 := false
 
-	if nickname == "" {
+	if len(strings.TrimSpace(nickname)) == 0 {
 		_ = databases.DB.QueryRow("SELECT nickname FROM users WHERE id = ?", userID).Scan(&nickname)
-		state = true
-	}
-	if email == "" {
-		_ = databases.DB.QueryRow("SELECT email FROM users WHERE id = ?", userID).Scan(&email)
-		state1 = true
-	}
-	if age == "" {
-		_ = databases.DB.QueryRow("SELECT age FROM users WHERE id = ?", userID).Scan(&age)
-	}
-	if !state {
-		var exists bool
-		err = databases.DB.QueryRow("SELECT EXISTS(SELECT 1 FROM users WHERE nickname = ?)", nickname).Scan(&exists)
-		if err != nil {
-			log.Fatal(err)
-		}
-		if exists {
-			errorr := ErrorStruct{
-				Type: "error",
-				Text: "Nickname is already in use",
-			}
-			w.Header().Set("Content-Type", "application/json")
-			w.WriteHeader(http.StatusBadRequest)
-			json.NewEncoder(w).Encode(errorr)
-			return
-		}
 	}
 
-	if !state1 {
-		var exists bool
-		err = databases.DB.QueryRow("SELECT EXISTS(SELECT 1 FROM users WHERE email = ?)", email).Scan(&exists)
-		if err != nil {
-			log.Fatal(err)
-		}
-		if exists {
+	if len(strings.TrimSpace(email)) == 0 {
+		_ = databases.DB.QueryRow("SELECT email FROM users WHERE id = ?", userID).Scan(&email)
+	} else {
+		emailRegex := `^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$`
+
+		re := regexp.MustCompile(emailRegex)
+		if !re.MatchString(email) {
 			errorr := ErrorStruct{
 				Type: "error",
-				Text: "Email is already in use",
+				Text: "Invalid email",
 			}
 			w.Header().Set("Content-Type", "application/json")
 			w.WriteHeader(http.StatusBadRequest)
@@ -98,7 +74,21 @@ func EditProfile(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 	}
-	args := []interface{}{nickname, email, age}
+	tmpAge, _ := strconv.Atoi(age)
+	if tmpAge == 0 {
+		_ = databases.DB.QueryRow("SELECT age FROM users WHERE id = ?", userID).Scan(&age)
+	} else if tmpAge < 13 || tmpAge > 120 {
+		errorr := ErrorStruct{
+			Type: "error",
+			Text: "Please provide a valid age",
+		}
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(errorr)
+		return
+	}
+
+	args := []interface{}{html.EscapeString(nickname), email, age}
 	query := "UPDATE users SET nickname = ?, email = ?, age = ?"
 
 	if photoPath != "" {
@@ -110,7 +100,13 @@ func EditProfile(w http.ResponseWriter, r *http.Request) {
 
 	_, err = databases.DB.Exec(query, args...)
 	if err != nil {
-		http.Error(w, "Failed to update profile", http.StatusInternalServerError)
+		errorr := ErrorStruct{
+			Type: "error",
+			Text: "The nickname or email is not available. Please try another.",
+		}
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(errorr)
 		return
 	}
 
@@ -121,5 +117,4 @@ func EditProfile(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(success)
-
 }

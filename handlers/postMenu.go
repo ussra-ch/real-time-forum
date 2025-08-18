@@ -2,8 +2,10 @@ package handlers
 
 import (
 	"encoding/json"
+	"html"
 	"log"
 	"net/http"
+	"strings"
 
 	"handlers/databases"
 )
@@ -100,8 +102,12 @@ func EditPost(w http.ResponseWriter, r *http.Request) {
 		errorHandler(http.StatusBadRequest, w)
 		return
 	}
+	if len(strings.TrimSpace(data.Title)) == 0 || len(strings.TrimSpace(data.Content)) == 0 {
+		errorHandler(http.StatusBadRequest, w)
+		return
+	}
 
-	_, err = databases.DB.Exec("UPDATE posts SET title = ?, content = ? WHERE id = ?", data.Title, data.Content, data.ID)
+	_, err = databases.DB.Exec("UPDATE posts SET title = ?, content = ? WHERE id = ?", html.EscapeString(data.Title), html.EscapeString(data.Content), data.ID)
 	if err != nil {
 		errorHandler(http.StatusInternalServerError, w)
 		return

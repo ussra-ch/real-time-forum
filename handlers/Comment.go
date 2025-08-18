@@ -7,6 +7,7 @@ import (
 	"log"
 	"net/http"
 	"strconv"
+	"strings"
 
 	"handlers/databases"
 )
@@ -31,7 +32,7 @@ func CommentHandler(w http.ResponseWriter, r *http.Request) {
 		errorHandler(http.StatusBadRequest, w)
 		return
 	}
-	if cd.Content == "" {
+	if len(strings.TrimSpace(cd.Content)) == 0{
 		errorHandler(http.StatusBadRequest, w)
 		return
 	}
@@ -81,7 +82,7 @@ func FetchCommentsHandler(w http.ResponseWriter, r *http.Request) {
 	limit, err2 := strconv.Atoi(limitStr)
 
 	if err1 != nil || err2 != nil || limit <= 0 {
-		http.Error(w, "Invalid parameters", http.StatusBadRequest)
+		errorHandler(http.StatusInternalServerError, w)
 		return
 	}
 	rows, err := databases.DB.Query(fmt.Sprintf(`
