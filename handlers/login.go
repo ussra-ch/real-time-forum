@@ -161,6 +161,9 @@ func LogoutHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Println("Failed to delete session:", err)
 	}
+	for i := range OpenedConversations[float64(userId)] {
+		OpenedConversations[float64(userId)][i] = false
+	}
 	http.SetCookie(w, &http.Cookie{
 		Name:     "session",
 		Value:    "",
@@ -220,8 +223,8 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 	tmpAge, _ := strconv.Atoi(userInformation.Age)
 	if len(strings.TrimSpace(userInformation.Nickname)) == 0 || tmpAge < 13 || tmpAge > 120 ||
 		userInformation.Gender == "" || len(strings.TrimSpace(userInformation.Firstname)) == 0 ||
-		len(strings.TrimSpace(userInformation.Lastname)) == 0 || userInformation.Email == "" || userInformation.Password == ""|| 
-		(userInformation.Gender != "male" && userInformation.Gender != "female" ){
+		len(strings.TrimSpace(userInformation.Lastname)) == 0 || userInformation.Email == "" || userInformation.Password == "" ||
+		(userInformation.Gender != "male" && userInformation.Gender != "female") {
 		errorr := ErrorStruct{
 			Type: "error",
 			Text: "Please make sure to fill out all the fields with valid information",

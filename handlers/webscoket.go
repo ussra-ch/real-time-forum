@@ -149,6 +149,9 @@ func WebSocketHandler(w http.ResponseWriter, r *http.Request) {
 				mu.Lock()
 				UsersStatus[int(userID)] = "offline"
 				delete(ConnectedUsers, float64(userID))
+				for i := range OpenedConversations[userID] {
+					OpenedConversations[userID][i] = false
+				}
 				if _, exists := ConnectedUsers[float64(userID)]; !exists {
 					oldUser := make(map[string]interface{})
 					oldUser["type"] = "offline"
@@ -288,7 +291,13 @@ func conversationOpened(senderId, receiverId float64, typeValue string) {
 		OpenedConversations[senderId] = make(map[float64]bool)
 	}
 	if typeValue == "CloseConversation" {
-		OpenedConversations[senderId][receiverId] = false
+		if receiverId == 0 {
+			for i := range OpenedConversations[senderId] {
+				OpenedConversations[senderId][i] = false
+			}
+		} else {
+			OpenedConversations[senderId][receiverId] = false
+		}
 	} else {
 		OpenedConversations[senderId][receiverId] = true
 	}

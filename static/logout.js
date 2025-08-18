@@ -23,6 +23,13 @@ export function logout() {
 }
 
 export function triggerUserLogout() {
+  // let isConversationOpen = {
+  //   senderId: userId,
+  //   receiverId: 0,
+  //   type: "CloseConversation"
+  // }
+
+  // ws.send(JSON.stringify(isConversationOpen));
   let logoutJson = { "ws": ws, "type": "offline" }
   const logouT = JSON.stringify(logoutJson);
   ws.send(logouT)

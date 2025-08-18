@@ -9,7 +9,7 @@ function typingInProgress(Id) {
     const chat = document.getElementById('footer');
     if (!chat) return;
     const userID = document.getElementById('message_id')
-    
+
     if (userID.value != Id) {
         return
     }
@@ -39,10 +39,11 @@ function typingInProgress(Id) {
 
 export function initWebSocket(onMessageCallback) {
     if (stat) {
-        
+
         ws = new WebSocket("ws://localhost:8080/chat")
     }
-
+    
+    
     ws.onopen = (event) => {
         console.log("WebSocket connected");
     };
@@ -55,11 +56,11 @@ export function initWebSocket(onMessageCallback) {
             if (data.type === 'online' || data.type === 'offline') {
                 fetchUser()
             } else if (data.type === "message") {
-              
-                
+
+
                 let notifs = document.getElementById('notification-circle')
                 notifs.textContent = data.Notifications
-                onMessageCallback(data.messageContent,data.name);
+                onMessageCallback(data.messageContent, data.name);
 
             } else if (data.type == 'notification' || data.type === "unreadMessage") {
                 let notifs = document.getElementById('notification-circle')

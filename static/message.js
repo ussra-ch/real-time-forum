@@ -24,6 +24,7 @@ function throttle(func, delay) {
 export function mesaageDiv(user, userId, receiverId) {
     const body = document.querySelector('body')
     toool.offset = 0
+   
     if (document.getElementById('message')) {
 
         document.getElementById('message').remove()
@@ -124,6 +125,7 @@ export function mesaageDiv(user, userId, receiverId) {
                     input.value = ''
                     const container = document.getElementById('chat-body')
                     container.scrollTop = container.scrollHeight;
+
                 }
             }
         })

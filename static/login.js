@@ -11,6 +11,7 @@ import { initWebSocket } from "./websocket.js";
 import { main } from "./main.js";
 import { triggerUserLogout } from "./logout.js";
 import { toool } from "./message.js";
+import { ws } from "./websocket.js";
 export function logindiv() {
     loginDiv.className = 'container';
     loginDiv.id = 'container';
@@ -136,6 +137,8 @@ export function logindiv() {
 }
 
 function handleUserLogin() {
+   
+
     initWebSocket((msg, user) => {
         fetchUser()
         let chatBody = document.getElementById('chat-body');
@@ -182,6 +185,8 @@ function handleUserLogin() {
         if (el) el.remove();
         chatBody.scrollTop = chatBody.scrollHeight;
     });
+
+    
 
     logout();
     Create();
@@ -308,10 +313,11 @@ export function login() {
                         user.style.display = 'block'
                     }
                 })
-              
-                handleUserLogin();
+
+                handleUserLogin(res.id);
                 return true
             } else {
+
                 body.innerHTML = `
                     <script type="module" src="static/main.js"></script>
                     `
