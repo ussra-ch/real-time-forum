@@ -1,10 +1,11 @@
 **offline ila l user msa7 tab w7da makhashach tkoun
 send json f ga3 l errors f backend
-no need l check dyal nickname, email wach kayn hit rh unique f database
-check ila len dyal l inputs f register == 0 w machi empty string
-check l input dyal l post f edit post (check dyal dakhal chi script)
+**no need l check dyal nickname, email wach kayn hit rh unique f database
+**check ila len dyal l inputs f register == 0 w machi empty string
+**check l input dyal l post f edit post (check dyal dakhal chi script)
 declare categories f database using check wman3amrhumch manuellement
 notifications popup 3la wd l messages / notifications 3la kola user
+check l input f edit profile
 
 
 
