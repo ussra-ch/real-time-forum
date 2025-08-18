@@ -65,15 +65,14 @@ func IsLoggedIn(r *http.Request) (bool, int) {
 
 func ProtectStaticDir(w http.ResponseWriter, r *http.Request) {
 	fs := http.FileServer(http.Dir("static"))
-	path :=r.URL.Path
-	if path == "/static/" || path == "/static/uploads/"  {
-		http.Error(w, "forbidden", http.StatusForbidden)
+	path := r.URL.Path
+	if path == "/static/" || path == "/static/uploads/" {
+		errorHandler(http.StatusForbidden, w)
 		return
 	}
 
 	http.StripPrefix("/static/", fs).ServeHTTP(w, r)
 }
-
 
 func HomeHandler(w http.ResponseWriter, r *http.Request) {
 	http.ServeFile(w, r, "index.html")

@@ -39,7 +39,6 @@ func FetchUsers(w http.ResponseWriter, r *http.Request) {
 	err := databases.DB.QueryRow("SELECT nickname FROM users WHERE id = ?", userID).Scan(&myNickname)
 	if err != nil {
 		errorHandler(http.StatusInternalServerError, w)
-		http.Error(w, "Database error", http.StatusInternalServerError)
 		return
 	}
 

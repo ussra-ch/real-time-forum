@@ -82,7 +82,7 @@ func FetchCommentsHandler(w http.ResponseWriter, r *http.Request) {
 	limit, err2 := strconv.Atoi(limitStr)
 
 	if err1 != nil || err2 != nil || limit <= 0 {
-		http.Error(w, "Invalid parameters", http.StatusBadRequest)
+		errorHandler(http.StatusInternalServerError, w)
 		return
 	}
 	rows, err := databases.DB.Query(fmt.Sprintf(`

@@ -190,7 +190,7 @@ func WebSocketHandler(w http.ResponseWriter, r *http.Request) {
 func FetchMessages(w http.ResponseWriter, r *http.Request) {
 	// fetch data
 	if r.Method != http.MethodGet {
-		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
+		errorHandler(http.StatusMethodNotAllowed, w)
 		return
 	}
 	_, userId := IsLoggedIn(r)
@@ -203,7 +203,7 @@ func FetchMessages(w http.ResponseWriter, r *http.Request) {
 	limit, err2 := strconv.Atoi(limitStr)
 
 	if err1 != nil || err2 != nil || limit <= 0 {
-		http.Error(w, "Invalid parameters", http.StatusBadRequest)
+		errorHandler(http.StatusBadRequest, w)
 		return
 	}
 
