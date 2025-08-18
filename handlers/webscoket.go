@@ -181,6 +181,14 @@ func WebSocketHandler(w http.ResponseWriter, r *http.Request) {
 
 				sendUnreadNotifications(int(messageStruct.ReceiverId), ConnectedUsers[messageStruct.ReceiverId])
 			} else {
+				Message, err := json.Marshal(messageStruct)
+				if err != nil {
+				}
+				for _, con := range ConnectedUsers[messageStruct.ReceiverId] {
+					err = con.WriteMessage(websocket.TextMessage, []byte(Message))
+					if err != nil {
+					}
+				}
 				sendUnreadNotifications(int(messageStruct.ReceiverId), ConnectedUsers[messageStruct.ReceiverId])
 			}
 		}

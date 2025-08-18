@@ -289,19 +289,21 @@ export function login() {
                     })
                 })
                 const show = document.getElementById('showUsers')
+
                 const user = document.getElementById('user')
-                user.style.display = 'none'
+                //user.style.display = 'none'
                 show.addEventListener('click', () => {
                     isAuthenticated().then(auth => {
                         if (!auth) {
                             triggerUserLogout()
                             main()
                         } else {
-                            user.style.display = user.style.display == 'none' ? 'block' : 'none'
+                            const currentDisplay = window.getComputedStyle(user).display;
+                            user.style.display = (currentDisplay === 'none') ? 'block' : 'none';
                         }
                     })
                 })
-
+                
                 handleUserLogin();
                 return true
             } else {
