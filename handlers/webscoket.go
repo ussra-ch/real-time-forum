@@ -49,7 +49,6 @@ var (
 // Send
 func WebSocketHandler(w http.ResponseWriter, r *http.Request) {
 	conn, err := Upgrader.Upgrade(w, r, nil)
-
 	if err != nil {
 		errorHandler(http.StatusInternalServerError, w)
 		return

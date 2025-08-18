@@ -1465,3 +1465,96 @@ form a:hover {
 .user-info {
     color: #f5f6fa;
 }
+
+/* Edit Post Modal Styles */
+.edit-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0,0,0,0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 3000;
+}
+
+.edit-modal-content {
+    background: #0f1419;
+    padding: 32px 24px;
+    border-radius: 16px;
+    min-width: 320px;
+    max-width: 95vw;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.12);
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    align-items: stretch;
+}
+
+.edit-modal-title {
+    margin: 0 0 8px 0;
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: #222;
+    color: aliceblue;
+}
+
+.edit-modal-input {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 1rem;
+    margin-bottom: 8px;
+}
+
+.edit-modal-textarea {
+    width: 100%;
+    height: 100px;
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 1rem;
+    margin-bottom: 8px;
+    resize: vertical;
+}
+
+.edit-modal-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+}
+
+.edit-modal-save {
+    background: #4f8cff;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 8px 20px;
+    font-size: 1rem;
+    cursor: pointer;
+    font-weight: 500;
+    transition: background 0.2s;
+}
+
+.edit-modal-save:hover {
+    background: #2563eb;
+}
+
+.edit-modal-cancel {
+    background: #eee;
+    color: #333;
+    border: none;
+    border-radius: 8px;
+    padding: 8px 20px;
+    font-size: 1rem;
+    cursor: pointer;
+    font-weight: 500;
+    transition: background 0.2s;
+}
+
+.edit-modal-cancel:hover {
+    background: #ccc;
+}
