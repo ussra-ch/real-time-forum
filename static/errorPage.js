@@ -1,6 +1,10 @@
 import { main } from "./main.js";
 
 export function errorPage(err) {
+    fetch('/').then(res => {
+        return
+    })
+
     const style = document.createElement("style");
     style.id = 'style'
     style.textContent = `

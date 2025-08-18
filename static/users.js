@@ -34,28 +34,28 @@ export function fetchUser() {
       }
       const conversationButton = document.createElement('button')
       conversationButton.id = "conversationButton"
-      conversationButton.innerHTML = `
-      <i class="fa-solid fa-message"></i>`
+     
 
       conversationButton.style.marginRight = '0'
       const div = document.createElement('div');
+      div.className = 'user-info';
       div.innerHTML = `${profil} ${user.nickname}`;
       if (user.status == 'online') {
         div.style.color = 'rgb(89, 230, 187)';
       }
-      div.style.display = 'flex';
-      div.style.justifyContent = 'space-between';
-      div.style.alignItems = 'center'
-      div.style.border = '1px solid #ccc';
-      div.style.padding = '8px';
-      div.style.borderRadius = '70px';
-      div.style.width = '60%';
-      div.style.margin = '10px'
-      div.style.background = 'rgba(26, 35, 50, 0.95)';
-      div.className = "user-container"
-      div.append(conversationButton)
+      conversationButton.style.display = 'flex';
+      conversationButton.style.justifyContent = 'space-between';
+      conversationButton.style.alignItems = 'center'
+      conversationButton.style.border = '1px solid #ccc';
+      conversationButton.style.padding = '8px';
+      conversationButton.style.borderRadius = '70px';
+      conversationButton.style.width = '60%';
+      conversationButton.style.margin = '10px'
+      conversationButton.style.background = 'rgba(26, 35, 50, 0.95)';
+      conversationButton.className = "user-container"
+      conversationButton.append(div)
 
-      usern.appendChild(div);
+      usern.appendChild(conversationButton);
 
 
       conversationButton.addEventListener('click', () => {

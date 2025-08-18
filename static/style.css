@@ -15,6 +15,7 @@ body {
     font-size: 1.05rem;
     letter-spacing: 0.01em;
     line-height: 1.6;
+
     min-height: 100vh;
     /* overflow-x: hidden; */
     overflow: hidden;
@@ -574,12 +575,13 @@ body::after {
     z-index: 100;
     position: relative;
     left: -25%;
-    top: -10vh;
+    top: -14vh;
     flex: 0 0 300px;
     width: 35vw;
     min-width: 220px;
     height: 65vh;
     max-height: 70vh;
+    display: block;
     padding: 1rem;
     margin-top: 17px;
     border-radius: 20px;
@@ -757,7 +759,6 @@ button {
 }
 
 form {
-    background: rgba(26, 35, 50, 0.95);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -1176,19 +1177,15 @@ form a:hover {
 
 #showUsers {
     z-index: 1001;
-    background: transparent;
-    color: #00b4d8;
+    background: #00b4d8;
+    color: #0f1419;
     border: 2px solid #00b4d8;
     text-align: center;
     position: absolute;
+    display: none   ;
     top: 33vh;
     width: 15vw;
     height: 4vh;
-}
-
-#showUsers:hover {
-    background: #00b4d8;
-    color: #0f1419;
 }
 
 .nav {
@@ -1238,7 +1235,9 @@ form a:hover {
         top: 65vh;
         left: 95vw;
     }
-
+#showUsers{
+        display: block;
+    }
 
     /* .notification-circle {
         right: 11vw;
@@ -1453,4 +1452,16 @@ form a:hover {
 .user-container {
     overflow: hidden;
     flex-wrap: wrap
+}
+
+.user-info i {
+    margin: 0 10px 0 0;
+}
+
+.user-info img {
+    margin: 0 10px 0 0;
+}
+
+.user-info {
+    color: #f5f6fa;
 }

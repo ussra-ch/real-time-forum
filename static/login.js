@@ -10,6 +10,7 @@ import { comment } from "./comment.js";
 import { initWebSocket } from "./websocket.js";
 import { main } from "./main.js";
 import { triggerUserLogout } from "./logout.js";
+import { toool } from "./message.js";
 
 export function logindiv() {
     loginDiv.className = 'container';
@@ -137,25 +138,47 @@ export function logindiv() {
 
 function handleUserLogin() {
     initWebSocket((msg, user) => {
+        fetchUser()
         let chatBody = document.getElementById('chat-body');
         if (!chatBody || msg == "") {
             return
         }
         let newMsg = document.createElement('div');
-        newMsg.innerHTML = `
-                            <div class="messagProfil">
-                                                <div class="profile">
-                                                <i class="fa-solid fa-user"></i>
-                                                </div>
-                                                   <h7>${user}</h7>
-                                            </div>
-                            
-                            <h3>${msg}</h3>
-                            <h7>${formatDate(Date.now())}</h7>`;
+
+        let messagProfil = document.createElement('div')
+        messagProfil.className = 'messagProfil'
+        let profile = document.createElement('div')
+        profile.className = 'profile'
+        if (document.querySelector('.profile')) {
+            profile.innerHTML = `<i class="fa-solid fa-user"></i>`
+        }
+        messagProfil.appendChild(profile)
+        let h7 = document.createElement('h7')
+        h7.textContent = user
+        messagProfil.appendChild(h7)
+        newMsg.appendChild(messagProfil)
+
+        let msgDiv = document.createElement('h3')
+        msgDiv.textContent = `${msg}`
+        newMsg.append(msgDiv)
+
+        let timeDiv = document.createElement('h7')
+        timeDiv.textContent = `${formatDate(Date.now())}`
+        newMsg.append(timeDiv)
+
+        // newMsg.innerHTML = `
+        //                     <div class="messagProfil">
+        //                                         <div class="profile">
+        //                                         <i class="fa-solid fa-user"></i>
+        //                                         </div>
+        //                                            <h7>${user}</h7>
+        //                                     </div>
+
+        //                     <h3>${msg}</h3>
+        //                     <h7>${formatDate(Date.now())}</h7>`;
         newMsg.className = 'messageSent'
         chatBody.append(newMsg);
-
-        
+        toool.offset++;
         const el = document.getElementById('typing');
         if (el) el.remove();
         chatBody.scrollTop = chatBody.scrollHeight;
@@ -169,7 +192,7 @@ function handleUserLogin() {
     fetchUser()
 }
 
-export let Username 
+export let Username
 export function login() {
     const body = document.querySelector('body')
     fetch('/api/authenticated')
@@ -207,9 +230,11 @@ export function login() {
                 </div>
             
             <script type="module" src="static/main.js"></script>`
+                console.log(res);
+
 
                 if (res.photo && res.photo.String.trim() !== "") {
-                    document.getElementById('profile').style.backgroundImage = `url(${res.photo})`;
+                    document.getElementById('profile').style.backgroundImage = `url(${res.photo.String})`;
                 } else {
                     document.getElementById('profile').innerHTML = `${profil}`
                 }
@@ -260,24 +285,30 @@ export function login() {
                             triggerUserLogout()
                             main()
                         } else {
-                            profile(res.age, res.email, Username, res.photo)
+                            profile(res.age, res.email, Username, res.photo.String)
                         }
                     })
                 })
                 const show = document.getElementById('showUsers')
+
                 const user = document.getElementById('user')
-                user.style.display = 'none'
+                //user.style.display = 'none'
                 show.addEventListener('click', () => {
                     isAuthenticated().then(auth => {
                         if (!auth) {
                             triggerUserLogout()
                             main()
                         } else {
-                            user.style.display = user.style.display == 'none' ? 'block' : 'none'
+                            user.style.display = (user.style.display === 'none') ? 'block' : 'none';
+
                         }
                     })
                 })
-
+                window.addEventListener('resize', () => {
+                    if (window.innerWidth > 1370) {
+                        user.style.display = 'block'
+                    }
+                })
                 handleUserLogin();
                 return true
             } else {
