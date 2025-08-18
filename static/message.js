@@ -5,8 +5,8 @@ import { isAuthenticated } from "./login.js";
 import { triggerUserLogout } from "./logout.js";
 import { Username } from "./login.js";
 export let toool = {
-  offset: 0,
-  limit: 10
+    offset: 0,
+    limit: 10
 }
 
 
@@ -25,7 +25,7 @@ export function mesaageDiv(user, userId, receiverId) {
     const body = document.querySelector('body')
     toool.offset = 0
     if (document.getElementById('message')) {
-        
+
         document.getElementById('message').remove()
     }
     var done = true
@@ -83,7 +83,7 @@ export function mesaageDiv(user, userId, receiverId) {
                     let msgContent = document.createElement('h3')
                     let messagProfil = document.createElement('div')
                     messagProfil.className = 'messagProfil'
-                 let profile = document.createElement('div')
+                    let profile = document.createElement('div')
                     profile.className = 'profile'
                     if (document.querySelector('.profile')) {
                         profile.innerHTML = `<i class="fa-solid fa-user"></i>`
@@ -93,7 +93,7 @@ export function mesaageDiv(user, userId, receiverId) {
                     h7.textContent = Username
                     messagProfil.appendChild(h7)
                     msgContent.appendChild(messagProfil)
-                   
+
                     // msgContent.innerHTML = `
                     //         <div class="messagProfil">
                     //             <div class="profile"><i class="fa-solid fa-user"></i></div>
@@ -160,13 +160,13 @@ export function mesaageDiv(user, userId, receiverId) {
     deleteButton.addEventListener('click', (e) => {
 
         // if (conversation && !conversation.contains(e.target) && !done) {
-            let isConversationOpen = {
-                senderId: userId,
-                receiverId: receiverId,
-                type: "CloseConversation"
-            }
-            ws.send(JSON.stringify(isConversationOpen));
-            conversation.remove();
+        let isConversationOpen = {
+            senderId: userId,
+            receiverId: receiverId,
+            type: "CloseConversation"
+        }
+        ws.send(JSON.stringify(isConversationOpen));
+        conversation.remove();
         // }
         // done = false
     });
@@ -243,6 +243,12 @@ export function formatDate(timestampInSeconds) {
     const date = new Date(isoString);
     const hours = date.getHours().toString().padStart(2, '0');
     const minutes = date.getMinutes().toString().padStart(2, '0');
-    const time = `${hours}:${minutes}`;
-    return time;
+    const year = date.getFullYear();
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const day = date.getDate().toString().padStart(2, '0');
+    const formattedDate = `${year}-${month}-${day}`;
+    const formattedTime = `${hours}:${minutes}`;
+    const formattedDateTime = `${formattedDate} ${formattedTime}`;
+
+    return formattedDateTime;
 }
