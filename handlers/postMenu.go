@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"encoding/json"
+	"fmt"
 	"html"
 	"log"
 	"net/http"
@@ -86,7 +87,7 @@ func EditPost(w http.ResponseWriter, r *http.Request) {
 		Title   string `json:"title"`
 		Content string `json:"content"`
 	}
-
+	fmt.Println(data)
 	if err := json.NewDecoder(r.Body).Decode(&data); err != nil {
 
 		errorHandler(http.StatusBadRequest, w)
@@ -102,9 +103,11 @@ func EditPost(w http.ResponseWriter, r *http.Request) {
 		errorHandler(http.StatusBadRequest, w)
 		return
 	}
-	if len(strings.TrimSpace(data.Title)) == 0 || len(strings.TrimSpace(data.Content)) == 0 {
-		errorHandler(http.StatusBadRequest, w)
-		return
+	if len(strings.TrimSpace(data.Title)) == 0 {
+		_ = databases.DB.QueryRow("SELECT title FROM posts WHERE id = ?", data.ID).Scan(&data.Title)
+	}
+	if len(strings.TrimSpace(data.Content)) == 0 {
+		_ = databases.DB.QueryRow("SELECT content FROM posts WHERE id = ?", data.ID).Scan(&data.Content)
 	}
 
 	_, err = databases.DB.Exec("UPDATE posts SET title = ?, content = ? WHERE id = ?", html.EscapeString(data.Title), html.EscapeString(data.Content), data.ID)

@@ -45,11 +45,10 @@ function showEditModal(postId, postTitle, postContent) {
         modal.style.display = 'flex';
     }
 
-    // Set current values
-    modal.querySelector('#editTitle').value = postTitle;
-    modal.querySelector('#editContent').value = postContent;
+    // // Set current values
+    // modal.querySelector('#editTitle').value = postTitle;
+    // modal.querySelector('#editContent').value = postContent;
 
-    // Save handler
     modal.querySelector('#saveEditBtn').onclick = () => {
         const newTitle = modal.querySelector('#editTitle').value;
         const newContent = modal.querySelector('#editContent').value;
@@ -57,15 +56,13 @@ function showEditModal(postId, postTitle, postContent) {
         submitEdit(postId, newTitle, newContent);
     };
 
-    // Cancel handler
     modal.querySelector('#cancelEditBtn').onclick = () => {
         modal.style.display = 'none';
     };
 }
 
-// Extracted fetch logic
 function submitEdit(postId, newTitle, newContent) {
-    if (newTitle === "" || newContent === "") return;
+
 
     fetch('/edit', {
         method: 'POST',
