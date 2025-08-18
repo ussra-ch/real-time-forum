@@ -43,7 +43,7 @@ export function Create() {
 
     const deleteButton = document.createElement('button')
     deleteButton.innerHTML = `<i class="fa-solid fa-xmark"></i>`
-    deleteButton.id = 'closeConversation'
+    deleteButton.id = 'closeAddPost'
 
     const form = document.getElementById('createPostForm')
     let createPostDiv = document.getElementById('createPostCard')

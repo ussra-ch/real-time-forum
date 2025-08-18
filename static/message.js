@@ -129,9 +129,18 @@ export function mesaageDiv(user, userId, receiverId) {
 
     })
 
-    window.addEventListener('click', (e) => {
 
-        if (conversation && !conversation.contains(e.target) && !done) {
+    const deleteButton = document.createElement('button')
+    deleteButton.innerHTML = `<i class="fa-solid fa-xmark"></i>`
+    deleteButton.id = 'closeConversation'
+    let conversationHead = document.querySelector('#message .head')
+
+    conversationHead.append(deleteButton)
+
+
+    deleteButton.addEventListener('click', (e) => {
+
+        // if (conversation && !conversation.contains(e.target) && !done) {
             let isConversationOpen = {
                 senderId: userId,
                 receiverId: receiverId,
@@ -139,8 +148,8 @@ export function mesaageDiv(user, userId, receiverId) {
             }
             ws.send(JSON.stringify(isConversationOpen));
             conversation.remove();
-        }
-        done = false
+        // }
+        // done = false
     });
 
 }

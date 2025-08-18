@@ -1160,11 +1160,18 @@ form a:hover {
     display: inline-block
 }
 
-#closeConversation {
+#closeAddPost {
     position: fixed;
     right: 2%;
     top: 1%;
 
+}
+
+#closeConversation {
+    position: fixed;
+    right: 2%;
+    top: 33.1%;
+    background: transparent;
 }
 
 #showUsers {
@@ -1195,9 +1202,10 @@ form a:hover {
 }
 
 @media (max-width: 1370px) {
-    body{
+    body {
         overflow: hidden;
     }
+
     #all {
         position: absolute;
         left: 0;
@@ -1230,7 +1238,7 @@ form a:hover {
         top: 65vh;
         left: 95vw;
     }
-    
+
 
     /* .notification-circle {
         right: 11vw;
@@ -1242,9 +1250,10 @@ form a:hover {
 }
 
 @media (max-width: 1024px) {
-    body{
+    body {
         overflow: hidden;
     }
+
     #all {
         position: absolute;
         left: 0;
@@ -1276,7 +1285,8 @@ form a:hover {
         top: 65vh;
 
     }
-    .category-title{
+
+    .category-title {
         display: none;
     }
 
@@ -1336,9 +1346,10 @@ form a:hover {
         right: 11vw;
     } */
 
-    body{
+    body {
         overflow: hidden;
     }
+
     .menu {
         right: 15%;
     }
@@ -1404,9 +1415,10 @@ form a:hover {
 }
 
 @media (max-width: 430px) {
-    body{
+    body {
         overflow: hidden;
     }
+
     #message {
         height: 40vh;
         font-size: 0.9em;
@@ -1438,7 +1450,7 @@ form a:hover {
     }
 }
 
-.user-container{
+.user-container {
     overflow: hidden;
-    flex-wrap : wrap
+    flex-wrap: wrap
 }
