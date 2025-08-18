@@ -298,12 +298,16 @@ export function login() {
                             triggerUserLogout()
                             main()
                         } else {
-                            const currentDisplay = window.getComputedStyle(user).display;
-                            user.style.display = (currentDisplay === 'none') ? 'block' : 'none';
+                            if (window.innerWidth < 1370) {
+                                console.log(11);
+                                
+                                const currentDisplay = window.getComputedStyle(user).display;
+                                user.style.display = (currentDisplay === 'none') ? 'block' : 'none';
+                            }
                         }
                     })
                 })
-                
+
                 handleUserLogin();
                 return true
             } else {
