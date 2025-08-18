@@ -172,8 +172,8 @@ func WebSocketHandler(w http.ResponseWriter, r *http.Request) {
 
 		if len(messageStruct.MessageContent) > 0 {
 			if isConversationOpened {
-				updateSeenValue(int(messageStruct.ReceiverId), int(messageStruct.SenderId))
 				Message, err := json.Marshal(messageStruct)
+				updateSeenValue(int(messageStruct.ReceiverId), int(messageStruct.SenderId))
 				if err != nil {
 				}
 				for _, con := range ConnectedUsers[messageStruct.ReceiverId] {
@@ -185,6 +185,21 @@ func WebSocketHandler(w http.ResponseWriter, r *http.Request) {
 				sendUnreadNotifications(int(messageStruct.ReceiverId), ConnectedUsers[messageStruct.ReceiverId])
 			} else {
 				sendUnreadNotifications(int(messageStruct.ReceiverId), ConnectedUsers[messageStruct.ReceiverId])
+			}
+			fmt.Println("Message sent to user:", messageStruct.ReceiverId)
+			messageStruct.ReceiverId =float64(userId)
+			fmt.Println("Message sent to user:", messageStruct.ReceiverId)
+			Message, err := json.Marshal(messageStruct)
+			if err != nil {
+				
+			}
+			for _, con := range ConnectedUsers[float64(userId)] {
+				if con == conn {
+					continue
+				}
+				err = con.WriteMessage(websocket.TextMessage, []byte(Message))
+				if err != nil {
+				}
 			}
 		}
 	}

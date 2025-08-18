@@ -60,7 +60,7 @@ export function initWebSocket(onMessageCallback) {
 
                 let notifs = document.getElementById('notification-circle')
                 notifs.textContent = data.Notifications
-                onMessageCallback(data.messageContent, data.name);
+                onMessageCallback(data);
 
             } else if (data.type == 'notification' || data.type === "unreadMessage") {
                 let notifs = document.getElementById('notification-circle')
