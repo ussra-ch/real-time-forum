@@ -3,6 +3,7 @@ package handlers
 import (
 	"encoding/json"
 	"fmt"
+	"html"
 	"io"
 	"net/http"
 	"os"
@@ -78,16 +79,16 @@ func EditProfile(w http.ResponseWriter, r *http.Request) {
 		_ = databases.DB.QueryRow("SELECT age FROM users WHERE id = ?", userID).Scan(&age)
 	} else if tmpAge < 13 || tmpAge > 120 {
 		errorr := ErrorStruct{
-				Type: "error",
-				Text: "Please provide a valid age",
-			}
-			w.Header().Set("Content-Type", "application/json")
-			w.WriteHeader(http.StatusBadRequest)
-			json.NewEncoder(w).Encode(errorr)
-			return
+			Type: "error",
+			Text: "Please provide a valid age",
+		}
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(errorr)
+		return
 	}
 
-	args := []interface{}{nickname, email, age}
+	args := []interface{}{html.EscapeString(nickname), email, age}
 	query := "UPDATE users SET nickname = ?, email = ?, age = ?"
 
 	if photoPath != "" {
