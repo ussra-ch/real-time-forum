@@ -138,6 +138,7 @@ export function logindiv() {
 
 function handleUserLogin() {
     initWebSocket((msg, user) => {
+        fetchUser()
         let chatBody = document.getElementById('chat-body');
         if (!chatBody || msg == "") {
             return
@@ -298,16 +299,16 @@ export function login() {
                             triggerUserLogout()
                             main()
                         } else {
-                            if (window.innerWidth < 1370) {
-                                console.log(11);
-                                
-                                const currentDisplay = window.getComputedStyle(user).display;
-                                user.style.display = (currentDisplay === 'none') ? 'block' : 'none';
-                            }
+                            user.style.display = (user.style.display === 'none') ? 'block' : 'none';
+
                         }
                     })
                 })
-
+                window.addEventListener('resize', () => {
+                    if (window.innerWidth > 1370) {
+                        user.style.display = 'block'
+                    }
+                })
                 handleUserLogin();
                 return true
             } else {
