@@ -49,6 +49,7 @@ var (
 // Send
 func WebSocketHandler(w http.ResponseWriter, r *http.Request) {
 	conn, err := Upgrader.Upgrade(w, r, nil)
+
 	if err != nil {
 		errorHandler(http.StatusInternalServerError, w)
 		return
@@ -181,14 +182,6 @@ func WebSocketHandler(w http.ResponseWriter, r *http.Request) {
 
 				sendUnreadNotifications(int(messageStruct.ReceiverId), ConnectedUsers[messageStruct.ReceiverId])
 			} else {
-				Message, err := json.Marshal(messageStruct)
-				if err != nil {
-				}
-				for _, con := range ConnectedUsers[messageStruct.ReceiverId] {
-					err = con.WriteMessage(websocket.TextMessage, []byte(Message))
-					if err != nil {
-					}
-				}
 				sendUnreadNotifications(int(messageStruct.ReceiverId), ConnectedUsers[messageStruct.ReceiverId])
 			}
 		}

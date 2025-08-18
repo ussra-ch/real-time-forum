@@ -1,5 +1,5 @@
 import { login } from "./login.js"
-
+export let stat = true
 export function profile(age, email, nickname, photo) {
     const body = document.querySelector('body')
     body.innerHTML = `
@@ -26,6 +26,7 @@ export function profile(age, email, nickname, photo) {
     </div>
         <script type="module" src="static/script.js"></script>
     `
+    stat = false
     document.getElementById('edit').addEventListener('submit', (e) => {
         e.preventDefault();
 

@@ -11,7 +11,6 @@ import { initWebSocket } from "./websocket.js";
 import { main } from "./main.js";
 import { triggerUserLogout } from "./logout.js";
 import { toool } from "./message.js";
-
 export function logindiv() {
     loginDiv.className = 'container';
     loginDiv.id = 'container';
@@ -309,6 +308,7 @@ export function login() {
                         user.style.display = 'block'
                     }
                 })
+              
                 handleUserLogin();
                 return true
             } else {

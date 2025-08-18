@@ -1,5 +1,7 @@
 import { fetchUser } from "./users.js"
 export var ws = null
+import { stat } from "./profile.js";
+
 let lastCall = 0;
 let typingTimeout;
 
@@ -36,7 +38,10 @@ function typingInProgress(Id) {
 }
 
 export function initWebSocket(onMessageCallback) {
-    ws = new WebSocket("ws://localhost:8080/chat")
+    if (stat) {
+        
+        ws = new WebSocket("ws://localhost:8080/chat")
+    }
 
     ws.onopen = (event) => {
         console.log("WebSocket connected");
