@@ -243,8 +243,8 @@ button:hover,
 
 .profile-container img {
 
-    width: 40vw;
-    height: 40vw;
+    width: 200px;
+    max-height: 200px;
     border-radius: 55%;
 }
 

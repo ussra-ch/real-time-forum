@@ -5,6 +5,7 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"net/http"
+	"text/template"
 
 	"handlers/databases"
 )
@@ -78,5 +79,10 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 	if r.URL.Path != "/" {
 		w.WriteHeader(http.StatusNotFound)
 	}
-	http.ServeFile(w, r, "index.html")
+	template, err := template.ParseFiles("index.html")
+	if err != nil{
+		errorHandler(http.StatusInternalServerError, w)
+	}
+
+	template.Execute(w, nil)
 }

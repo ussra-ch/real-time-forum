@@ -39,7 +39,7 @@ export function categories() {
                              <p>${post.content}</p>
                              <p>Topics: ${topics.join(', ')}</p>
                              ${post.photo ? `<img src="${post.photo}" alt="Post image" style="max-width:100%;">` : ''}
-                             <p>Posted by: User #${post.nickname || "Unknown"} on ${new Date(post.created_at).toLocaleDateString()}</p>
+                             <p>Posted by: #${post.nickname || "Unknown"} on ${new Date(post.created_at).toLocaleDateString()}</p>
                               <form class="commentForm">
                                 <div class="inputWrapper">
                               <input type="hidden" name="post_id" value="${post.id}">
