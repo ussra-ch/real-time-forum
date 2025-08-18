@@ -1339,7 +1339,14 @@ form a:hover {
     } */
 
 }
+@media (max-width: 727px) {
+   .categories {
+        min-width: 70px;
+        min-height: 70px;
+        font-size: 0.7rem;
+    }
 
+}
 @media (max-width: 630px) {
     /* .notification-circle {
         right: 11vw;
@@ -1400,10 +1407,10 @@ form a:hover {
         padding: 10px;
     }
 
-    .categories {
-        min-width: 60px;
-        min-height: 60px;
-        font-size: 0.8rem;
+   .categories {
+        min-width: 40px;
+        min-height: 40px;
+        font-size: 0.7rem;
     }
 
     #showUsers {
