@@ -147,10 +147,10 @@ function handleUserLogin(userId) {
         if (!chatBody || msg == "") {
             return
         }
-        console.log(userId);
+        console.log(msg.receiverId, userId);
         
         let newMsg = document.createElement('div');
-        if (msg.receiverId == userId) {
+        if (msg.senderId == userId) {
             newMsg.className = 'messageReceived'
             let msgContent = document.createElement('h3')
             let messagProfil = document.createElement('div')
