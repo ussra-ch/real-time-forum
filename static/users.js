@@ -64,14 +64,19 @@ export function fetchUser() {
             triggerUserLogout()
             main()
           } else {
+            console.log(36);
+            
             if (document.getElementById('message')) document.getElementById('message').remove()
             let isConversationOpen = { "senderId": users.UserId, "receiverId": user.userId, "isOpen": true, "type": "OpenConversation", "ws" : ws }
             const jsonIsConversationOpen = JSON.stringify(isConversationOpen);
             ws.send(jsonIsConversationOpen);
+            document.getElementById('user').style.display = 'none';
             mesaageDiv(user.nickname, users.UserId, user.userId)
           }
         })
       })
     }
+  }).catch(err => {
+    console.error("Error fetching users:", err);
   });
 }

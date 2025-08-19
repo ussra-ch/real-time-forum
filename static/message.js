@@ -4,6 +4,7 @@ import { main } from "./main.js";
 import { isAuthenticated } from "./login.js";
 import { triggerUserLogout } from "./logout.js";
 import { Username } from "./login.js";
+import { profilPhoto } from "./login.js";
 export let toool = {
     offset: 0,
     limit: 10
@@ -24,11 +25,13 @@ function throttle(func, delay) {
 export function mesaageDiv(user, userId, receiverId) {
     const body = document.querySelector('body')
     toool.offset = 0
-   
+
     if (document.getElementById('message')) {
 
         document.getElementById('message').remove()
     }
+    document.getElementById('content').style.filter = 'blur(30px)';
+
     var done = true
     const conversation = document.createElement('div')
     conversation.id = 'message'
@@ -87,7 +90,14 @@ export function mesaageDiv(user, userId, receiverId) {
                     let profile = document.createElement('div')
                     profile.className = 'profile'
                     if (document.querySelector('.profile')) {
-                        profile.innerHTML = `<i class="fa-solid fa-user"></i>`
+                        if (profilPhoto) {
+                            
+                            profile.style.backgroundImage = profilPhoto
+                        }else{
+                            profile.innerHTML = `
+                                    <i class="fa-solid fa-user"></i>
+                                `
+                        }
                     }
                     messagProfil.appendChild(profile)
                     let h7 = document.createElement('h7')
@@ -160,16 +170,16 @@ export function mesaageDiv(user, userId, receiverId) {
 
 
     deleteButton.addEventListener('click', (e) => {
-
+        document.getElementById('content').style.filter = 'none';
         // if (conversation && !conversation.contains(e.target) && !done) {
         let isConversationOpen = {
             senderId: userId,
             receiverId: receiverId,
             type: "CloseConversation",
-            ws : ws
+            ws: ws
         }
-        console.log("websocket is :::",ws);
-        
+        console.log("websocket is :::", ws);
+
         ws.send(JSON.stringify(isConversationOpen));
         conversation.remove();
         // }
@@ -232,9 +242,14 @@ function fetchMessages(userId, receiverId, offset, limit, name) {
                                             <h3>${message.content}</h3>
                                             <h7>${formatDate(message.time)}</h7>`
                         body.prepend(newMsg)
-                        document.querySelector('.profile').innerHTML = `
+                        if (profilPhoto) {
+                            
+                            document.querySelector('.profile').style.backgroundImage = `${profilPhoto}`
+                        }else{
+                            document.querySelector('.profile').innerHTML = `
                                     <i class="fa-solid fa-user"></i>
                                 `
+                        }
                     }
                 }
             }

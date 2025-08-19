@@ -12,6 +12,7 @@ import { main } from "./main.js";
 import { triggerUserLogout } from "./logout.js";
 import { toool } from "./message.js";
 import { ws } from "./websocket.js";
+export let profilPhoto
 export function logindiv() {
     loginDiv.className = 'container';
     loginDiv.id = 'container';
@@ -136,7 +137,7 @@ export function logindiv() {
     });
 }
 
-function handleUserLogin(userId) {
+function handleUserLogin(userId, photo) {
 
 
     initWebSocket((msg) => {
@@ -147,7 +148,7 @@ function handleUserLogin(userId) {
         if (!chatBody || msg == "") {
             return
         }
-        console.log(document.getElementById('message_id').value ,msg);
+        console.log(document.getElementById('message_id').value, msg);
 
         let newMsg = document.createElement('div');
 
@@ -159,7 +160,14 @@ function handleUserLogin(userId) {
             let profile = document.createElement('div')
             profile.className = 'profile'
             if (document.querySelector('.profile')) {
-                profile.innerHTML = `<i class="fa-solid fa-user"></i>`
+                if (profilPhoto) {
+                    
+                    profile.style.backgroundImage = `${profilPhoto}`
+                }else { 
+                    profile.innerHTML = `
+                                    <i class="fa-solid fa-user"></i>
+                                `
+                }
             }
             messagProfil.appendChild(profile)
             let h7 = document.createElement('h7')
@@ -269,8 +277,10 @@ export function login() {
 
                 if (res.photo && res.photo.String.trim() !== "") {
                     document.getElementById('profile').style.backgroundImage = `url(${res.photo.String})`;
+                    profilPhoto = `url(${res.photo.String})`
                 } else {
                     document.getElementById('profile').innerHTML = `${profil}`
+                    profilPhoto = `${profil}`
                 }
 
                 const div = document.createElement('div');
@@ -328,15 +338,19 @@ export function login() {
                 const user = document.getElementById('user')
                 //user.style.display = 'none'
                 show.addEventListener('click', () => {
-                    isAuthenticated().then(auth => {
-                        if (!auth) {
-                            triggerUserLogout()
-                            main()
-                        } else {
-                            user.style.display = (user.style.display === 'none') ? 'block' : 'none';
+                    if (!document.getElementById('message')) {
 
-                        }
-                    })
+                        isAuthenticated().then(auth => {
+                            if (!auth) {
+                                triggerUserLogout()
+                                main()
+                            } else {
+
+                                user.style.display = (user.style.display === 'none') ? 'block' : 'none';
+
+                            }
+                        })
+                    }
                 })
                 window.addEventListener('resize', () => {
                     if (window.innerWidth > 1370) {
@@ -344,7 +358,7 @@ export function login() {
                     }
                 })
 
-                handleUserLogin(res.id);
+                handleUserLogin(res.id, res.photo.String);
                 return true
             } else {
 

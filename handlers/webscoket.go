@@ -105,6 +105,7 @@ func WebSocketHandler(w http.ResponseWriter, r *http.Request) {
 
 		if typeValue, ok := toolMap["type"].(string); ok {
 			if typeValue == "OpenConversation" || typeValue == "CloseConversation" {
+				fmt.Println(typeValue)
 				mu.Lock()
 				conversationOpened(conn, toolMap["receiverId"].(float64), toolMap["type"].(string))
 				if typeValue == "OpenConversation" {
