@@ -148,7 +148,7 @@ function handleUserLogin(userId) {
             return
         }
         console.log(msg.receiverId, userId);
-        
+
         let newMsg = document.createElement('div');
         if (msg.senderId == userId) {
             newMsg.className = 'messageReceived'
@@ -181,29 +181,32 @@ function handleUserLogin(userId) {
 
 
         } else {
+            
+            if (document.getElementById('message_id').value == msg.senderId) {
+                newMsg.className = 'messageSent'
+                let messagProfil = document.createElement('div')
+                messagProfil.className = 'messagProfil'
+                let profile = document.createElement('div')
+                profile.className = 'profile'
+                if (document.querySelector('.profile')) {
+                    profile.innerHTML = `<i class="fa-solid fa-user"></i>`
+                }
+                messagProfil.appendChild(profile)
+                let h7 = document.createElement('h7')
+                h7.textContent = msg.name
+                messagProfil.appendChild(h7)
+                newMsg.appendChild(messagProfil)
 
-            newMsg.className= 'messageSent'
-            let messagProfil = document.createElement('div')
-            messagProfil.className = 'messagProfil'
-            let profile = document.createElement('div')
-            profile.className = 'profile'
-            if (document.querySelector('.profile')) {
-                profile.innerHTML = `<i class="fa-solid fa-user"></i>`
+                let msgDiv = document.createElement('h3')
+                msgDiv.textContent = `${msg.messageContent}`
+                newMsg.append(msgDiv)
+
+                let timeDiv = document.createElement('h7')
+                timeDiv.textContent = `${formatDate(Date.now())}`
+                newMsg.append(timeDiv)
+                chatBody.append(newMsg);
             }
-            messagProfil.appendChild(profile)
-            let h7 = document.createElement('h7')
-            h7.textContent = msg.name
-            messagProfil.appendChild(h7)
-            newMsg.appendChild(messagProfil)
 
-            let msgDiv = document.createElement('h3')
-            msgDiv.textContent = `${msg.messageContent}`
-            newMsg.append(msgDiv)
-
-            let timeDiv = document.createElement('h7')
-            timeDiv.textContent = `${formatDate(Date.now())}`
-            newMsg.append(timeDiv)
-            chatBody.append(newMsg);
         }
         toool.offset++;
         const el = document.getElementById('typing');
@@ -228,8 +231,8 @@ export function login() {
         .then(r => r.json())
         .then(res => {
             let profil = `<i class="fa-solid fa-user"></i>`
-           
-            
+
+
             if (res.ok) {
                 body.innerHTML =
                     ` <div id="content">
