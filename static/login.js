@@ -280,7 +280,7 @@ export function login() {
                     profilPhoto = `url(${res.photo.String})`
                 } else {
                     document.getElementById('profile').innerHTML = `${profil}`
-                    profilPhoto = `${profil}`
+                  
                 }
 
                 const div = document.createElement('div');
