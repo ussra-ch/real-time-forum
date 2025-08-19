@@ -126,7 +126,7 @@ func WebSocketHandler(w http.ResponseWriter, r *http.Request) {
 				messageStruct.Name = username
 				messageStruct.ReceiverName = receiverName
 				messageHandler(messageStruct)
-				isConversationOpened = OpenedConversations[conn][toolMap["receiverId"].(float64)]
+				isConversationOpened = IsConversationOpened(conn, toolMap["receiverId"].(float64), float64(userId))
 			}
 			if typeValue == "typing" {
 				typing := map[string]interface{}{
@@ -370,4 +370,14 @@ func deleteOneconnection(userId int, conn *websocket.Conn) {
 			break
 		}
 	}
+}
+
+
+func IsConversationOpened(con *websocket.Conn, receiverId, senderId float64)bool{
+	for _, conn := range ConnectedUsers[receiverId]{
+		if OpenedConversations[conn][senderId]{
+			return true
+		}
+	}
+	return  false
 }
