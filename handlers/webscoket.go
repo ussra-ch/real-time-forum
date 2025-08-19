@@ -197,6 +197,7 @@ func WebSocketHandler(w http.ResponseWriter, r *http.Request) {
 				if err != nil {
 				}
 			}
+			sendUnreadNotifications(int(messageStruct.SenderId), ConnectedUsers[messageStruct.SenderId])
 		}
 	}
 }
