@@ -65,7 +65,7 @@ export function fetchUser() {
             main()
           } else {
             if (document.getElementById('message')) document.getElementById('message').remove()
-            let isConversationOpen = { "senderId": users.UserId, "receiverId": user.userId, "isOpen": true, "type": "OpenConversation" }
+            let isConversationOpen = { "senderId": users.UserId, "receiverId": user.userId, "isOpen": true, "type": "OpenConversation", "ws" : ws }
             const jsonIsConversationOpen = JSON.stringify(isConversationOpen);
             ws.send(jsonIsConversationOpen);
             mesaageDiv(user.nickname, users.UserId, user.userId)

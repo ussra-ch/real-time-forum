@@ -161,8 +161,10 @@ func LogoutHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Println("Failed to delete session:", err)
 	}
-	for i := range OpenedConversations[float64(userId)] {
-		OpenedConversations[float64(userId)][i] = false
+	for _, connection := range ConnectedUsers[float64(userId)]{
+		for i := range OpenedConversations[connection] {
+			OpenedConversations[connection][i] = false
+		}
 	}
 	http.SetCookie(w, &http.Cookie{
 		Name:     "session",

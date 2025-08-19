@@ -165,8 +165,11 @@ export function mesaageDiv(user, userId, receiverId) {
         let isConversationOpen = {
             senderId: userId,
             receiverId: receiverId,
-            type: "CloseConversation"
+            type: "CloseConversation",
+            ws : ws
         }
+        console.log("websocket is :::",ws);
+        
         ws.send(JSON.stringify(isConversationOpen));
         conversation.remove();
         // }

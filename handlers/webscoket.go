@@ -43,7 +43,7 @@ type Notification struct {
 
 var (
 	ConnectedUsers      = make(map[float64][]*websocket.Conn)
-	OpenedConversations = make(map[float64]map[float64]bool)
+	OpenedConversations = make(map[*websocket.Conn]map[float64]bool)
 )
 
 // Send
@@ -106,7 +106,7 @@ func WebSocketHandler(w http.ResponseWriter, r *http.Request) {
 		if typeValue, ok := toolMap["type"].(string); ok {
 			if typeValue == "OpenConversation" || typeValue == "CloseConversation" {
 				mu.Lock()
-				conversationOpened(toolMap["senderId"].(float64), toolMap["receiverId"].(float64), toolMap["type"].(string))
+				conversationOpened(conn, toolMap["receiverId"].(float64), toolMap["type"].(string))
 				if typeValue == "OpenConversation" {
 					updateSeenValue(int(toolMap["senderId"].(float64)), int(toolMap["receiverId"].(float64)))
 				}
@@ -126,7 +126,7 @@ func WebSocketHandler(w http.ResponseWriter, r *http.Request) {
 				messageStruct.Name = username
 				messageStruct.ReceiverName = receiverName
 				messageHandler(messageStruct)
-				isConversationOpened = OpenedConversations[toolMap["receiverId"].(float64)][toolMap["senderId"].(float64)]
+				isConversationOpened = OpenedConversations[conn][toolMap["receiverId"].(float64)]
 			}
 			if typeValue == "typing" {
 				typing := map[string]interface{}{
@@ -149,8 +149,8 @@ func WebSocketHandler(w http.ResponseWriter, r *http.Request) {
 				mu.Lock()
 				UsersStatus[int(userID)] = "offline"
 				delete(ConnectedUsers, float64(userID))
-				for i := range OpenedConversations[userID] {
-					OpenedConversations[userID][i] = false
+				for i := range OpenedConversations[conn] {
+					OpenedConversations[conn][i] = false
 				}
 				if _, exists := ConnectedUsers[float64(userID)]; !exists {
 					oldUser := make(map[string]interface{})
@@ -186,12 +186,8 @@ func WebSocketHandler(w http.ResponseWriter, r *http.Request) {
 			} else {
 				sendUnreadNotifications(int(messageStruct.ReceiverId), ConnectedUsers[messageStruct.ReceiverId])
 			}
-			// fmt.Println("Message sent to user:", messageStruct.ReceiverId)
-			// messageStruct.ReceiverId =float64(userId)
-			// fmt.Println("Message sent to user:", messageStruct.ReceiverId)
 			Message, err := json.Marshal(messageStruct)
 			if err != nil {
-				
 			}
 			for _, con := range ConnectedUsers[float64(userId)] {
 				if con == conn {
@@ -290,7 +286,7 @@ func userOffline(userId int, conn *websocket.Conn) {
 	delete(ConnectedUsers, float64(userId))
 	UsersStatus[userId] = "offline"
 	newUser := make(map[string]interface{})
-	newUser["type"] = "offline" ///////////////////////// hna rh kant online, makaynch dalil niit ms rh jatni khas tjun offline
+	newUser["type"] = "offline"
 	newUser["userId"] = userId
 	toSend, _ := json.Marshal(newUser)
 	for _, connections := range ConnectedUsers {
@@ -301,20 +297,20 @@ func userOffline(userId int, conn *websocket.Conn) {
 	conn.Close()
 }
 
-func conversationOpened(senderId, receiverId float64, typeValue string) {
-	if OpenedConversations[senderId] == nil {
-		OpenedConversations[senderId] = make(map[float64]bool)
+func conversationOpened(conn *websocket.Conn, receiverId float64, typeValue string) {
+	if OpenedConversations[conn] == nil {
+		OpenedConversations[conn] = make(map[float64]bool)
 	}
 	if typeValue == "CloseConversation" {
 		if receiverId == 0 {
-			for i := range OpenedConversations[senderId] {
-				OpenedConversations[senderId][i] = false
+			for i := range OpenedConversations[conn] {
+				OpenedConversations[conn][i] = false
 			}
 		} else {
-			OpenedConversations[senderId][receiverId] = false
+			OpenedConversations[conn][receiverId] = false
 		}
 	} else {
-		OpenedConversations[senderId][receiverId] = true
+		OpenedConversations[conn][receiverId] = true
 	}
 }
 
