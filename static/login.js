@@ -147,10 +147,11 @@ function handleUserLogin(userId) {
         if (!chatBody || msg == "") {
             return
         }
-        console.log(msg.receiverId, userId);
+        console.log(document.getElementById('message_id').value ,msg);
 
         let newMsg = document.createElement('div');
-        if (msg.senderId == userId) {
+
+        if (msg.senderId == userId && document.getElementById('message_id').value == msg.receiverId) {
             newMsg.className = 'messageReceived'
             let msgContent = document.createElement('h3')
             let messagProfil = document.createElement('div')
@@ -181,7 +182,7 @@ function handleUserLogin(userId) {
 
 
         } else {
-            
+
             if (document.getElementById('message_id').value == msg.senderId) {
                 newMsg.className = 'messageSent'
                 let messagProfil = document.createElement('div')
