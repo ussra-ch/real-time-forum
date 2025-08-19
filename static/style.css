@@ -1263,15 +1263,12 @@ form a:hover {
         width: 100vw;
     }
 
-    /* #user {
-        top: -2vh;
-        left: 3%;
-        width: 90%;
-        flex: 0 0 auto;
-        min-width: 0;
-        max-height: 250px;
-        align-self: center;
-    }*/
+    #closeConversation {
+    position: fixed;
+    right: 5%;
+    top: 32.1%;
+    background: transparent;
+}
 
     #postsContainer {
         position: absolute;
@@ -1308,16 +1305,12 @@ form a:hover {
         width: 100vw;
     }
 
-    /*  #user {
-        top: -3vh;
-        left: 3%;
-        width: 90%;
-        flex: 0 0 auto;
-        min-width: 0;
-        max-height: 250px;
-        align-self: center;
-    }
-*/
+    #closeConversation {
+    position: fixed;
+    right: 3%;
+    top: 33.1%;
+    background: transparent;
+}
     #postsContainer {
         position: absolute;
         top: 1%;
@@ -1383,17 +1376,12 @@ form a:hover {
         padding: 0.5rem;
     }
 
-    /* #user {
-        position: static;
-        width: 100vw;
-        min-width: 0;
-        left: 0;
-        top: 0;
-        height: auto;
-        max-height: 200px;
-        margin: 0 auto 10px auto;
-        padding: 0.5rem;
-    }*/
+    #closeConversation {
+    position: fixed;
+    right: 3%;
+    top: 55.1%;
+    background: transparent;
+}
     .sidebar-left,
     .sidebar-right {
         display: none;
