@@ -136,7 +136,7 @@ export function logindiv() {
     });
 }
 
-function handleUserLogin(userId, photo) {
+function handleUserLogin(userId) {
 
 
     initWebSocket((msg) => {
@@ -154,7 +154,7 @@ function handleUserLogin(userId, photo) {
         if (msg.senderId == userId && document.getElementById('message_id').value == msg.receiverId) {
             newMsg.className = 'messageReceived'
             let msgContent = document.createElement('h3')
-        
+
             let h7 = document.createElement('h7')
             h7.textContent = Username
             messagProfil.appendChild(h7)
@@ -223,7 +223,7 @@ export function login() {
 
             if (res.ok) {
                 body.innerHTML =
-                                ` <div id="content">
+                    ` <div id="content">
                 <header>
                 <div class="nav">
                 <div class="notification-circle">
@@ -251,9 +251,9 @@ export function login() {
                 </div>
             
             <script type="module" src="static/main.js"></script>`
-                
+
                 document.getElementById('profile').innerHTML = `${profile}`
-                  
+
 
                 const div = document.createElement('div');
                 div.innerHTML = `
@@ -289,6 +289,17 @@ export function login() {
                     })
 
                 });
+
+                logoutBtn.addEventListener('click', () => {
+                    isAuthenticated().then(auth => {
+                        if (!auth) {
+                            triggerUserLogout()
+                            main()
+                        } else {
+                            logout()
+                        }
+                    })
+                })
                 Username = res.nickname
                 const show = document.getElementById('showUsers')
 
@@ -314,7 +325,7 @@ export function login() {
                     }
                 })
 
-                handleUserLogin(res.id, res.photo.String);
+                handleUserLogin(res.id);
                 return true
             } else {
 

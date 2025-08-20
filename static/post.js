@@ -21,10 +21,6 @@ export function Create() {
   <div class="div-description">
   <label for="description">description :</label>
   <textarea name="description" id="description" rows="4" required></textarea>
-  <div class="div-photo">
-  <label for="photo">Upload Photo:</label>
-  <input type="file" id="photo" name="photo" accept="image/*">
-  </div>
   </div>
   <div class="topic-options">
   <label><input type="checkbox" id="music" name="topic" value="Music" style="margin-right: 39px;"> Music</label>
@@ -68,9 +64,6 @@ export function Create() {
         formData.append('title', this.title.value);
         formData.append('description', this.description.value);
         selectedTopics.forEach(topic => formData.append('topics', topic));
-        if (this.photo.files[0]) {
-            formData.append('photo', this.photo.files[0]);
-        }
 
         fetch('/api/post', {
             method: 'POST',
@@ -142,7 +135,6 @@ export function fetchPosts() {
                     <h3>${post.title}</h3>
                     <p>${post.content}</p>
                     <p>Topics: ${topics.join(', ')}</p>
-                    ${post.photo ? `<img src="${post.photo}" alt="Post image" style="max-width:100%;">` : ''}
                     <p>Posted by: #${post.nickname || "Unknown"} on ${new Date(post.created_at).toLocaleDateString()}</p>
                      <form class="commentForm">
                        <div class="inputWrapper">
@@ -252,7 +244,5 @@ function resetForm(form) {
 
     document.querySelectorAll('input[name="topic"]:checked').forEach(el => el.checked = false);
 
-    if (form.photo) {
-        form.photo.value = '';
-    }
+    
 }

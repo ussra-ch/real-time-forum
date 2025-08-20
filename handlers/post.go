@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"encoding/json"
+	"fmt"
 	"html"
 	"log"
 	"net/http"
@@ -79,8 +80,8 @@ func PostHandler(w http.ResponseWriter, r *http.Request) {
 
 	query := `
 		INSERT INTO posts (title, content, user_id)
-		VALUES (?, ?, ?, ?)
-	`
+		VALUES (?, ?, ?)
+		`
 	res, err := databases.DB.Exec(query, html.EscapeString(title), html.EscapeString(description), userID)
 	if err != nil {
 		errorHandler(http.StatusInternalServerError, w)
@@ -96,6 +97,7 @@ func PostHandler(w http.ResponseWriter, r *http.Request) {
 		query2 := `INSERT INTO categories_post (categoryID, postID) VALUES (?, ?)`
 		_, err := databases.DB.Exec(query2, x.Id, postID)
 		if err != nil {
+			fmt.Println("11")
 			errorHandler(http.StatusInternalServerError, w)
 			return
 		}
@@ -120,9 +122,10 @@ func FetchPostsHandler(w http.ResponseWriter, r *http.Request) {
 	_, UserID := IsLoggedIn(r)
 	mu.Unlock()
 
-	query := `SELECT id, user_id, content, title, interest, created_at FROM posts`
+	query := `SELECT id, user_id, content, title, created_at FROM posts`
 	rows, err := databases.DB.Query(query)
 	if err != nil {
+		
 		errorHandler(http.StatusInternalServerError, w)
 		return
 	}
@@ -134,7 +137,7 @@ func FetchPostsHandler(w http.ResponseWriter, r *http.Request) {
 		var content, title, interest string
 		var createdAt string
 
-		if err := rows.Scan(&id, &userID, &content, &title, &interest, &createdAt); err != nil {
+		if err := rows.Scan(&id, &userID, &content, &title, &createdAt); err != nil {
 			log.Println("Error scanning row:", err)
 			continue
 		}

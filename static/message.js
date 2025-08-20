@@ -4,7 +4,6 @@ import { main } from "./main.js";
 import { isAuthenticated } from "./login.js";
 import { triggerUserLogout } from "./logout.js";
 import { Username } from "./login.js";
-import { profilPhoto } from "./login.js";
 export let toool = {
     offset: 0,
     limit: 10

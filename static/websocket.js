@@ -48,8 +48,8 @@ export function initWebSocket(onMessageCallback) {
 
             const data = JSON.parse(event.data);
 
+            fetchUser()
             if (data.type === 'online' || data.type === 'offline') {
-                fetchUser()
             } else if (data.type === "message") {
                 let notifs = document.getElementById('notification-circle')
                 notifs.textContent = data.Notifications

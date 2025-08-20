@@ -15,7 +15,7 @@ export function main() {
     return
   }
   const html = document.querySelector('html');
-  html.style.filter = 'blur(30px)';
+  //html.style.filter = 'blur(30px)';
   setTimeout(() => {
     html.style.filter = 'none';
   }, 700);
