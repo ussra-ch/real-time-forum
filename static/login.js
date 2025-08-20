@@ -223,7 +223,7 @@ export function login() {
 
             if (res.ok) {
                 body.innerHTML =
-                    ` <div id="content">
+                                ` <div id="content">
                 <header>
                 <div class="nav">
                 <div class="notification-circle">
@@ -231,6 +231,7 @@ export function login() {
                    <div class="notification-badge" , id ="notification-circle">${notifications}</div>
                </div>
                <button id="Create" style="z-index: 10;"><i class="fa-solid fa-plus"></i></button>
+               <button id="profile" style="z-index: 10;">
                </button>
               </div>
                 </header>
@@ -251,7 +252,7 @@ export function login() {
             
             <script type="module" src="static/main.js"></script>`
                 
-                    document.getElementById('profile').innerHTML = `${profile}`
+                document.getElementById('profile').innerHTML = `${profile}`
                   
 
                 const div = document.createElement('div');
