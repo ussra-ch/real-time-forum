@@ -241,12 +241,6 @@ button:hover,
 
 }
 
-.profile-container img {
-
-    width: 200px;
-    max-height: 200px;
-    border-radius: 55%;
-}
 
 #profile {
     /* position: fixed;*/
@@ -265,17 +259,6 @@ button:hover,
     border-radius: 50%;
 }
 
-#profile img {
-    width: 50px;
-    height: 40px;
-    position: absolute;
-    top: 0.7vh;
-    right: 3vw;
-    object-fit: cover;
-    border-radius: 50%;
-
-}
-
 #profile i {
     width: 3vw;
     height: 2vh;
@@ -285,7 +268,7 @@ button:hover,
 
 }
 
-.profil {
+.profile {
     width: 25%;
     height: 4vh;
     border-radius: 50%;
@@ -702,13 +685,6 @@ button {
     display: flex;
     align-items: center;
     gap: 10px;
-}
-
-#profile img {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    object-fit: cover;
 }
 
 .messagProfil h7 {

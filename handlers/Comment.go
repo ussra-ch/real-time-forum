@@ -27,6 +27,10 @@ type Comment struct {
 }
 
 func CommentHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost{
+		errorHandler(http.StatusMethodNotAllowed, w)
+		return
+	}
 	var cd CommentData
 	if err := json.NewDecoder(r.Body).Decode(&cd); err != nil {
 		errorHandler(http.StatusBadRequest, w)
@@ -39,7 +43,8 @@ func CommentHandler(w http.ResponseWriter, r *http.Request) {
 	var exists bool
 	err := databases.DB.QueryRow("SELECT EXISTS(SELECT 1 FROM posts WHERE id = $1)", cd.PostID).Scan(&exists)
 	if err != nil {
-		log.Fatal(err)
+		errorHandler(http.StatusInternalServerError, w)
+		return
 	}
 
 	if !exists {
@@ -47,19 +52,8 @@ func CommentHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Get user ID from session
-	cookie, err := r.Cookie("session")
-	if err != nil {
-		w.Write([]byte(`{"loggedIn": false}`))
-		return
-	}
-	var userID int
-	err = databases.DB.QueryRow(`SELECT user_id FROM sessions WHERE id = ?`, cookie.Value).Scan(&userID)
-	if err != nil {
-		errorHandler(http.StatusUnauthorized, w)
-		return
-	}
 	// Insert comment
+	_, userID := IsLoggedIn(r)
 	_, err = databases.DB.Exec(`
 		INSERT INTO comments (post_id, user_id, content)
 		VALUES (?, ?, ?)
@@ -76,6 +70,10 @@ func CommentHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func FetchCommentsHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet{
+		errorHandler(http.StatusBadRequest, w)
+		return
+	}
 	offsetStr := r.URL.Query().Get("offset")
 	limitStr := r.URL.Query().Get("limit")
 	offset, err1 := strconv.Atoi(offsetStr)
@@ -98,7 +96,6 @@ func FetchCommentsHandler(w http.ResponseWriter, r *http.Request) {
     ORDER BY comments.created_at DESC
     LIMIT %d OFFSET %d;`, limit, offset))
 	if err != nil {
-		fmt.Println(err)
 		errorHandler(http.StatusInternalServerError, w)
 		return
 	}

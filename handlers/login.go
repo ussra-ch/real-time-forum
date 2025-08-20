@@ -4,7 +4,6 @@ import (
 	"database/sql"
 	"encoding/json"
 	"html"
-	"log"
 	"net/http"
 	"regexp"
 	"strconv"
@@ -36,6 +35,11 @@ type data struct {
 }
 
 func LoginHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		errorHandler(http.StatusMethodNotAllowed, w)
+		return
+	}
+
 	var loginInformations loginInformation
 	err := json.NewDecoder(r.Body).Decode(&loginInformations)
 	if err != nil {
@@ -56,30 +60,12 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 		json.NewEncoder(w).Encode(errorr)
 		return
 	} else if err != nil {
-		errorr := ErrorStruct{
-			Type: "error",
-			Text: "Internal server error",
-		}
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode(errorr)
+		errorHandler(http.StatusInternalServerError, w)
 		return
 	}
 
-	sessionID := generateSessionID()
-	_, err = databases.DB.Exec(`
-		INSERT INTO sessions (id, user_id, expires_at)
-		VALUES (?, ?, DATETIME('now', '+1 hour'))
-	`, sessionID, userID)
-	if err != nil {
-		// log.Println(err)
-		errorr := ErrorStruct{
-			Type: "error",
-			Text: "Internal server error",
-		}
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode(errorr)
+	sessionID := generateSessionID(w, userID)
+	if sessionID == "" {
 		return
 	}
 
@@ -93,9 +79,8 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func IsAuthenticated(w http.ResponseWriter, r *http.Request) {
-	islogin, userID := IsLoggedIn(r)
-	if !islogin {
-
+	isloggedn, userID := IsLoggedIn(r)
+	if !isloggedn {
 		w.WriteHeader(http.StatusUnauthorized)
 		json.NewEncoder(w).Encode(map[string]any{
 			"ok":    false,
@@ -103,24 +88,10 @@ func IsAuthenticated(w http.ResponseWriter, r *http.Request) {
 		})
 		return
 	}
-
-	var nickname, age, email string
-	var photo sql.NullString
-	err := databases.DB.QueryRow("SELECT nickname, age, email, photo FROM users WHERE id = ?", userID).Scan(&nickname, &age, &email, &photo)
-	if err != nil {
-	}
-	notifs, _ := databases.DB.Exec(`
-	SELECT COUNT(*) FROM messages
-					WHERE receiver_id = ? AND seen = false;
-	`, userID)
+	notifs := unreadMessages(userID)
 	user := map[string]interface{}{
 		"ok":            true,
-		"nickname":      nickname,
-		"age":           age,
-		"photo":         photo,
-		"email":         email,
 		"id":            userID,
-		"status":        "online",
 		"notifications": notifs,
 	}
 	mu.Lock()
@@ -131,37 +102,27 @@ func IsAuthenticated(w http.ResponseWriter, r *http.Request) {
 }
 
 func LogoutHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		errorHandler(http.StatusUnauthorized, w)
+		return
+	}
 	_, userId := IsLoggedIn(r)
 	mu.Lock()
 	UsersStatus[userId] = "offline"
-	delete(ConnectedUsers, float64(userId))
-	if _, exists := ConnectedUsers[float64(userId)]; !exists {
-		oldUser := make(map[string]interface{})
-		oldUser["type"] = "offline"
-		oldUser["userId"] = userId
-		toSend, err := json.Marshal(oldUser)
-		if err != nil {
-		}
-
-		for _, connections := range ConnectedUsers {
-			for _, con := range connections {
-				con.WriteMessage(websocket.TextMessage, []byte(toSend))
-			}
-		}
-	}
+	broadcastUserStatus(nil, userId, "offline", w)
 	mu.Unlock()
 
 	cookie, err := r.Cookie("session")
 	if err != nil {
-		http.Redirect(w, r, "/", http.StatusSeeOther)
+		errorHandler(http.StatusInternalServerError, w)
 		return
 	}
-
 	_, err = databases.DB.Exec("DELETE FROM sessions WHERE id = ?", cookie.Value)
 	if err != nil {
-		log.Println("Failed to delete session:", err)
+		errorHandler(http.StatusInternalServerError, w)
+		return
 	}
-	for _, connection := range ConnectedUsers[float64(userId)]{
+	for _, connection := range ConnectedUsers[float64(userId)] {
 		for i := range OpenedConversations[connection] {
 			OpenedConversations[connection][i] = false
 		}
@@ -183,26 +144,7 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		errorHandler(http.StatusBadRequest, w)
 	}
-	var exists int
-	err = databases.DB.QueryRow("SELECT COUNT(*) FROM users WHERE email = ? OR nickname = ?", html.EscapeString(userInformation.Email), html.EscapeString(userInformation.Nickname)).Scan(&exists)
-	if err != nil {
-		errorHandler(http.StatusInternalServerError, w)
-		return
-	}
-
-	if exists > 0 {
-		errorr := ErrorStruct{
-			Type: "error",
-			Text: "Email or nickname is allready in use",
-		}
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(http.StatusConflict)
-		json.NewEncoder(w).Encode(errorr)
-		return
-	}
-
 	emailRegex := `^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$`
-
 	re := regexp.MustCompile(emailRegex)
 
 	if !re.MatchString(userInformation.Email) {
@@ -266,20 +208,7 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	mu.Lock()
 	_, userId := IsLoggedIn(r)
-
-	if _, exists := ConnectedUsers[float64(userId)]; !exists {
-		newUser := make(map[string]interface{})
-		newUser["type"] = "online"
-		newUser["userId"] = userId
-		toSend, err := json.Marshal(newUser)
-		if err != nil {
-		}
-		for _, connections := range ConnectedUsers {
-			for _, con := range connections {
-				con.WriteMessage(websocket.TextMessage, []byte(toSend))
-			}
-		}
-	}
+	broadcastUserStatus(nil, userId, "online", w)
 	mu.Unlock()
 	http.SetCookie(w, &http.Cookie{
 		Name:     "session",
@@ -298,13 +227,3 @@ func logoutWhenSessionIsDeleted(conn *websocket.Conn) float64 {
 	return userId
 }
 
-func findKeyByConn(conn *websocket.Conn) (float64, bool) {
-	for key, conns := range ConnectedUsers {
-		for _, c := range conns {
-			if c == conn {
-				return key, true
-			}
-		}
-	}
-	return 0, false
-}

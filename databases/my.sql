@@ -8,8 +8,7 @@ CREATE TABLE
         first_name TEXT NOT NULL,
         last_name TEXT NOT NULL,
         email TEXT NOT NULL UNIQUE,
-        password TEXT NOT NULL,
-        photo TEXT
+        password TEXT NOT NULL
     );
 
 CREATE TABLE
@@ -18,8 +17,6 @@ CREATE TABLE
         user_id INTEGER,
         content TEXT,
         title TEXT,
-        interest TEXT,
-        photo TEXT,
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
         FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
     );

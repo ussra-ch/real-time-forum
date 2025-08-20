@@ -1,6 +1,5 @@
 import { fetchUser } from "./users.js";
 import { loginDiv, content, notifications } from "./var.js";
-import { profile } from "./profile.js"
 import { formatDate } from "./message.js"
 import { logout } from "./logout.js"
 import { Create } from "./post.js"
@@ -155,21 +154,7 @@ function handleUserLogin(userId, photo) {
         if (msg.senderId == userId && document.getElementById('message_id').value == msg.receiverId) {
             newMsg.className = 'messageReceived'
             let msgContent = document.createElement('h3')
-            let messagProfil = document.createElement('div')
-            messagProfil.className = 'messagProfil'
-            let profile = document.createElement('div')
-            profile.className = 'profile'
-            if (document.querySelector('.profile')) {
-                if (profilPhoto) {
-                    
-                    profile.style.backgroundImage = `${profilPhoto}`
-                }else { 
-                    profile.innerHTML = `
-                                    <i class="fa-solid fa-user"></i>
-                                `
-                }
-            }
-            messagProfil.appendChild(profile)
+        
             let h7 = document.createElement('h7')
             h7.textContent = Username
             messagProfil.appendChild(h7)
@@ -195,12 +180,6 @@ function handleUserLogin(userId, photo) {
                 newMsg.className = 'messageSent'
                 let messagProfil = document.createElement('div')
                 messagProfil.className = 'messagProfil'
-                let profile = document.createElement('div')
-                profile.className = 'profile'
-                if (document.querySelector('.profile')) {
-                    profile.innerHTML = `<i class="fa-solid fa-user"></i>`
-                }
-                messagProfil.appendChild(profile)
                 let h7 = document.createElement('h7')
                 h7.textContent = msg.name
                 messagProfil.appendChild(h7)
@@ -239,7 +218,7 @@ export function login() {
     fetch('/api/authenticated')
         .then(r => r.json())
         .then(res => {
-            let profil = `<i class="fa-solid fa-user"></i>`
+            let profile = `<i class="fa-solid fa-user"></i>`
 
 
             if (res.ok) {
@@ -252,7 +231,6 @@ export function login() {
                    <div class="notification-badge" , id ="notification-circle">${notifications}</div>
                </div>
                <button id="Create" style="z-index: 10;"><i class="fa-solid fa-plus"></i></button>
-               <button id="profile" style="z-index: 10;">
                </button>
               </div>
                 </header>
@@ -272,21 +250,13 @@ export function login() {
                 </div>
             
             <script type="module" src="static/main.js"></script>`
-                console.log(res);
-
-
-                if (res.photo && res.photo.String.trim() !== "") {
-                    document.getElementById('profile').style.backgroundImage = `url(${res.photo.String})`;
-                    profilPhoto = `url(${res.photo.String})`
-                } else {
-                    document.getElementById('profile').innerHTML = `${profil}`
+                
+                    document.getElementById('profile').innerHTML = `${profile}`
                   
-                }
 
                 const div = document.createElement('div');
                 div.innerHTML = `
                     <button id="logout">Logout</button>
-                    <button id="editProfile">Edit Profile</button>
                 `;
                 body.append(div);
 
@@ -300,12 +270,8 @@ export function login() {
                 div.style.zIndex = '1000';
                 div.style.display = 'none';
                 const logoutBtn = document.getElementById('logout');
-                const editProfileButton = document.getElementById('editProfile');
 
                 logoutBtn.style.margin = '5px';
-                editProfileButton.style.position = 'relative';
-                editProfileButton.style.top = '8vh';
-                editProfileButton.style.height = '5vh';
 
                 document.getElementById('profile').addEventListener('click', () => {
                     isAuthenticated().then(auth => {
@@ -323,20 +289,9 @@ export function login() {
 
                 });
                 Username = res.nickname
-                editProfileButton.addEventListener('click', () => {
-                    isAuthenticated().then(auth => {
-                        if (!auth) {
-                            triggerUserLogout()
-                            main()
-                        } else {
-                            profile(res.age, res.email, Username, res.photo.String)
-                        }
-                    })
-                })
                 const show = document.getElementById('showUsers')
 
                 const user = document.getElementById('user')
-                //user.style.display = 'none'
                 show.addEventListener('click', () => {
                     if (!document.getElementById('message')) {
 

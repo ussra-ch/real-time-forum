@@ -90,26 +90,15 @@ export function mesaageDiv(user, userId, receiverId) {
                     let profile = document.createElement('div')
                     profile.className = 'profile'
                     if (document.querySelector('.profile')) {
-                        if (profilPhoto) {
-                            
-                            profile.style.backgroundImage = profilPhoto
-                        }else{
                             profile.innerHTML = `
                                     <i class="fa-solid fa-user"></i>
                                 `
-                        }
                     }
                     messagProfil.appendChild(profile)
                     let h7 = document.createElement('h7')
                     h7.textContent = Username
                     messagProfil.appendChild(h7)
                     msgContent.appendChild(messagProfil)
-
-                    // msgContent.innerHTML = `
-                    //         <div class="messagProfil">
-                    //             <div class="profile"><i class="fa-solid fa-user"></i></div>
-                    //             <h7>${Username}</h7>
-                    //         </div>`
                     toool.offset++
                     newMsg.append(msgContent)
 
@@ -171,19 +160,15 @@ export function mesaageDiv(user, userId, receiverId) {
 
     deleteButton.addEventListener('click', (e) => {
         document.getElementById('content').style.filter = 'none';
-        // if (conversation && !conversation.contains(e.target) && !done) {
         let isConversationOpen = {
             senderId: userId,
             receiverId: receiverId,
             type: "CloseConversation",
             ws: ws
         }
-        console.log("websocket is :::", ws);
-
         ws.send(JSON.stringify(isConversationOpen));
         conversation.remove();
-        // }
-        // done = false
+
     });
 
 }
@@ -221,14 +206,9 @@ function fetchMessages(userId, receiverId, offset, limit, name) {
                                             <h7>${formatDate(message.time)}</h7>`
                         body.prepend(newMsg)
                         if (document.querySelector('.profile')) {
-
-                            if (message.photo) {
-                                document.querySelector('.profile').style.backgroundImage = `url(${message.photo})`;
-                            } else {
                                 document.querySelector('.profile').innerHTML = `
                                     <i class="fa-solid fa-user"></i>
                                 `
-                            }
                         }
                     } else if (message.userId == receiverId && message.sender_id == userId) {
                         let newMsg = document.createElement('div')
@@ -242,14 +222,9 @@ function fetchMessages(userId, receiverId, offset, limit, name) {
                                             <h3>${message.content}</h3>
                                             <h7>${formatDate(message.time)}</h7>`
                         body.prepend(newMsg)
-                        if (profilPhoto) {
-                            
-                            document.querySelector('.profile').style.backgroundImage = `${profilPhoto}`
-                        }else{
                             document.querySelector('.profile').innerHTML = `
                                     <i class="fa-solid fa-user"></i>
                                 `
-                        }
                     }
                 }
             }

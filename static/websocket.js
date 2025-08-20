@@ -1,6 +1,5 @@
 import { fetchUser } from "./users.js"
 export var ws = null
-import { stat } from "./profile.js";
 
 let lastCall = 0;
 let typingTimeout;
@@ -38,12 +37,8 @@ function typingInProgress(Id) {
 }
 
 export function initWebSocket(onMessageCallback) {
-    if (stat) {
+    ws = new WebSocket("ws://localhost:8080/chat")
 
-        ws = new WebSocket("ws://localhost:8080/chat")
-    }
-    
-    
     ws.onopen = (event) => {
         console.log("WebSocket connected");
     };
@@ -56,8 +51,6 @@ export function initWebSocket(onMessageCallback) {
             if (data.type === 'online' || data.type === 'offline') {
                 fetchUser()
             } else if (data.type === "message") {
-
-
                 let notifs = document.getElementById('notification-circle')
                 notifs.textContent = data.Notifications
                 onMessageCallback(data);
@@ -65,7 +58,6 @@ export function initWebSocket(onMessageCallback) {
             } else if (data.type == 'notification' || data.type === "unreadMessage") {
                 let notifs = document.getElementById('notification-circle')
                 notifs.textContent = data.unreadCount
-
             } else if (data.type == 'typing') {
                 typingInProgress(data.sender)
             }

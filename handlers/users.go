@@ -3,7 +3,6 @@ package handlers
 import (
 	"database/sql"
 	"encoding/json"
-	"log"
 	"net/http"
 	"sync"
 	"time"
@@ -21,6 +20,10 @@ type User struct {
 }
 
 func FetchUsers(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		errorHandler(http.StatusMethodNotAllowed, w)
+		return
+	}
 	mu.Lock()
 	loggedIn, userID := IsLoggedIn(r)
 	mu.Unlock()
@@ -43,30 +46,30 @@ func FetchUsers(w http.ResponseWriter, r *http.Request) {
 	}
 
 	rows, err := databases.DB.Query(`
-		SELECT u.nickname, u.id, u.photo
+		SELECT u.nickname, u.id
 		FROM users u
 		
 	`, userID)
 	if err != nil {
-		log.Fatal(err)
+		errorHandler(http.StatusInternalServerError, w)
+		return
 	}
 	defer rows.Close()
 
 	type User struct {
-		Nickname string         `json:"nickname"`
-		UserId   int            `json:"userId"`
-		Photo    sql.NullString `json:"photo"`
-		Status   string         `json:"status"`
-		Time     time.Time      `json:"time"`
+		Nickname string    `json:"nickname"`
+		UserId   int       `json:"userId"`
+		Status   string    `json:"status"`
+		Time     time.Time `json:"time"`
 	}
 	var onlineUsers []User
 	for rows.Next() {
-		var photo sql.NullString
 		var nickname string
 		var userId int
 
-		if err := rows.Scan(&nickname, &userId, &photo); err != nil {
-			log.Fatal("error", err)
+		if err := rows.Scan(&nickname, &userId); err != nil {
+			errorHandler(http.StatusInternalServerError, w)
+			return
 		}
 
 		var T time.Time
@@ -94,7 +97,6 @@ func FetchUsers(w http.ResponseWriter, r *http.Request) {
 		onlineUsers = append(onlineUsers, User{
 			Nickname: nickname,
 			UserId:   userId,
-			Photo:    photo,
 			Status:   UsersStatus[userId],
 			Time:     T,
 		})

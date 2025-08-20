@@ -28,10 +28,7 @@ export function fetchUser() {
       if (users.UserId == user.userId) {
         continue
       }
-      let profil = `<i class="fa-solid fa-user"></i>`
-      if (user.photo.Valid) {
-        profil = `<img src="${user.photo.String}" class="profil" class="profil" alt="Profile Picture">`
-      }
+      let profile = `<i class="fa-solid fa-user"></i>`
       const conversationButton = document.createElement('button')
       conversationButton.id = "conversationButton"
      
@@ -39,7 +36,7 @@ export function fetchUser() {
       conversationButton.style.marginRight = '0'
       const div = document.createElement('div');
       div.className = 'user-info';
-      div.innerHTML = `${profil} ${user.nickname}`;
+      div.innerHTML = `${profile} ${user.nickname}`;
       if (user.status == 'online') {
         div.style.color = 'rgb(89, 230, 187)';
       }
@@ -64,8 +61,6 @@ export function fetchUser() {
             triggerUserLogout()
             main()
           } else {
-            console.log(36);
-            
             if (document.getElementById('message')) document.getElementById('message').remove()
             let isConversationOpen = { "senderId": users.UserId, "receiverId": user.userId, "isOpen": true, "type": "OpenConversation", "ws" : ws }
             const jsonIsConversationOpen = JSON.stringify(isConversationOpen);

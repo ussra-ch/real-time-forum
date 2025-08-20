@@ -8,6 +8,8 @@ import (
 	"text/template"
 
 	"handlers/databases"
+
+	"github.com/gorilla/websocket"
 )
 
 func errorHandler(errorType int, w http.ResponseWriter) {
@@ -20,30 +22,21 @@ func errorHandler(errorType int, w http.ResponseWriter) {
 	json.NewEncoder(w).Encode(errorr)
 }
 
-func generateSessionID() string {
+func generateSessionID(w http.ResponseWriter, userID int) string {
 	bytes := make([]byte, 16)
 	_, err := rand.Read(bytes)
 	if err != nil {
-		panic(err)
+		errorHandler(http.StatusInternalServerError, w)
+	}
+	_, err = databases.DB.Exec(`
+		INSERT INTO sessions (id, user_id, expires_at)
+		VALUES (?, ?, DATETIME('now', '+1 hour'))
+	`, hex.EncodeToString(bytes), userID)
+	if err != nil {
+		errorHandler(http.StatusInternalServerError, w)
+		return ""
 	}
 	return hex.EncodeToString(bytes)
-}
-
-func GetUserIDFromSession(r *http.Request) (int64, error) {
-	cookie, err := r.Cookie("session")
-	if err != nil {
-		return 0, err
-	}
-
-	var userID int64
-	err = databases.DB.QueryRow(`
-		SELECT user_id FROM sessions
-		WHERE id = ? AND expires_at > datetime('now')`, cookie.Value).Scan(&userID)
-	if err != nil {
-		return 0, err
-	}
-
-	return userID, nil
 }
 
 func IsLoggedIn(r *http.Request) (bool, int) {
@@ -80,9 +73,30 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusNotFound)
 	}
 	template, err := template.ParseFiles("index.html")
-	if err != nil{
+	if err != nil {
 		errorHandler(http.StatusInternalServerError, w)
 	}
 
 	template.Execute(w, nil)
 }
+
+func findKeyByConn(conn *websocket.Conn) (float64, bool) {
+	for key, conns := range ConnectedUsers {
+		for _, c := range conns {
+			if c == conn {
+				return key, true
+			}
+		}
+	}
+	return 0, false
+}
+
+func contains(slice []Category, item string) (bool, int) {
+	for _, v := range slice {
+		if v.Name == item {
+			return true, v.Id
+		}
+	}
+	return false, -1
+}
+

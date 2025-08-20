@@ -54,45 +54,29 @@ func WebSocketHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	mu.Lock()
-	_, userId := IsLoggedIn(r)
-	broadcastUserStatus(conn, userId)
+	ok, userId := IsLoggedIn(r)
+	broadcastUserStatus(conn, userId, "online", w)
 	sendUnreadNotifications(userId, ConnectedUsers[float64(userId)])
 	mu.Unlock()
 
 	defer func() {
 		mu.Lock()
-		newUser := make(map[string]interface{})
-		newUser["type"] = "offline"
-		newUser["userId"] = userId
-		toSend, err := json.Marshal(newUser)
-		if err != nil {
-		}
-		deleteOneconnection(userId, conn)
-		if len(ConnectedUsers[float64(userId)]) == 0 {
-			for id, value := range ConnectedUsers {
-				if id != float64(userId) {
-					for _, con := range value {
-						con.WriteMessage(websocket.TextMessage, []byte(toSend))
-					}
-				}
-			}
-		}
+		broadcastUserStatus(conn, userId, "offline", w)
 		conn.Close()
 		mu.Unlock()
 	}()
 
 	for {
-
 		_, message, err := conn.NextReader()
 		if message == nil {
 			mu.Lock()
-			ok, _ := IsLoggedIn(r)
 			if !ok {
-				userOffline(userId, conn)
+				broadcastUserStatus(conn, userId, "offline", w)
 			}
 			mu.Unlock()
 		}
 		if err != nil {
+			errorHandler(http.StatusInternalServerError, w)
 			return
 		}
 
@@ -105,11 +89,14 @@ func WebSocketHandler(w http.ResponseWriter, r *http.Request) {
 
 		if typeValue, ok := toolMap["type"].(string); ok {
 			if typeValue == "OpenConversation" || typeValue == "CloseConversation" {
-				fmt.Println(typeValue)
 				mu.Lock()
 				conversationOpened(conn, toolMap["receiverId"].(float64), toolMap["type"].(string))
 				if typeValue == "OpenConversation" {
-					updateSeenValue(int(toolMap["senderId"].(float64)), int(toolMap["receiverId"].(float64)))
+					err = updateSeenValue(int(toolMap["senderId"].(float64)), int(toolMap["receiverId"].(float64)))
+					if err != nil{
+						errorHandler(http.StatusInternalServerError, w)
+						return
+					}
 				}
 				sendUnreadNotifications(userId, ConnectedUsers[float64(userId)])
 				mu.Unlock()
@@ -119,28 +106,36 @@ func WebSocketHandler(w http.ResponseWriter, r *http.Request) {
 				var username, receiverName string
 				err := databases.DB.QueryRow("SELECT nickname FROM users WHERE id = ?", messageStruct.SenderId).Scan(&username)
 				if err != nil {
+					errorHandler(http.StatusInternalServerError, w)
+					return
 				}
-
 				messageStruct.ReceiverId = toolMap["receiverId"].(float64)
 				messageStruct.Type = toolMap["type"].(string)
 				messageStruct.MessageContent = toolMap["messageContent"].(string)
 				messageStruct.Name = username
 				messageStruct.ReceiverName = receiverName
-				messageHandler(messageStruct)
+				err = messageHandler(messageStruct)
+				if err != nil{
+					errorHandler(http.StatusInternalServerError, w)
+					return
+				}
 				isConversationOpened = IsConversationOpened(conn, toolMap["receiverId"].(float64), float64(userId))
 			}
 			if typeValue == "typing" {
-				typing := map[string]interface{}{
+				typingJson, err := json.Marshal(map[string]interface{}{
 					"type":   "typing",
 					"sender": toolMap["senderId"].(float64),
-				}
-				typingJson, _ := json.Marshal((typing))
+				})
 				if err != nil {
+					errorHandler(http.StatusInternalServerError, w)
+					return
 				}
 				if ConnectedUsers[toolMap["receiverId"].(float64)] != nil {
 					for _, con := range ConnectedUsers[toolMap["receiverId"].(float64)] {
 						err = con.WriteMessage(websocket.TextMessage, []byte(typingJson))
 						if err != nil {
+							errorHandler(http.StatusInternalServerError, w)
+							return
 						}
 					}
 				}
@@ -149,24 +144,10 @@ func WebSocketHandler(w http.ResponseWriter, r *http.Request) {
 				userID := logoutWhenSessionIsDeleted(conn)
 				mu.Lock()
 				UsersStatus[int(userID)] = "offline"
-				delete(ConnectedUsers, float64(userID))
 				for i := range OpenedConversations[conn] {
 					OpenedConversations[conn][i] = false
 				}
-				if _, exists := ConnectedUsers[float64(userID)]; !exists {
-					oldUser := make(map[string]interface{})
-					oldUser["type"] = "offline"
-					oldUser["userId"] = userID
-					toSend, err := json.Marshal(oldUser)
-					if err != nil {
-					}
-
-					for _, connections := range ConnectedUsers {
-						for _, con := range connections {
-							con.WriteMessage(websocket.TextMessage, []byte(toSend))
-						}
-					}
-				}
+				broadcastUserStatus(conn, userId, "offline", w)
 				mu.Unlock()
 			}
 		}
@@ -174,21 +155,24 @@ func WebSocketHandler(w http.ResponseWriter, r *http.Request) {
 		if len(messageStruct.MessageContent) > 0 {
 			if isConversationOpened {
 				Message, err := json.Marshal(messageStruct)
-				updateSeenValue(int(messageStruct.ReceiverId), int(messageStruct.SenderId))
-				if err != nil {
+				err1 := updateSeenValue(int(messageStruct.ReceiverId), int(messageStruct.SenderId))
+				if err1 != nil || err != nil{
+					errorHandler(http.StatusInternalServerError, w)
+					return
 				}
 				for _, con := range ConnectedUsers[messageStruct.ReceiverId] {
 					err = con.WriteMessage(websocket.TextMessage, []byte(Message))
 					if err != nil {
+						errorHandler(http.StatusInternalServerError, w)
+						return
 					}
 				}
-
-				sendUnreadNotifications(int(messageStruct.ReceiverId), ConnectedUsers[messageStruct.ReceiverId])
-			} else {
-				sendUnreadNotifications(int(messageStruct.ReceiverId), ConnectedUsers[messageStruct.ReceiverId])
 			}
+			sendUnreadNotifications(int(messageStruct.ReceiverId), ConnectedUsers[messageStruct.ReceiverId])
 			Message, err := json.Marshal(messageStruct)
 			if err != nil {
+				errorHandler(http.StatusInternalServerError, w)
+				return
 			}
 			for _, con := range ConnectedUsers[float64(userId)] {
 				if con == conn {
@@ -196,6 +180,8 @@ func WebSocketHandler(w http.ResponseWriter, r *http.Request) {
 				}
 				err = con.WriteMessage(websocket.TextMessage, []byte(Message))
 				if err != nil {
+					errorHandler(http.StatusInternalServerError, w)
+					return
 				}
 			}
 			sendUnreadNotifications(int(messageStruct.SenderId), ConnectedUsers[messageStruct.SenderId])
@@ -231,32 +217,32 @@ func FetchMessages(w http.ResponseWriter, r *http.Request) {
 
 	rows, err := databases.DB.Query(query, userId, senderID, userId, senderID)
 	if err != nil {
+		errorHandler(http.StatusInternalServerError, w)
+		return
 	}
 
 	err = databases.DB.QueryRow("SELECT nickname FROM users WHERE id = ?", userId).Scan(&receiverName)
 	if err != nil {
+		errorHandler(http.StatusInternalServerError, w)
+		return
 	}
 	var messages []map[string]interface{}
 	for rows.Next() {
 		var id, userId, sender_id int
-		var content, photo string
+		var content string
 		var time time.Time
 		var seen bool
 
 		if err := rows.Scan(&id, &sender_id, &userId, &content, &time, &seen); err != nil {
+			errorHandler(http.StatusInternalServerError, w)
+			return
 		}
-		q := `SELECT photo FROM users WHERE id = ?`
-		err := databases.DB.QueryRow(q, sender_id).Scan(&photo)
-		if err != nil {
-		}
-
 		message := map[string]interface{}{
 			"id":           id,
 			"sender_id":    sender_id,
 			"userId":       userId,
 			"content":      content,
 			"time":         time,
-			"photo":        photo,
 			"receiverName": receiverName,
 		}
 
@@ -267,13 +253,22 @@ func FetchMessages(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(messages)
 }
 
-func broadcastUserStatus(conn *websocket.Conn, userId int) {
+func broadcastUserStatus(conn *websocket.Conn, userId int, tyype string, w http.ResponseWriter) {
+	if tyype == "offline" {
+		if conn != nil {
+			conn.Close()
+		}
+		delete(ConnectedUsers, float64(userId))
+	} else if conn != nil {
+		ConnectedUsers[float64(userId)] = append(ConnectedUsers[float64(userId)], conn)
+	}
 	if _, exists := ConnectedUsers[float64(userId)]; !exists {
-		newUser := make(map[string]interface{})
-		newUser["type"] = "online"
-		newUser["userId"] = userId
-		toSend, err := json.Marshal(newUser)
+		User := make(map[string]interface{})
+		User["type"] = tyype
+		User["userId"] = userId
+		toSend, err := json.Marshal(User)
 		if err != nil {
+			errorHandler(http.StatusInternalServerError, w)
 		}
 		for _, connections := range ConnectedUsers {
 			for _, con := range connections {
@@ -281,7 +276,6 @@ func broadcastUserStatus(conn *websocket.Conn, userId int) {
 			}
 		}
 	}
-	ConnectedUsers[float64(userId)] = append(ConnectedUsers[float64(userId)], conn)
 }
 
 func userOffline(userId int, conn *websocket.Conn) {
@@ -316,20 +310,24 @@ func conversationOpened(conn *websocket.Conn, receiverId float64, typeValue stri
 	}
 }
 
-func messageHandler(messageStruct Message) {
+func messageHandler(messageStruct Message) error{
 	_, err := databases.DB.Exec(`INSERT INTO messages (sender_id,receiver_id,content,seen )
 					VALUES (?, ?, ?, ?);`, messageStruct.SenderId, messageStruct.ReceiverId, html.EscapeString(messageStruct.MessageContent), false)
 	if err != nil {
+		return err
 	}
+	return nil
 }
 
-func updateSeenValue(receiverId, senderId int) {
+func updateSeenValue(receiverId, senderId int) error{
 	query := `UPDATE messages
 	SET seen = 1
 	WHERE messages.sender_id = ? AND messages.receiver_id = ?;`
 	_, err := databases.DB.Exec(query, senderId, receiverId)
 	if err != nil {
+		return err
 	}
+	return nil
 }
 
 func unreadMessages(receiverId int) int {
@@ -375,11 +373,11 @@ func deleteOneconnection(userId int, conn *websocket.Conn) {
 }
 
 
-func IsConversationOpened(con *websocket.Conn, receiverId, senderId float64)bool{
-	for _, conn := range ConnectedUsers[receiverId]{
-		if OpenedConversations[conn][senderId]{
+func IsConversationOpened(con *websocket.Conn, receiverId, senderId float64) bool {
+	for _, conn := range ConnectedUsers[receiverId] {
+		if OpenedConversations[conn][senderId] {
 			return true
 		}
 	}
-	return  false
+	return false
 }
