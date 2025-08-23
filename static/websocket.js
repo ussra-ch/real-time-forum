@@ -41,15 +41,18 @@ export function initWebSocket(onMessageCallback) {
 
     ws.onopen = (event) => {
         console.log("WebSocket connected");
+        // Optionally, send a message to mark as online after login/register
+        // ws.send(JSON.stringify({ type: "online" }));
     };
 
     ws.onmessage = (event) => {
         if (event.data) {
-
             const data = JSON.parse(event.data);
 
             fetchUser()
             if (data.type === 'online' || data.type === 'offline') {
+                // Optionally update UI for user status
+                fetchUser();
             } else if (data.type === "message") {
                 let notifs = document.getElementById('notification-circle')
                 notifs.textContent = data.Notifications
@@ -69,6 +72,7 @@ export function initWebSocket(onMessageCallback) {
     };
 
     ws.onclose = (event) => {
-
+        // Optionally handle UI update for offline
+        fetchUser();
     };
 }

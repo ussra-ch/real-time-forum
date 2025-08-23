@@ -7,10 +7,16 @@ import { triggerUserLogout } from "./logout.js";
 export function fetchUser() {
   const usern = document.getElementById('users');
   fetch('/user').then(r => r.json()).then(users => {
+    if (!users || !users.UserId) {
+      triggerUserLogout()
+      main()
+      return
+    }
     usern.textContent = '';
 
     let on = new Set()
     if (users.onlineUsers) {
+      // Only show users with status 'online'
       users.onlineUsers.sort((a, b) => {
         return a.nickname.localeCompare(b.nickname);
       });
@@ -23,8 +29,6 @@ export function fetchUser() {
     }
 
     for (const user of on) {
-
-
       if (users.UserId == user.userId) {
         continue
       }
@@ -51,9 +55,7 @@ export function fetchUser() {
       conversationButton.style.background = 'rgba(26, 35, 50, 0.95)';
       conversationButton.className = "user-container"
       conversationButton.append(div)
-
       usern.appendChild(conversationButton);
-
 
       conversationButton.addEventListener('click', () => {
         isAuthenticated().then(auth => {
