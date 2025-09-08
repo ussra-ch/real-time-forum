@@ -1,10 +1,8 @@
 import { comment } from "./comment.js";
 import { fetchComments } from "./comment.js";
-import { deletepost, editpost } from "./postMenu.js";
 import { main } from "./main.js";
 import { isAuthenticated } from "./login.js";
 import { triggerUserLogout } from "./logout.js";
-window.deletepost = deletepost;
 
 
 export function Create() {
@@ -149,52 +147,6 @@ export function fetchPosts() {
                 menu.style.display = 'none'
                 menu.className = 'menu'
                 postCard.prepend(menu)
-                if (post.myId == post.user_id) {
-                    const select = document.createElement('button')
-                    select.innerHTML = '<i class="fa-solid fa-ellipsis-vertical"></i>'
-                    select.className = 'select'
-                    postCard.prepend(select)
-                    select.addEventListener('click', (e) => {
-                        isAuthenticated().then(auth => {
-                            if (!auth) {
-                                triggerUserLogout()
-                                main()
-                            } else {
-                                e.preventDefault()
-                                menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
-                            }
-                        })
-                    })
-                    const deletePost = document.createElement('button')
-                    deletePost.innerHTML = `<i class="fa-solid fa-trash"></i> Delete`
-                    menu.prepend(deletePost)
-                    deletePost.addEventListener('click', (e) => {
-                        isAuthenticated().then(auth => {
-                            if (!auth) {
-                                triggerUserLogout()
-                                main()
-                            } else {
-                                e.preventDefault()
-                                deletepost(post.id)
-                            }
-                        })
-                    })
-                    const editPost = document.createElement('button')
-                    editPost.innerHTML = `<i class="fa-solid fa-file-pen"></i>  Edit `
-                    menu.prepend(editPost)
-                    editPost.addEventListener('click', (e) => {
-                        isAuthenticated().then(auth => {
-                            if (!auth) {
-                                triggerUserLogout()
-                                main()
-                            } else {
-                                e.preventDefault()
-                                editpost(post.id, post.title, post.content)
-
-                            }
-                        })
-                    })
-                }
 
                 const div = document.createElement('div');
                 div.className = 'comments-container';

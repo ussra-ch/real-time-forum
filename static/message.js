@@ -33,10 +33,12 @@ export function mesaageDiv(user, userId, receiverId) {
 
     var done = true
     const conversation = document.createElement('div')
+
     conversation.id = 'message'
     conversation.innerHTML = `
         <div class="head">
             <input type="hidden" id="message_id" name="message_id" value="${receiverId}">
+            <input type="hidden" id="name" name="message_id" value="${user}">
             <h3>${user}</h3>
         </div>
         <div class="body" id="chat-body"></div>
@@ -167,6 +169,7 @@ export function mesaageDiv(user, userId, receiverId) {
         }
         ws.send(JSON.stringify(isConversationOpen));
         conversation.remove();
+        document.getElementById('user').style.display='block'
 
     });
 

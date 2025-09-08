@@ -8,6 +8,7 @@ function typingInProgress(Id) {
     const chat = document.getElementById('footer');
     if (!chat) return;
     const userID = document.getElementById('message_id')
+    const name = document.getElementById('name').value
 
     if (userID.value != Id) {
         return
@@ -17,6 +18,7 @@ function typingInProgress(Id) {
         const div = document.createElement('div');
         div.id = 'typing';
         div.innerHTML = `
+        <h6>${name} is typing </h6>
             <div id="typing-indicator">
               <span></span>
               <span></span>
